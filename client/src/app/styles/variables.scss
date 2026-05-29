@@ -36,6 +36,11 @@
   --font-size-body: 16px;
   --font-size-small: 14px;
 
+  --line-height-body: 1.5;
+  --line-height-heading: 1.2;
+  --line-height-tight: 1.1;
+  --line-height-small: 1.25;
+
   --container-width: #{fluid-to-laptop(1280, 1120)};
   --container-padding-x: 15px;
   --section-padding-y: #{fluid(96, 56)};
