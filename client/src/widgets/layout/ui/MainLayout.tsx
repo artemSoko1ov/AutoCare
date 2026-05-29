@@ -1,26 +1,10 @@
-import { NavLink, Outlet } from "react-router-dom";
-
-const headerLinks = [
-  { label: "Главная", to: "/" },
-  { label: "Услуги", to: "/services" },
-  { label: "Контакты", to: "/contacts" },
-  { label: "Вход", to: "/login" },
-  { label: "Регистрация", to: "/sign-up" },
-];
+import { Outlet } from "react-router-dom";
+import Header from "@/widgets/header/ui/Header.tsx";
 
 const MainLayout = () => {
   return (
     <>
-      <header>
-        <nav>
-          {headerLinks.map((link) => (
-            <NavLink end={link.to === "/"} to={link.to}>
-              {link.label}
-            </NavLink>
-          ))}
-        </nav>
-      </header>
-
+      <Header />
       <main className="content">
         <Outlet />
       </main>
