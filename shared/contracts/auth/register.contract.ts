@@ -1,4 +1,5 @@
-import { z } from 'zod';
+import {z} from 'zod';
+import {userDtoSchema} from "./user.contract";
 
 export const RegisterBodySchema = z.object({
   email: z.email('Некорректный email'),
@@ -13,9 +14,8 @@ export const RegisterBodySchema = z.object({
 });
 
 export const RegisterResponseSchema = z.object({
-  id: z.string(),
-  email: z.email(),
-  username: z.string(),
+  accessToken: z.string(),
+  user: userDtoSchema,
 });
 
 export type RegisterBody = z.infer<typeof RegisterBodySchema>;

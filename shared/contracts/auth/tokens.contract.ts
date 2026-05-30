@@ -6,8 +6,3 @@ export const TokensSchema = z.object({
 });
 
 export type TokensDto = z.infer<typeof TokensSchema>;
-
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
