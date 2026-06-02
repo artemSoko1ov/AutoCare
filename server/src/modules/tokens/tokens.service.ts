@@ -27,4 +27,12 @@ export class TokensService {
       refreshToken,
     };
   }
+
+  async saveToken(userId: string, refreshToken: string) {
+    return this.prisma.token.upsert({
+      where: { userId },
+      update: { refreshToken },
+      create: { userId, refreshToken },
+    });
+  }
 }
