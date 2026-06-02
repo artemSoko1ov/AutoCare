@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -b && vite build --emptyOutDir=false",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "lint:styles": "stylelint \"src/**/*.{css,scss}\" --allow-empty-input",

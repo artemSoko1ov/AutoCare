@@ -7,8 +7,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@app/*": ["./src/app/*"],
-      "@styles/*": ["./src/app/styles/*"],
-      "@shared/*": ["../shared/*"]
+      "@styles/*": ["./src/app/styles/*"]
     },
     "types": ["vite/client"],
     "skipLibCheck": true,
