@@ -5,6 +5,8 @@ import type {
   LoginResponse,
   RegisterBody,
   RegisterResponse,
+  TokensDto,
+  UserDto,
 } from '@shared/contracts/auth';
 import { AuthService } from './auth.service';
 
@@ -12,17 +14,17 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
-  async register(
-    @Body() data: RegisterBody,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<RegisterResponse> {
-    const userData = await this.authService.register(data);
+  private setRefreshTokenAndReturn(
+    res: Response,
+    userData: TokensDto & UserDto,
+  ): RegisterResponse | LoginResponse {
     const { accessToken, refreshToken, ...userFields } = userData;
 
     res.cookie('refreshToken', refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
     });
 
     return {
@@ -31,22 +33,21 @@ export class AuthController {
     };
   }
 
+  @Post('register')
+  async register(
+    @Body() data: RegisterBody,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const userData = await this.authService.register(data);
+    return this.setRefreshTokenAndReturn(res, userData);
+  }
+
   @Post('login')
   async login(
     @Body() data: LoginBody,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<LoginResponse> {
+  ) {
     const userData = await this.authService.login(data);
-    const { accessToken, refreshToken, ...userFields } = userData;
-
-    res.cookie('refreshToken', refreshToken, {
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
-
-    return {
-      accessToken,
-      user: userFields,
-    };
+    return this.setRefreshTokenAndReturn(res, userData);
   }
 }
