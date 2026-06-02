@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import type { TokensDto, UserDto } from '@shared/contracts/auth';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 @Injectable()
 export class TokensService {
@@ -39,5 +39,37 @@ export class TokensService {
     return this.prisma.token.delete({
       where: { refreshToken },
     });
+  }
+
+  async findToken(refreshToken: string) {
+    return this.prisma.token.findFirst({
+      where: { refreshToken },
+    });
+  }
+
+  validateAccessToken(token: string): JwtPayload | string | null {
+    const accessSecret = process.env.JWT_ACCESS_SECRET;
+
+    if (!accessSecret) {
+      throw new Error('JWT secrets are not defined');
+    }
+    try {
+      return jwt.verify(token, accessSecret);
+    } catch {
+      return null;
+    }
+  }
+
+  validateRefreshToken(token: string): JwtPayload | string | null {
+    const refreshSecret = process.env.JWT_REFRESH_SECRET;
+
+    if (!refreshSecret) {
+      throw new Error('JWT secrets are not defined');
+    }
+    try {
+      return jwt.verify(token, refreshSecret);
+    } catch {
+      return null;
+    }
   }
 }
