@@ -1,7 +1,16 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
-import type { RegisterBody, TokensDto, UserDto } from '@shared/contracts/auth';
+import type {
+  LoginBody,
+  RegisterBody,
+  TokensDto,
+  UserDto,
+} from '@shared/contracts/auth';
 import { TokensService } from '../tokens/tokens.service';
 
 @Injectable()
@@ -52,6 +61,43 @@ export class AuthService {
     return {
       ...tokens,
       ...userWithDate,
+    };
+  }
+
+  async login({ email, password }: LoginBody): Promise<TokensDto & UserDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        password: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Неверный email или пароль');
+    }
+
+    const isPassEquals = await bcrypt.compare(password, user.password);
+    if (!isPassEquals) {
+      throw new UnauthorizedException('Неверный email или пароль');
+    }
+
+    const userDto: UserDto = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      createdAt: user.createdAt.toISOString(),
+    };
+
+    const tokens = this.tokenService.generateTokens(userDto);
+    await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+    return {
+      ...tokens,
+      ...userDto,
     };
   }
 }
