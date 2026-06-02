@@ -1,5 +1,5 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
-import { type Response } from 'express';
+import { Body, Controller, Post, Res, Req } from '@nestjs/common';
+import type { Response, Request } from 'express';
 import type {
   LoginBody,
   LoginResponse,
@@ -49,5 +49,23 @@ export class AuthController {
   ) {
     const userData = await this.authService.login(data);
     return this.setRefreshTokenAndReturn(res, userData);
+  }
+
+  @Post('logout')
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const refreshToken =
+      typeof req.cookies?.refreshToken === 'string'
+        ? req.cookies.refreshToken
+        : undefined;
+
+    if (!refreshToken) {
+      res.clearCookie('refreshToken');
+      return;
+    }
+    const token = await this.authService.logout(refreshToken);
+
+    res.clearCookie('refreshToken');
+
+    return token;
   }
 }
