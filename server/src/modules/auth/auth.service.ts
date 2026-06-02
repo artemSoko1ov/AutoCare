@@ -105,7 +105,7 @@ export class AuthService {
     return this.tokenService.removeToken(refreshToken);
   }
 
-  async refresh(refreshToken: string) {
+  async refresh(refreshToken: string): Promise<TokensDto & UserDto> {
     if (!refreshToken) {
       throw new UnauthorizedException();
     }
@@ -151,7 +151,7 @@ export class AuthService {
 
     return {
       ...tokens,
-      user: userDto,
+      ...userDto,
     };
   }
 }
