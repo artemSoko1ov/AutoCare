@@ -100,4 +100,8 @@ export class AuthService {
       ...userDto,
     };
   }
+
+  async logout(refreshToken: string) {
+    return this.tokenService.removeToken(refreshToken);
+  }
 }

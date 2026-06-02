@@ -34,4 +34,10 @@ export class TokensService {
       create: { userId, refreshToken },
     });
   }
+
+  async removeToken(refreshToken: string) {
+    return this.prisma.token.delete({
+      where: { refreshToken },
+    });
+  }
 }
