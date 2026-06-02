@@ -1,6 +1,11 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { type Response } from 'express';
-import type { RegisterBody, RegisterResponse } from '@shared/contracts/auth';
+import type {
+  LoginBody,
+  LoginResponse,
+  RegisterBody,
+  RegisterResponse,
+} from '@shared/contracts/auth';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -13,6 +18,25 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<RegisterResponse> {
     const userData = await this.authService.register(data);
+    const { accessToken, refreshToken, ...userFields } = userData;
+
+    res.cookie('refreshToken', refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+
+    return {
+      accessToken,
+      user: userFields,
+    };
+  }
+
+  @Post('login')
+  async login(
+    @Body() data: LoginBody,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<LoginResponse> {
+    const userData = await this.authService.login(data);
     const { accessToken, refreshToken, ...userFields } = userData;
 
     res.cookie('refreshToken', refreshToken, {
