@@ -68,4 +68,17 @@ export class AuthController {
 
     return token;
   }
+
+  @Post('refresh')
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const requestRefreshToken =
+      typeof req.cookies?.refreshToken === 'string'
+        ? req.cookies.refreshToken
+        : undefined;
+    const userData = await this.authService.refresh(requestRefreshToken ?? '');
+    return this.setRefreshTokenAndReturn(res, userData);
+  }
 }
