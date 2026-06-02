@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
+import type { TokensDto, UserDto } from '@shared/contracts/auth';
 import jwt from 'jsonwebtoken';
-import { UserDto } from '@shared/contracts/auth/user.contract';
-import { TokensDto } from '@shared/contracts/auth/tokens.contract';
 
 @Injectable()
 export class TokensService {

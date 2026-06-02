@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { type Response } from 'express';
+import type { RegisterBody, RegisterResponse } from '@shared/contracts/auth';
 import { AuthService } from './auth.service';
-import { type RegisterBody, RegisterResponse } from '@shared/contracts/auth';
 
 @Controller('auth')
 export class AuthController {

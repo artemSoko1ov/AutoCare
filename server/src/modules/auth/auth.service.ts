@@ -1,10 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
-import { RegisterBody } from '@shared/contracts/auth';
 import * as bcrypt from 'bcryptjs';
+import type { RegisterBody, TokensDto, UserDto } from '@shared/contracts/auth';
 import { TokensService } from '../tokens/tokens.service';
-import { TokensDto } from '@shared/contracts/auth/tokens.contract';
-import { UserDto } from '@shared/contracts/auth/user.contract';
 
 @Injectable()
 export class AuthService {
