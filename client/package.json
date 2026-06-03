@@ -28,6 +28,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.12.0",
     "@tanstack/react-query": "^5.99.0",
+    "@shared/contracts": "workspace:*",
     "axios": "^1.15.0",
     "clsx": "^2.1.1",
     "react": "^19.2.4",
