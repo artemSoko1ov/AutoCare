@@ -10,7 +10,7 @@ const Header = () => {
     <header>
       <nav>
         {headerLinks.map((link) => (
-          <NavLink end={link.to === "/"} to={link.to}>
+          <NavLink end={link.to === "/"} key={link.to} to={link.to}>
             {link.label}
           </NavLink>
         ))}

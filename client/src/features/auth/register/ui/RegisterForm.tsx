@@ -53,7 +53,7 @@ const RegisterForm = () => {
       />
 
       <button type="submit" disabled={loading}>
-        {loading ? "Загрузка..." : "Войти"}
+        {loading ? "Загрузка..." : "Зарегистрироваться"}
       </button>
     </form>
   );

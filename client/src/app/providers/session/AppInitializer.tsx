@@ -31,6 +31,6 @@ export const AppInitializer = () => {
     void initSession();
   }, [dispatch, isInitialized, status]);
 
-  if (!isInitialized) return <div>Р—Р°РіСЂСѓР·РєР°...</div>;
+  if (!isInitialized) return <div>Загрузка...</div>;
   return null;
 };
