@@ -1,0 +1,91 @@
+name: Auth CI
+
+on:
+  push:
+    paths:
+      - ".github/workflows/auth-ci.yml"
+      - "client/**"
+      - "server/**"
+      - "shared/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+  pull_request:
+    paths:
+      - ".github/workflows/auth-ci.yml"
+      - "client/**"
+      - "server/**"
+      - "shared/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: auth-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  client:
+    name: Client
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared contracts
+        run: pnpm --filter @shared/contracts build
+
+      - name: Lint client
+        run: pnpm --dir client lint
+
+      - name: Build client
+        run: pnpm --dir client build
+
+  server:
+    name: Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test server
+        run: pnpm --dir server test
+
+      - name: Build server
+        run: pnpm --dir server build
