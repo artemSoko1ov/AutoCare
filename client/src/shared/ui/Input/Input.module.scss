@@ -1,0 +1,114 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.field--full-width {
+  width: 100%;
+}
+
+.label {
+  font-size: fluid(17, 13);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-small);
+  color: var(--color-text-heading);
+}
+
+.control {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  width: 100%;
+  padding-inline: fluid(18, 16);
+  background-color: var(--color-bg-base);
+  border: var(--border);
+  border-radius: var(--border-radius-button);
+  box-shadow: inset 0 1px 2px rgb(15 23 42 / 4%);
+  transition:
+    border-color var(--transition-duration) var(--transition-easing),
+    box-shadow var(--transition-duration-slow) var(--transition-easing),
+    background-color var(--transition-duration) var(--transition-easing),
+    translate var(--transition-duration-slow) var(--transition-easing);
+
+  &:focus-within {
+    @include interactive-ring;
+
+    translate: 0 calc(var(--interaction-lift-y) * -1);
+  }
+}
+
+.field--sm .control {
+  min-height: fluid(46, 42);
+  padding-block: fluid(10, 8);
+}
+
+.field--md .control {
+  min-height: fluid(52, 48);
+  padding-block: fluid(12, 10);
+}
+
+.field--lg .control {
+  min-height: fluid(58, 52);
+  padding-block: fluid(14, 12);
+}
+
+.field--invalid .control {
+  border-color: rgb(var(--color-danger-rgb) / 44%);
+  box-shadow: 0 0 0 4px rgb(var(--color-danger-rgb) / 10%);
+}
+
+.field--invalid .control:focus-within {
+  @include interactive-ring(
+    rgb(var(--color-danger-rgb) / 64%),
+    0 0 0 4px rgb(var(--color-danger-rgb) / 12%)
+  );
+}
+
+.field--disabled .control {
+  background-color: var(--color-bg-secondary);
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  font-size: fluid(16, 15);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body);
+  color: var(--color-text-primary);
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+
+  &::placeholder {
+    color: var(--color-text-placeholder);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+
+  svg {
+    @include square(var(--icon-size-sm));
+  }
+}
+
+.description {
+  font-size: fluid(13, 12);
+  line-height: var(--line-height-small);
+  color: var(--color-text-secondary);
+}
+
+.description--error {
+  color: var(--color-danger);
+}
