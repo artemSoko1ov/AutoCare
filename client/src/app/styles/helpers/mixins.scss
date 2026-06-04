@@ -76,3 +76,50 @@
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+@mixin interactive-ring($border-color: var(--color-primary), $shadow: var(--shadow-focus)) {
+  outline: none;
+  border-color: $border-color;
+  box-shadow: $shadow;
+}
+
+@mixin surface(
+  $background: var(--color-bg-base),
+  $border: var(--border),
+  $radius: var(--border-radius-card),
+  $shadow: var(--shadow-medium)
+) {
+  background-color: $background;
+  border: $border;
+  border-radius: $radius;
+  box-shadow: $shadow;
+}
+
+@mixin control-base(
+  $height: var(--control-height-md),
+  $padding-x: var(--control-padding-x),
+  $radius: var(--border-radius-button)
+) {
+  display: inline-flex;
+  gap: var(--space-xs);
+  align-items: center;
+  justify-content: center;
+  min-height: $height;
+  padding-inline: $padding-x;
+  white-space: nowrap;
+  border-radius: $radius;
+  transition:
+    background-color var(--transition-duration) var(--transition-easing),
+    color var(--transition-duration) var(--transition-easing),
+    border-color var(--transition-duration) var(--transition-easing),
+    box-shadow var(--transition-duration) var(--transition-easing),
+    opacity var(--transition-duration-fast) var(--transition-easing),
+    translate var(--transition-duration-fast) var(--transition-easing);
+}
+
+@mixin clamp-lines($lines: 2) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+}
