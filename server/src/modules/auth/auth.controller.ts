@@ -1,5 +1,6 @@
 import { Body, Controller, Post, Res, Req } from '@nestjs/common';
 import type { Response, Request } from 'express';
+import { LoginBodySchema, RegisterBodySchema } from '@shared/contracts/auth';
 import type {
   LoginBody,
   LoginResponse,
@@ -8,6 +9,7 @@ import type {
   TokensDto,
   UserDto,
 } from '@shared/contracts/auth';
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -35,7 +37,7 @@ export class AuthController {
 
   @Post('register')
   async register(
-    @Body() data: RegisterBody,
+    @Body(new ZodValidationPipe(RegisterBodySchema)) data: RegisterBody,
     @Res({ passthrough: true }) res: Response,
   ) {
     const userData = await this.authService.register(data);
@@ -44,7 +46,7 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Body() data: LoginBody,
+    @Body(new ZodValidationPipe(LoginBodySchema)) data: LoginBody,
     @Res({ passthrough: true }) res: Response,
   ) {
     const userData = await this.authService.login(data);
