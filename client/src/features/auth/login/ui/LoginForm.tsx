@@ -1,10 +1,9 @@
 import { type FormEvent, useState } from "react";
-import { useAppSelector } from "@app/providers/store/hooks";
+
 import { useLogin } from "../model/useLogin";
 
 const LoginForm = () => {
   const { executeLogin, loading, error } = useLogin();
-  const session = useAppSelector((state) => state.session);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,10 +44,6 @@ const LoginForm = () => {
       <button type="submit" disabled={loading}>
         {loading ? "Загрузка..." : "Войти"}
       </button>
-
-      <pre style={{ marginTop: "1rem", fontSize: "0.8rem" }}>
-        Session state: {JSON.stringify(session, null, 2)}
-      </pre>
     </form>
   );
 };

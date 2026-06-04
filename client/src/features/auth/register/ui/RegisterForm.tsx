@@ -1,10 +1,8 @@
 import { type FormEvent, useState } from "react";
-import { useAppSelector } from "@app/providers/store/hooks";
 import { useRegister } from "../model/useRegister.ts";
 
 const RegisterForm = () => {
   const { executeRegister, loading, error } = useRegister();
-  const session = useAppSelector((state) => state.session);
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -57,10 +55,6 @@ const RegisterForm = () => {
       <button type="submit" disabled={loading}>
         {loading ? "Загрузка..." : "Войти"}
       </button>
-
-      <pre style={{ marginTop: "1rem", fontSize: "0.8rem" }}>
-        Session state: {JSON.stringify(session, null, 2)}
-      </pre>
     </form>
   );
 };
