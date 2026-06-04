@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { type PropsWithChildren, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@app/providers/store/hooks";
 import axiosInstance from "@/shared/api/axiosInstance.ts";
 import { logout, setCredentials, setStatus } from "@/entities/session/model/sessionSlice.ts";
 
-export const AppInitializer = () => {
+type AppInitializerProps = PropsWithChildren;
+
+export const AppInitializer = ({ children }: AppInitializerProps) => {
   const dispatch = useAppDispatch();
   const { isInitialized, status } = useAppSelector((state) => state.session);
 
@@ -33,6 +35,9 @@ export const AppInitializer = () => {
     void initSession();
   }, [dispatch, isInitialized, status]);
 
-  if (!isInitialized) return <div>Загрузка...</div>;
-  return null;
+  if (!isInitialized) {
+    return <div>Загрузка...</div>;
+  }
+
+  return <>{children}</>;
 };

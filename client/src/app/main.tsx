@@ -8,8 +8,9 @@ import { AppInitializer } from "@app/providers/session/AppInitializer.tsx";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <StoreProvider>
-      <AppInitializer />
-      <App />
+      <AppInitializer>
+        <App />
+      </AppInitializer>
     </StoreProvider>
   </StrictMode>,
 );
