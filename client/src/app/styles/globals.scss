@@ -63,12 +63,33 @@ button {
     color var(--transition-duration) var(--transition-easing),
     border-color var(--transition-duration) var(--transition-easing),
     box-shadow var(--transition-duration) var(--transition-easing),
-    opacity var(--transition-duration-fast) var(--transition-easing);
+    opacity var(--transition-duration-fast) var(--transition-easing),
+    translate var(--transition-duration-slow) var(--transition-easing);
 }
 
 button,
 [role="button"] {
   cursor: pointer;
+}
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  transition:
+    background-color var(--transition-duration) var(--transition-easing),
+    color var(--transition-duration) var(--transition-easing),
+    border-color var(--transition-duration) var(--transition-easing),
+    box-shadow var(--transition-duration-slow) var(--transition-easing),
+    text-decoration-color var(--transition-duration) var(--transition-easing),
+    opacity var(--transition-duration-fast) var(--transition-easing),
+    translate var(--transition-duration-slow) var(--transition-easing);
+
+  @include hover {
+    translate: 0 calc(var(--interaction-lift-y) * -1);
+  }
+
+  &:active {
+    translate: 0 var(--interaction-press-y);
+  }
 }
 
 button:disabled,
@@ -196,13 +217,38 @@ a {
     text-decoration-color: currentcolor;
   }
 
+  &[class] {
+    text-decoration: none;
+    transition:
+      color var(--transition-duration) var(--transition-easing),
+      text-decoration-color var(--transition-duration) var(--transition-easing),
+      background-color var(--transition-duration) var(--transition-easing),
+      box-shadow var(--transition-duration-slow) var(--transition-easing),
+      opacity var(--transition-duration-fast) var(--transition-easing),
+      translate var(--transition-duration-slow) var(--transition-easing);
+
+    @include hover {
+      translate: 0 calc(var(--interaction-lift-y) * -1);
+    }
+
+    &:active {
+      translate: 0 var(--interaction-press-y);
+    }
+  }
+
   &:active {
     color: var(--color-primary-pressed);
   }
+}
 
-  &[class] {
-    text-decoration: none;
-  }
+svg,
+svg * {
+  transition:
+    fill var(--transition-duration) var(--transition-easing),
+    stroke var(--transition-duration) var(--transition-easing),
+    opacity var(--transition-duration-fast) var(--transition-easing),
+    translate var(--transition-duration-slow) var(--transition-easing),
+    rotate var(--transition-duration-slower) var(--transition-easing);
 }
 
 strong,

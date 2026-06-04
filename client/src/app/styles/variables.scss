@@ -135,7 +135,10 @@
   --transition-duration-fast: 0.15s;
   --transition-duration: 0.2s;
   --transition-duration-slow: 0.3s;
+  --transition-duration-slower: 0.4s;
   --transition-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --interaction-lift-y: 2px;
+  --interaction-press-y: 1px;
 
   --z-index-base: 0;
   --z-index-sticky: 20;

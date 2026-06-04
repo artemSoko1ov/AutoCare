@@ -1,0 +1,133 @@
+.button {
+  @include control-base;
+
+  position: relative;
+  font-weight: var(--font-weight-heading);
+  line-height: 1;
+  color: var(--color-text-heading);
+  user-select: none;
+  border: var(--border);
+
+  &:focus-visible {
+    @include interactive-ring;
+  }
+
+  @include hover {
+    text-decoration: none;
+  }
+
+  &:active:not(:disabled) {
+    translate: 0 1px;
+  }
+
+  &:disabled {
+    @include disabled;
+  }
+}
+
+.button--primary {
+  color: var(--color-primary-contrast);
+  background: var(--gradient-primary);
+  border-color: transparent;
+  box-shadow: var(--shadow-floating);
+
+  @include hover {
+    background: linear-gradient(135deg, #4f8cff 0%, #2563eb 100%);
+    box-shadow: 0 18px 34px rgb(var(--color-primary-rgb) / 22%);
+  }
+
+  &:focus-visible {
+    @include interactive-ring(transparent, 0 0 0 4px rgb(var(--color-primary-rgb) / 18%));
+  }
+}
+
+.button--secondary {
+  color: var(--color-primary);
+  background-color: var(--color-bg-base);
+  border-color: rgb(var(--color-primary-rgb) / 42%);
+  box-shadow: var(--shadow-soft);
+
+  @include hover {
+    background-color: var(--color-bg-muted);
+    border-color: var(--color-primary);
+  }
+}
+
+.button--ghost {
+  color: var(--color-text-heading);
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+
+  @include hover {
+    color: var(--color-primary);
+    background-color: var(--color-primary-subtle);
+  }
+}
+
+.button--sm {
+  min-height: var(--control-height-sm);
+  padding-inline: 1rem;
+  font-size: var(--font-size-small);
+}
+
+.button--md {
+  min-height: var(--control-height-md);
+  padding-inline: 1.25rem;
+  font-size: var(--font-size-body);
+}
+
+.button--lg {
+  min-height: var(--control-height-lg);
+  padding-inline: var(--control-padding-x-lg);
+  font-size: var(--font-size-body);
+}
+
+.button--full-width {
+  width: 100%;
+}
+
+.button--loading {
+  pointer-events: none;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.icon,
+.loader {
+  flex-shrink: 0;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    @include square(var(--icon-size-sm));
+  }
+}
+
+.loader {
+  @include square(1rem);
+
+  border: 2px solid rgb(255 255 255 / 34%);
+  border-top-color: currentcolor;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.button--secondary .loader,
+.button--ghost .loader {
+  border-color: rgb(var(--color-primary-rgb) / 20%);
+  border-top-color: currentcolor;
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
