@@ -3,6 +3,7 @@ import { useAppDispatch } from "@app/providers/store/hooks";
 import { loginApi } from "../api/loginApi";
 import type { LoginBody } from "@shared/contracts/auth";
 import { setCredentials } from "@/entities/session/model/sessionSlice.ts";
+import type { AxiosError } from "axios";
 
 export const useLogin = () => {
   const dispatch = useAppDispatch();
@@ -17,8 +18,9 @@ export const useLogin = () => {
       const response = await loginApi(data);
       dispatch(setCredentials({ user: response.user, accessToken: response.accessToken }));
       return response;
-    } catch (err) {
-      setError(err?.response?.data?.message || "Ошибка при входе");
+    } catch (err: unknown) {
+      const axiosErr = err as AxiosError<{ message: string }>;
+      setError(axiosErr.response?.data?.message || "Ошибка при входе");
       throw err;
     } finally {
       setLoading(false);
