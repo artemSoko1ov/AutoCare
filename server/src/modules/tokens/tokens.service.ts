@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
-import type { TokensDto, UserDto } from '@shared/contracts/auth';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import type { TokensDto } from '@shared/contracts/auth';
+import jwt from 'jsonwebtoken';
+import type { AuthTokenPayload } from '../../common/types/auth-token-payload';
 
 @Injectable()
 export class TokensService {
   constructor(private readonly prisma: PrismaService) {}
 
-  generateTokens(payload: UserDto): TokensDto {
+  generateTokens(payload: AuthTokenPayload): TokensDto {
     const accessSecret = process.env.JWT_ACCESS_SECRET;
     const refreshSecret = process.env.JWT_REFRESH_SECRET;
 
@@ -47,29 +48,57 @@ export class TokensService {
     });
   }
 
-  validateAccessToken(token: string): JwtPayload | string | null {
-    const accessSecret = process.env.JWT_ACCESS_SECRET;
-
-    if (!accessSecret) {
-      throw new Error('JWT secrets are not defined');
-    }
+  private validateToken(
+    token: string,
+    secret: string,
+  ): AuthTokenPayload | null {
     try {
-      return jwt.verify(token, accessSecret);
+      const payload = jwt.verify(token, secret);
+
+      if (typeof payload === 'string') {
+        return null;
+      }
+
+      const { id, email, username, createdAt, sessionVersion } = payload;
+      if (
+        typeof id !== 'string' ||
+        typeof email !== 'string' ||
+        typeof username !== 'string' ||
+        typeof createdAt !== 'string' ||
+        typeof sessionVersion !== 'number'
+      ) {
+        return null;
+      }
+
+      return {
+        id,
+        email,
+        username,
+        createdAt,
+        sessionVersion,
+      };
     } catch {
       return null;
     }
   }
 
-  validateRefreshToken(token: string): JwtPayload | string | null {
+  validateAccessToken(token: string): AuthTokenPayload | null {
+    const accessSecret = process.env.JWT_ACCESS_SECRET;
+
+    if (!accessSecret) {
+      throw new Error('JWT secrets are not defined');
+    }
+
+    return this.validateToken(token, accessSecret);
+  }
+
+  validateRefreshToken(token: string): AuthTokenPayload | null {
     const refreshSecret = process.env.JWT_REFRESH_SECRET;
 
     if (!refreshSecret) {
       throw new Error('JWT secrets are not defined');
     }
-    try {
-      return jwt.verify(token, refreshSecret);
-    } catch {
-      return null;
-    }
+
+    return this.validateToken(token, refreshSecret);
   }
 }

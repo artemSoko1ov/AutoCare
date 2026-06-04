@@ -11,6 +11,7 @@ import type {
   TokensDto,
   UserDto,
 } from '@shared/contracts/auth';
+import type { AuthTokenPayload } from '../../common/types/auth-token-payload';
 import { TokensService } from '../tokens/tokens.service';
 
 @Injectable()
@@ -19,6 +20,62 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly tokenService: TokensService,
   ) {}
+
+  private toUserDto(user: {
+    id: string;
+    email: string;
+    username: string;
+    createdAt: Date;
+  }): UserDto {
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      createdAt: user.createdAt.toISOString(),
+    };
+  }
+
+  private toTokenPayload(user: {
+    id: string;
+    email: string;
+    username: string;
+    createdAt: Date;
+    sessionVersion: number;
+  }): AuthTokenPayload {
+    return {
+      ...this.toUserDto(user),
+      sessionVersion: user.sessionVersion,
+    };
+  }
+
+  private extractBearerToken(authHeader?: string): string | null {
+    if (!authHeader?.startsWith('Bearer ')) {
+      return null;
+    }
+
+    const accessToken = authHeader.slice('Bearer '.length).trim();
+    return accessToken || null;
+  }
+
+  private resolveUserIdFromTokens(
+    refreshToken?: string,
+    authHeader?: string,
+  ): string | null {
+    const accessToken = this.extractBearerToken(authHeader);
+    if (accessToken) {
+      const accessPayload = this.tokenService.validateAccessToken(accessToken);
+      if (accessPayload) {
+        return accessPayload.id;
+      }
+    }
+
+    if (!refreshToken) {
+      return null;
+    }
+
+    const refreshPayload = this.tokenService.validateRefreshToken(refreshToken);
+    return refreshPayload?.id ?? null;
+  }
 
   async register({
     email,
@@ -46,21 +103,18 @@ export class AuthService {
         id: true,
         email: true,
         username: true,
+        sessionVersion: true,
         createdAt: true,
       },
     });
 
-    const userWithDate = {
-      ...user,
-      createdAt: user.createdAt.toISOString(),
-    };
-
-    const tokens = this.tokenService.generateTokens(userWithDate);
-    await this.tokenService.saveToken(userWithDate.id, tokens.refreshToken);
+    const userDto = this.toUserDto(user);
+    const tokens = this.tokenService.generateTokens(this.toTokenPayload(user));
+    await this.tokenService.saveToken(user.id, tokens.refreshToken);
 
     return {
       ...tokens,
-      ...userWithDate,
+      ...userDto,
     };
   }
 
@@ -72,6 +126,7 @@ export class AuthService {
         email: true,
         username: true,
         password: true,
+        sessionVersion: true,
         createdAt: true,
       },
     });
@@ -85,14 +140,8 @@ export class AuthService {
       throw new UnauthorizedException('Неверный email или пароль');
     }
 
-    const userDto: UserDto = {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      createdAt: user.createdAt.toISOString(),
-    };
-
-    const tokens = this.tokenService.generateTokens(userDto);
+    const userDto = this.toUserDto(user);
+    const tokens = this.tokenService.generateTokens(this.toTokenPayload(user));
     await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
 
     return {
@@ -101,8 +150,29 @@ export class AuthService {
     };
   }
 
-  async logout(refreshToken: string) {
-    return this.tokenService.removeToken(refreshToken);
+  async logout(refreshToken?: string, authHeader?: string) {
+    const userId = this.resolveUserIdFromTokens(refreshToken, authHeader);
+
+    if (!userId) {
+      if (refreshToken) {
+        await this.tokenService.removeToken(refreshToken);
+      }
+      return;
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.user.updateMany({
+        where: { id: userId },
+        data: {
+          sessionVersion: {
+            increment: 1,
+          },
+        },
+      }),
+      this.prisma.token.deleteMany({
+        where: { userId },
+      }),
+    ]);
   }
 
   async refresh(refreshToken: string): Promise<TokensDto & UserDto> {
@@ -116,22 +186,13 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    if (typeof userData === 'string' || !('id' in userData)) {
-      throw new UnauthorizedException();
-    }
-
-    const payload = userData as Record<string, unknown>;
-    const userId = payload.id;
-    if (typeof userId !== 'string') {
-      throw new UnauthorizedException();
-    }
-
     const user = await this.prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userData.id },
       select: {
         id: true,
         email: true,
         username: true,
+        sessionVersion: true,
         createdAt: true,
       },
     });
@@ -140,13 +201,12 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const userDto: UserDto = {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      createdAt: user.createdAt.toISOString(),
-    };
-    const tokens = this.tokenService.generateTokens(userDto);
+    if (user.sessionVersion !== userData.sessionVersion) {
+      throw new UnauthorizedException();
+    }
+
+    const userDto = this.toUserDto(user);
+    const tokens = this.tokenService.generateTokens(this.toTokenPayload(user));
     await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
 
     return {

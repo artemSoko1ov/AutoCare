@@ -17,6 +17,7 @@ model User {
   username  String
   password  String
   role      UserRole @default(USER)
+  sessionVersion Int @default(0)
   createdAt DateTime @default(now())
 
   Token Token?
