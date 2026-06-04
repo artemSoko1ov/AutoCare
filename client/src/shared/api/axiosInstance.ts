@@ -7,6 +7,9 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+const hasBearerToken = (authHeader: unknown) =>
+  typeof authHeader === "string" && authHeader.startsWith("Bearer ");
+
 axiosInstance.interceptors.request.use((config) => {
   const token = store.getState().session.accessToken;
   if (token && config.headers) {
@@ -19,16 +22,25 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const authHeader =
+      originalRequest?.headers?.Authorization ?? originalRequest?.headers?.authorization;
+
     if (
+      originalRequest &&
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes("/auth/refresh")
+      !originalRequest.skipAuthRefresh &&
+      !originalRequest.url?.includes("/auth/refresh") &&
+      hasBearerToken(authHeader)
     ) {
       originalRequest._retry = true;
       try {
-        const refreshResponse = await axiosInstance.post("/auth/refresh");
+        const refreshResponse = await axiosInstance.post("/auth/refresh", undefined, {
+          skipAuthRefresh: true,
+        });
         const { accessToken, user } = refreshResponse.data;
         store.dispatch(setCredentials({ user, accessToken }));
+        originalRequest.headers ??= {};
         originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
         return axiosInstance(originalRequest);
       } catch {

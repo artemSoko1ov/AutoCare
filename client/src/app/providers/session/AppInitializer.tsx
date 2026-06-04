@@ -16,7 +16,9 @@ export const AppInitializer = () => {
       dispatch(setStatus("loading"));
 
       try {
-        const res = await axiosInstance.post("/auth/refresh");
+        const res = await axiosInstance.post("/auth/refresh", undefined, {
+          skipAuthRefresh: true,
+        });
         dispatch(
           setCredentials({
             user: res.data.user,
