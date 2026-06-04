@@ -64,11 +64,10 @@ export class AuthController {
       res.clearCookie('refreshToken');
       return;
     }
-    const token = await this.authService.logout(refreshToken);
+
+    await this.authService.logout(refreshToken);
 
     res.clearCookie('refreshToken');
-
-    return token;
   }
 
   @Post('refresh')

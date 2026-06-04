@@ -36,7 +36,7 @@ export class TokensService {
   }
 
   async removeToken(refreshToken: string) {
-    return this.prisma.token.delete({
+    return this.prisma.token.deleteMany({
       where: { refreshToken },
     });
   }
