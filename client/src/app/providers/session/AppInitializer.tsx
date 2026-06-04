@@ -1,14 +1,20 @@
-import { useEffect, useState } from "react";
-import { useAppDispatch } from "@app/providers/store/hooks";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@app/providers/store/hooks";
 import axiosInstance from "@/shared/api/axiosInstance.ts";
-import { logout, setCredentials } from "@/entities/session/model/sessionSlice.ts";
+import { logout, setCredentials, setStatus } from "@/entities/session/model/sessionSlice.ts";
 
 export const AppInitializer = () => {
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(true);
+  const { isInitialized, status } = useAppSelector((state) => state.session);
 
   useEffect(() => {
+    if (isInitialized || status === "loading") {
+      return;
+    }
+
     const initSession = async () => {
+      dispatch(setStatus("loading"));
+
       try {
         const res = await axiosInstance.post("/auth/refresh");
         dispatch(
@@ -19,14 +25,12 @@ export const AppInitializer = () => {
         );
       } catch {
         dispatch(logout());
-      } finally {
-        setLoading(false);
       }
     };
 
-    initSession();
-  }, [dispatch]);
+    void initSession();
+  }, [dispatch, isInitialized, status]);
 
-  if (loading) return <div>Загрузка...</div>;
+  if (!isInitialized) return <div>Р—Р°РіСЂСѓР·РєР°...</div>;
   return null;
 };
