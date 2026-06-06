@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
-import type { TokensDto } from '@shared/contracts/auth';
+import type { TokensDto, UserRole } from '@shared/contracts/auth';
 import jwt from 'jsonwebtoken';
 import type { AuthTokenPayload } from '../../common/types/auth-token-payload';
 
@@ -59,12 +59,28 @@ export class TokensService {
         return null;
       }
 
-      const { id, email, username, createdAt, sessionVersion } = payload;
+      const {
+        id,
+        email,
+        username,
+        phone,
+        avatarUrl,
+        role,
+        createdAt,
+        updatedAt,
+        sessionVersion,
+      } = payload;
       if (
         typeof id !== 'string' ||
         typeof email !== 'string' ||
         typeof username !== 'string' ||
+        (phone !== null && phone !== undefined && typeof phone !== 'string') ||
+        (avatarUrl !== null &&
+          avatarUrl !== undefined &&
+          typeof avatarUrl !== 'string') ||
+        !this.isUserRole(role) ||
         typeof createdAt !== 'string' ||
+        typeof updatedAt !== 'string' ||
         typeof sessionVersion !== 'number'
       ) {
         return null;
@@ -74,12 +90,20 @@ export class TokensService {
         id,
         email,
         username,
+        phone: phone ?? null,
+        avatarUrl: avatarUrl ?? null,
+        role,
         createdAt,
+        updatedAt,
         sessionVersion,
       };
     } catch {
       return null;
     }
+  }
+
+  private isUserRole(role: unknown): role is UserRole {
+    return role === 'USER' || role === 'ADMIN';
   }
 
   validateAccessToken(token: string): AuthTokenPayload | null {

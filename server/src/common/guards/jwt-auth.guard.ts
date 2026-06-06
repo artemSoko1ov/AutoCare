@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import type { UserDto } from '@shared/contracts/auth';
+import { toUserDto } from '../mappers/user-dto.mapper';
 import { TokensService } from '../../modules/tokens/tokens.service';
 import type { AuthenticatedRequest } from '../types/authenticated-request';
 
@@ -40,8 +41,12 @@ export class JwtAuthGuard implements CanActivate {
         id: true,
         email: true,
         username: true,
+        phone: true,
+        avatarUrl: true,
+        role: true,
         sessionVersion: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -53,12 +58,7 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException('Session revoked');
     }
 
-    request.user = {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      createdAt: user.createdAt.toISOString(),
-    } satisfies UserDto;
+    request.user = toUserDto(user) satisfies UserDto;
 
     return true;
   }
