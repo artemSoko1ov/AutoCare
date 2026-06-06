@@ -66,21 +66,21 @@
 }
 
 .button--sm {
-  min-height: var(--control-height-sm);
-  padding-inline: 1rem;
-  font-size: var(--font-size-small);
+  min-height: fluid(44, 40);
+  padding-inline: fluid(16, 12);
+  font-size: fluid(14, 13);
 }
 
 .button--md {
-  min-height: var(--control-height-md);
-  padding-inline: 1.25rem;
-  font-size: var(--font-size-body);
+  min-height: fluid(48, 42);
+  padding-inline: fluid(20, 14);
+  font-size: fluid(16, 14);
 }
 
 .button--lg {
-  min-height: var(--control-height-lg);
-  padding-inline: var(--control-padding-x-lg);
-  font-size: var(--font-size-body);
+  min-height: fluid(56, 46);
+  padding-inline: fluid(24, 16);
+  font-size: fluid(16, 14);
 }
 
 .button--full-width {
