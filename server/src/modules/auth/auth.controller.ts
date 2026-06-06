@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Res,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import type { Response, Request } from 'express';
 import { LoginBodySchema, RegisterBodySchema } from '@shared/contracts/auth';
 import type {
@@ -17,8 +9,6 @@ import type {
   TokensDto,
   UserDto,
 } from '@shared/contracts/auth';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { AuthService } from './auth.service';
 
@@ -96,11 +86,5 @@ export class AuthController {
         : undefined;
     const userData = await this.authService.refresh(requestRefreshToken ?? '');
     return this.setRefreshTokenAndReturn(res, userData);
-  }
-
-  @Get('me')
-  @UseGuards(JwtAuthGuard)
-  me(@CurrentUser() user: UserDto) {
-    return user;
   }
 }

@@ -12,7 +12,9 @@ describe('ProfileService', () => {
           username: 'tester',
           phone: '+7 (999) 123-45-67',
           avatarUrl: 'https://example.com/avatar.jpg',
+          role: 'USER',
           createdAt: new Date('2026-06-04T10:00:00.000Z'),
+          updatedAt: new Date('2026-06-05T10:00:00.000Z'),
         }),
       },
     } as unknown as PrismaService;
@@ -25,7 +27,9 @@ describe('ProfileService', () => {
       username: 'tester',
       phone: '+7 (999) 123-45-67',
       avatarUrl: 'https://example.com/avatar.jpg',
+      role: 'USER',
       createdAt: '2026-06-04T10:00:00.000Z',
+      updatedAt: '2026-06-05T10:00:00.000Z',
     });
   });
 
@@ -52,7 +56,9 @@ describe('ProfileService', () => {
           username: 'updated',
           phone: null,
           avatarUrl: 'https://example.com/avatar.jpg',
+          role: 'USER',
           createdAt: new Date('2026-06-04T10:00:00.000Z'),
+          updatedAt: new Date('2026-06-06T10:00:00.000Z'),
         }),
       },
     } as unknown as PrismaService;
@@ -71,7 +77,9 @@ describe('ProfileService', () => {
       username: 'updated',
       phone: null,
       avatarUrl: 'https://example.com/avatar.jpg',
+      role: 'USER',
       createdAt: '2026-06-04T10:00:00.000Z',
+      updatedAt: '2026-06-06T10:00:00.000Z',
     });
     expect(prisma.user.update).toHaveBeenCalledWith({
       where: { id: 'user-1' },
@@ -86,7 +94,9 @@ describe('ProfileService', () => {
         username: true,
         phone: true,
         avatarUrl: true,
+        role: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
   });

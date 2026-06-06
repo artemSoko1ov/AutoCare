@@ -1,5 +1,5 @@
-import {z} from 'zod';
-import {userDtoSchema} from "./user.contract";
+import { z } from 'zod';
+import { userDtoSchema } from './user.contract';
 
 export const RegisterBodySchema = z.object({
   email: z.email('Некорректный email'),

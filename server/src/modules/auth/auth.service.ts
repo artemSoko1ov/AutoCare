@@ -10,6 +10,7 @@ import type {
   RegisterBody,
   TokensDto,
   UserDto,
+  UserRole,
 } from '@shared/contracts/auth';
 import type { AuthTokenPayload } from '../../common/types/auth-token-payload';
 import { TokensService } from '../tokens/tokens.service';
@@ -25,13 +26,21 @@ export class AuthService {
     id: string;
     email: string;
     username: string;
+    phone: string | null;
+    avatarUrl: string | null;
+    role: UserRole;
     createdAt: Date;
+    updatedAt: Date;
   }): UserDto {
     return {
       id: user.id,
       email: user.email,
       username: user.username,
+      phone: user.phone,
+      avatarUrl: user.avatarUrl,
+      role: user.role,
       createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
     };
   }
 
@@ -39,7 +48,11 @@ export class AuthService {
     id: string;
     email: string;
     username: string;
+    phone: string | null;
+    avatarUrl: string | null;
+    role: UserRole;
     createdAt: Date;
+    updatedAt: Date;
     sessionVersion: number;
   }): AuthTokenPayload {
     return {
@@ -98,13 +111,19 @@ export class AuthService {
         email,
         username,
         password: hashPassword,
+        phone: null,
+        avatarUrl: null,
       },
       select: {
         id: true,
         email: true,
         username: true,
+        phone: true,
+        avatarUrl: true,
+        role: true,
         sessionVersion: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -125,9 +144,13 @@ export class AuthService {
         id: true,
         email: true,
         username: true,
+        phone: true,
+        avatarUrl: true,
+        role: true,
         password: true,
         sessionVersion: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -192,8 +215,12 @@ export class AuthService {
         id: true,
         email: true,
         username: true,
+        phone: true,
+        avatarUrl: true,
+        role: true,
         sessionVersion: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 

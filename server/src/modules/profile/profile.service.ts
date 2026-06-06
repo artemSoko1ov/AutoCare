@@ -16,7 +16,9 @@ export class ProfileService {
         username: true,
         phone: true,
         avatarUrl: true,
+        role: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -27,7 +29,10 @@ export class ProfileService {
     return toUserDto(user);
   }
 
-  async updateProfile(userId: string, data: UpdateProfileBody): Promise<UserDto> {
+  async updateProfile(
+    userId: string,
+    data: UpdateProfileBody,
+  ): Promise<UserDto> {
     const user = await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -41,7 +46,9 @@ export class ProfileService {
         username: true,
         phone: true,
         avatarUrl: true,
+        role: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 
