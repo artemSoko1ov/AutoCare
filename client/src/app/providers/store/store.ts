@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import sessionReducer from "@/entities/session/model";
+import userReducer from "@/entities/user/model";
 
 export const store = configureStore({
   reducer: {
     session: sessionReducer,
+    user: userReducer,
   },
 });
 

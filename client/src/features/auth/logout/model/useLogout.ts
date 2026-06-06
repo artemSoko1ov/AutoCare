@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useAppDispatch } from "@app/providers/store/hooks";
-import { logoutApi } from "../api/logoutApi";
-import { logout } from "@/entities/session/model/sessionSlice.ts";
 import type { AxiosError } from "axios";
+import { useAppDispatch } from "@app/providers/store/hooks";
+import { sessionCleared } from "@/entities/session/model/session.actions.ts";
+import { logoutApi } from "../api/logoutApi";
 
 export const useLogout = () => {
   const dispatch = useAppDispatch();
@@ -12,9 +12,10 @@ export const useLogout = () => {
   const executeLogout = async () => {
     setLoading(true);
     setError(null);
+
     try {
       await logoutApi();
-      dispatch(logout());
+      dispatch(sessionCleared());
     } catch (err: unknown) {
       const axiosErr = err as AxiosError<{ message: string }>;
       setError(axiosErr.response?.data?.message || "Ошибка выхода");

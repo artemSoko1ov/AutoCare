@@ -1,7 +1,8 @@
 import { type PropsWithChildren, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@app/providers/store/hooks";
 import axiosInstance from "@/shared/api/axiosInstance.ts";
-import { logout, setCredentials, setStatus } from "@/entities/session/model/sessionSlice.ts";
+import { setStatus } from "@/entities/session/model/sessionSlice.ts";
+import { sessionCleared, sessionEstablished } from "@/entities/session/model/session.actions.ts";
 
 type AppInitializerProps = PropsWithChildren;
 
@@ -22,13 +23,13 @@ export const AppInitializer = ({ children }: AppInitializerProps) => {
           skipAuthRefresh: true,
         });
         dispatch(
-          setCredentials({
+          sessionEstablished({
             user: res.data.user,
             accessToken: res.data.accessToken,
           }),
         );
       } catch {
-        dispatch(logout());
+        dispatch(sessionCleared());
       }
     };
 

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useAppDispatch } from "@app/providers/store/hooks";
-import { registerApi } from "../api/registerApi.ts";
-import type { RegisterBody } from "@shared/contracts/auth";
-import { setCredentials } from "@/entities/session/model/sessionSlice.ts";
 import type { AxiosError } from "axios";
+import type { RegisterBody } from "@shared/contracts/auth";
+import { useAppDispatch } from "@app/providers/store/hooks";
+import { sessionEstablished } from "@/entities/session/model/session.actions.ts";
+import { registerApi } from "../api/registerApi.ts";
 
 export const useRegister = () => {
   const dispatch = useAppDispatch();
@@ -16,7 +16,7 @@ export const useRegister = () => {
 
     try {
       const response = await registerApi(data);
-      dispatch(setCredentials({ user: response.user, accessToken: response.accessToken }));
+      dispatch(sessionEstablished({ user: response.user, accessToken: response.accessToken }));
       return response;
     } catch (err: unknown) {
       const axiosErr = err as AxiosError<{ message: string }>;
