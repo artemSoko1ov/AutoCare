@@ -1,4 +1,8 @@
 import { type FormEvent, useState } from "react";
+import { Link } from "react-router-dom";
+import Button from "@/shared/ui/Button";
+import Form from "@/shared/ui/Form";
+import Input from "@/shared/ui/Input";
 import { useRegister } from "../model/useRegister.ts";
 
 const RegisterForm = () => {
@@ -14,48 +18,57 @@ const RegisterForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Регистрация</h2>
-
-      {error && <div>{error}</div>}
-
-      <label htmlFor="email">Email</label>
-      <input
+    <Form
+      actions={
+        <Button fullWidth loading={loading} type="submit">
+          Зарегистрироваться
+        </Button>
+      }
+      error={error}
+      footer={
+        <>
+          Уже есть аккаунт? <Link to="/login">Войти</Link>
+        </>
+      }
+      onSubmit={handleSubmit}
+      width="sm"
+    >
+      <Input
+        autoComplete="email"
+        disabled={loading}
         id="email"
-        type="email"
-        value={email}
+        label="Email"
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Введите email"
         required
-        disabled={loading}
+        type="email"
+        value={email}
       />
 
-      <label htmlFor="username">Имя</label>
-      <input
+      <Input
+        autoComplete="username"
+        disabled={loading}
         id="username"
-        type="text"
-        value={username}
+        label="Имя"
         onChange={(e) => setUsername(e.target.value)}
         placeholder="Введите имя"
         required
-        disabled={loading}
+        type="text"
+        value={username}
       />
 
-      <label htmlFor="password">Пароль</label>
-      <input
+      <Input
+        autoComplete="new-password"
+        disabled={loading}
         id="password"
-        type="password"
-        value={password}
+        label="Пароль"
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Введите пароль"
         required
-        disabled={loading}
+        type="password"
+        value={password}
       />
-
-      <button type="submit" disabled={loading}>
-        {loading ? "Загрузка..." : "Зарегистрироваться"}
-      </button>
-    </form>
+    </Form>
   );
 };
 
