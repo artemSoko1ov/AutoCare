@@ -16,7 +16,8 @@ body {
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-body);
   color: var(--color-text-primary);
-  background-color: var(--color-bg-page);
+  background-image: url("../../shared/assets/images/bg-body.jpg");
+  background-size: cover;
   text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
 }
