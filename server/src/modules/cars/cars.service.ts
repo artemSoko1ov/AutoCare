@@ -3,28 +3,18 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma, type Car } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '@prisma/prisma.service';
 import type {
   CarDto,
   CreateCarBody,
   UpdateCarBody,
 } from '@shared/contracts/cars';
-import { toCarDto } from '../../common/mappers/car-dto.mapper';
-
-const carSelect = {
-  id: true,
-  userId: true,
-  brand: true,
-  model: true,
-  year: true,
-  licensePlate: true,
-  vin: true,
-  mileage: true,
-  photoUrl: true,
-  createdAt: true,
-  updatedAt: true,
-} satisfies Prisma.CarSelect;
+import {
+  carDtoSelect,
+  type CarDtoSource,
+  toCarDto,
+} from '../../common/mappers/car-dto.mapper';
 
 @Injectable()
 export class CarsService {
@@ -34,7 +24,7 @@ export class CarsService {
     const cars = await this.prisma.car.findMany({
       where: { userId },
       orderBy: [{ createdAt: 'desc' }],
-      select: carSelect,
+      select: carDtoSelect,
     });
 
     return cars.map(toCarDto);
@@ -58,7 +48,7 @@ export class CarsService {
           mileage: data.mileage,
           photoUrl: data.photoUrl,
         },
-        select: carSelect,
+        select: carDtoSelect,
       });
 
       return toCarDto(car);
@@ -79,7 +69,7 @@ export class CarsService {
       const car = await this.prisma.car.update({
         where: { id: carId },
         data,
-        select: carSelect,
+        select: carDtoSelect,
       });
 
       return toCarDto(car);
@@ -99,12 +89,16 @@ export class CarsService {
     return toCarDto(car);
   }
 
-  private async findOwnedCar(userId: string, carId: string): Promise<Car> {
+  private async findOwnedCar(
+    userId: string,
+    carId: string,
+  ): Promise<CarDtoSource> {
     const car = await this.prisma.car.findFirst({
       where: {
         id: carId,
         userId,
       },
+      select: carDtoSelect,
     });
 
     if (!car) {

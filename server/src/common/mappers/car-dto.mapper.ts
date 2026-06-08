@@ -1,18 +1,23 @@
+import { Prisma } from '@prisma/client';
 import { isCarBrand, type CarDto } from '@shared/contracts/cars';
 
-type CarDtoSource = {
-  id: string;
-  userId: string;
-  brand: string;
-  model: string;
-  year: number;
-  licensePlate: string;
-  vin: string | null;
-  mileage: number;
-  photoUrl: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
+export const carDtoSelect = {
+  id: true,
+  userId: true,
+  brand: true,
+  model: true,
+  year: true,
+  licensePlate: true,
+  vin: true,
+  mileage: true,
+  photoUrl: true,
+  createdAt: true,
+  updatedAt: true,
+} satisfies Prisma.CarSelect;
+
+export type CarDtoSource = Prisma.CarGetPayload<{
+  select: typeof carDtoSelect;
+}>;
 
 export const toCarDto = (car: CarDtoSource): CarDto => ({
   ...(() => {

@@ -24,26 +24,30 @@ const ProfileCarsPage = () => {
         section={section}
       />
 
-      <CarFormModal
-        car={garageManager.formCar}
-        error={garageManager.formError}
-        fieldErrors={garageManager.formFieldErrors}
-        isOpen={garageManager.isFormModalOpen}
-        isSubmitting={garageManager.isSubmitting}
-        mode={garageManager.formMode}
-        onClose={garageManager.closeModal}
-        onFieldChange={garageManager.clearFormFieldError}
-        onSubmit={garageManager.submitCarForm}
-      />
+      {garageManager.isFormModalOpen ? (
+        <CarFormModal
+          car={garageManager.formCar}
+          error={garageManager.formError}
+          fieldErrors={garageManager.formFieldErrors}
+          isOpen
+          isSubmitting={garageManager.isSubmitting}
+          mode={garageManager.formMode}
+          onClose={garageManager.closeModal}
+          onFieldChange={garageManager.clearFormFieldError}
+          onSubmit={garageManager.submitCarForm}
+        />
+      ) : null}
 
-      <CarDeleteModal
-        carName={garageManager.deleteTargetName}
-        error={garageManager.deleteError}
-        isDeleting={garageManager.isDeleting}
-        isOpen={garageManager.isDeleteModalOpen}
-        onClose={garageManager.closeModal}
-        onConfirm={garageManager.confirmDelete}
-      />
+      {garageManager.isDeleteModalOpen ? (
+        <CarDeleteModal
+          carName={garageManager.deleteTargetName}
+          error={garageManager.deleteError}
+          isDeleting={garageManager.isDeleting}
+          isOpen
+          onClose={garageManager.closeModal}
+          onConfirm={garageManager.confirmDelete}
+        />
+      ) : null}
     </>
   );
 };

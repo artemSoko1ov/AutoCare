@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import type { UpdateProfileBody, UserDto } from '@shared/contracts/auth';
-import { toUserDto } from '../../common/mappers/user-dto.mapper';
+import {
+  toUserDto,
+  userDtoSelect,
+} from '../../common/mappers/user-dto.mapper';
 
 @Injectable()
 export class ProfileService {
@@ -10,16 +13,7 @@ export class ProfileService {
   async getProfile(userId: string): Promise<UserDto> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        phone: true,
-        avatarUrl: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: userDtoSelect,
     });
 
     if (!user) {
@@ -40,16 +34,7 @@ export class ProfileService {
         phone: data.phone,
         avatarUrl: data.avatarUrl,
       },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        phone: true,
-        avatarUrl: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: userDtoSelect,
     });
 
     return toUserDto(user);

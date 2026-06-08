@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { AxiosError } from "axios";
 import type {
   CreateCarBody,
   CreateCarResponse,
@@ -8,52 +7,34 @@ import type {
   UpdateCarResponse,
 } from "@shared/contracts/cars";
 import { carsQueryKey } from "@/entities/car";
+import {
+  getApiErrorMessage,
+  getValidationIssues,
+  mapValidationIssues,
+} from "@/shared/lib/api/validation";
 import { createCarApi } from "../api/createCarApi";
 import { deleteCarApi } from "../api/deleteCarApi";
 import { updateCarApi } from "../api/updateCarApi";
 
-export type ValidationIssue = {
-  field: string;
-  message: string;
-};
-
-export type ValidationErrorResponse = {
-  message?: string;
-  errors?: ValidationIssue[];
-};
-
 export type CarFieldErrors = Partial<Record<keyof CreateCarBody, string>>;
+const carFieldNames = [
+  "brand",
+  "model",
+  "year",
+  "licensePlate",
+  "vin",
+  "mileage",
+  "photoUrl",
+] as const satisfies readonly (keyof CreateCarBody)[];
 
-const normalizeFieldErrors = (issues: ValidationIssue[]): CarFieldErrors => {
-  return issues.reduce<CarFieldErrors>((accumulator, issue) => {
-    if (
-      issue.field === "brand" ||
-      issue.field === "model" ||
-      issue.field === "year" ||
-      issue.field === "licensePlate" ||
-      issue.field === "vin" ||
-      issue.field === "mileage" ||
-      issue.field === "photoUrl"
-    ) {
-      accumulator[issue.field] = issue.message;
-    }
-
-    return accumulator;
-  }, {});
-};
-
-export const getCarErrorMessage = (error: unknown, fallbackMessage: string) => {
-  const axiosError = error as AxiosError<ValidationErrorResponse>;
-  return axiosError.response?.data?.message || fallbackMessage;
-};
+export const getCarErrorMessage = getApiErrorMessage;
 
 export const getCarFieldErrors = (error: unknown) => {
-  const axiosError = error as AxiosError<ValidationErrorResponse>;
-  const validationErrors = axiosError.response?.data?.errors ?? [];
+  const validationErrors = getValidationIssues(error);
 
   return {
     validationErrors,
-    fieldErrors: normalizeFieldErrors(validationErrors),
+    fieldErrors: mapValidationIssues(validationErrors, carFieldNames) as CarFieldErrors,
   };
 };
 

@@ -1,5 +1,6 @@
 import { type ChangeEvent, type FormEvent, useEffect, useRef, useState } from "react";
 import type { UpdateProfileBody } from "@shared/contracts/auth";
+import { getImageFileValidationError, readFileAsDataUrl } from "@/shared/lib/files/imageUpload";
 import Button from "@/shared/ui/Button";
 import Icon from "@/shared/ui/Icon";
 import Input from "@/shared/ui/Input";
@@ -40,26 +41,6 @@ const normalizeOptionalValue = (value: string) => {
   const trimmedValue = value.trim();
   return trimmedValue.length > 0 ? trimmedValue : null;
 };
-
-const readFileAsDataUrl = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        resolve(reader.result);
-        return;
-      }
-
-      reject(new Error("Не удалось прочитать файл"));
-    };
-
-    reader.onerror = () => {
-      reject(new Error("Не удалось прочитать файл"));
-    };
-
-    reader.readAsDataURL(file);
-  });
 
 const ProfileUpdateForm = ({
   autoFocusField,
@@ -137,12 +118,14 @@ const ProfileUpdateForm = ({
       return;
     }
 
-    if (!file.type.startsWith("image/")) {
+    const imageValidationError = getImageFileValidationError(file);
+
+    if (imageValidationError === "invalid-type") {
       setAvatarError("Выберите файл изображения");
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
+    if (imageValidationError === "too-large") {
       setAvatarError("Размер фото должен быть не больше 5 МБ");
       return;
     }

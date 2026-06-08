@@ -48,17 +48,19 @@ const ProfileDashboardPage = () => {
 
       <ProfileReviews section={profileData.reviewsSection} />
 
-      <CarFormModal
-        car={garageManager.formCar}
-        error={garageManager.formError}
-        fieldErrors={garageManager.formFieldErrors}
-        isOpen={garageManager.isFormModalOpen}
-        isSubmitting={garageManager.isSubmitting}
-        mode={garageManager.formMode}
-        onClose={garageManager.closeModal}
-        onFieldChange={garageManager.clearFormFieldError}
-        onSubmit={garageManager.submitCarForm}
-      />
+      {garageManager.isFormModalOpen ? (
+        <CarFormModal
+          car={garageManager.formCar}
+          error={garageManager.formError}
+          fieldErrors={garageManager.formFieldErrors}
+          isOpen
+          isSubmitting={garageManager.isSubmitting}
+          mode={garageManager.formMode}
+          onClose={garageManager.closeModal}
+          onFieldChange={garageManager.clearFormFieldError}
+          onSubmit={garageManager.submitCarForm}
+        />
+      ) : null}
     </>
   );
 };

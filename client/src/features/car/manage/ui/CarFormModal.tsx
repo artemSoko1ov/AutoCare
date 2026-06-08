@@ -1,6 +1,7 @@
 import { type ChangeEvent, type FormEvent, useMemo, useRef, useState } from "react";
 import type { CarDto, CreateCarBody } from "@shared/contracts/cars";
 import { carBrandValues, getCarModelsByBrand } from "@/entities/car/model/carCatalog";
+import { getImageFileValidationError, readFileAsDataUrl } from "@/shared/lib/files/imageUpload";
 import Button from "@/shared/ui/Button";
 import Input from "@/shared/ui/Input";
 import Modal from "@/shared/ui/Modal";
@@ -43,26 +44,6 @@ const createInitialFormState = (car?: CarDto | null): CarFormState => ({
 });
 
 const createEmptyErrors = (): CarFieldErrors => ({});
-
-const readFileAsDataUrl = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        resolve(reader.result);
-        return;
-      }
-
-      reject(new Error("Не удалось прочитать файл"));
-    };
-
-    reader.onerror = () => {
-      reject(new Error("Не удалось прочитать файл"));
-    };
-
-    reader.readAsDataURL(file);
-  });
 
 const CarFormModal = ({
   car = null,
@@ -154,7 +135,9 @@ const CarFormModal = ({
       return;
     }
 
-    if (!file.type.startsWith("image/")) {
+    const imageValidationError = getImageFileValidationError(file);
+
+    if (imageValidationError === "invalid-type") {
       setClientErrors((currentErrors) => ({
         ...currentErrors,
         photoUrl: "Выберите файл изображения",
@@ -162,7 +145,7 @@ const CarFormModal = ({
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
+    if (imageValidationError === "too-large") {
       setClientErrors((currentErrors) => ({
         ...currentErrors,
         photoUrl: "Размер фото должен быть не больше 5 МБ",

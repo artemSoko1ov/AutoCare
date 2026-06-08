@@ -1,21 +1,20 @@
 import { useState } from "react";
-import type { AxiosError } from "axios";
 import type { UpdateProfileBody, UserDto } from "@shared/contracts/auth";
 import { useAppDispatch } from "@app/providers/store/hooks";
 import { currentUserUpdated } from "@/entities/user/model/user.actions.ts";
+import {
+  getApiErrorMessage,
+  getValidationIssues,
+  mapValidationIssues,
+} from "@/shared/lib/api/validation";
 import { updateProfileApi } from "../api/updateProfileApi";
 
-type ValidationIssue = {
-  field: string;
-  message: string;
-};
-
-type ValidationErrorResponse = {
-  message?: string;
-  errors?: ValidationIssue[];
-};
-
 type ProfileFieldErrors = Partial<Record<keyof UpdateProfileBody, string>>;
+const profileFieldNames = [
+  "username",
+  "phone",
+  "avatarUrl",
+] as const satisfies readonly (keyof UpdateProfileBody)[];
 
 export const useUpdateProfile = () => {
   const dispatch = useAppDispatch();
@@ -48,26 +47,18 @@ export const useUpdateProfile = () => {
       setSuccessMessage("Профиль обновлен");
       return response;
     } catch (err: unknown) {
-      const axiosErr = err as AxiosError<ValidationErrorResponse>;
-      const validationErrors = axiosErr.response?.data?.errors ?? [];
+      const validationErrors = getValidationIssues(err);
 
       if (validationErrors.length > 0) {
-        const nextFieldErrors = validationErrors.reduce<ProfileFieldErrors>((acc, issue) => {
-          if (
-            issue.field === "username" ||
-            issue.field === "phone" ||
-            issue.field === "avatarUrl"
-          ) {
-            acc[issue.field] = issue.message;
-          }
-
-          return acc;
-        }, {});
+        const nextFieldErrors = mapValidationIssues(
+          validationErrors,
+          profileFieldNames,
+        ) as ProfileFieldErrors;
 
         setFieldErrors(nextFieldErrors);
         setError("Проверьте введенные данные");
       } else {
-        setError(axiosErr.response?.data?.message || "Не удалось обновить профиль");
+        setError(getApiErrorMessage(err, "Не удалось обновить профиль"));
       }
 
       throw err;

@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '@prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import type {
@@ -10,14 +11,35 @@ import type {
   RegisterBody,
   TokensDto,
   UserDto,
-  UserRole,
 } from '@shared/contracts/auth';
+import {
+  toUserDto,
+  userDtoSelect,
+} from '../../common/mappers/user-dto.mapper';
 import type { AuthTokenPayload } from '../../common/types/auth-token-payload';
 import { TokensService } from '../tokens/tokens.service';
 
 const DEFAULT_ADMIN_EMAIL = 'admin@admin.admin';
 const DEFAULT_ADMIN_PASSWORD = 'admin.admin';
 const DEFAULT_ADMIN_USERNAME = 'Administrator';
+
+const authSessionUserSelect = {
+  ...userDtoSelect,
+  sessionVersion: true,
+} satisfies Prisma.UserSelect;
+
+const authUserSelect = {
+  ...authSessionUserSelect,
+  password: true,
+} satisfies Prisma.UserSelect;
+
+type AuthSessionUser = Prisma.UserGetPayload<{
+  select: typeof authSessionUserSelect;
+}>;
+
+type AuthUser = Prisma.UserGetPayload<{
+  select: typeof authUserSelect;
+}>;
 
 @Injectable()
 export class AuthService {
@@ -39,7 +61,10 @@ export class AuthService {
     return trimmedValue;
   }
 
-  private getOptionalEnvValue(value: string | undefined, fallbackValue: string) {
+  private getOptionalEnvValue(
+    value: string | undefined,
+    fallbackValue: string,
+  ) {
     if (typeof value !== 'string' || value.trim().length === 0) {
       return fallbackValue;
     }
@@ -71,41 +96,9 @@ export class AuthService {
     };
   }
 
-  private toUserDto(user: {
-    id: string;
-    email: string;
-    username: string;
-    phone: string | null;
-    avatarUrl: string | null;
-    role: UserRole;
-    createdAt: Date;
-    updatedAt: Date;
-  }): UserDto {
+  private toTokenPayload(user: AuthSessionUser): AuthTokenPayload {
     return {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      phone: user.phone,
-      avatarUrl: user.avatarUrl,
-      role: user.role,
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-    };
-  }
-
-  private toTokenPayload(user: {
-    id: string;
-    email: string;
-    username: string;
-    phone: string | null;
-    avatarUrl: string | null;
-    role: UserRole;
-    createdAt: Date;
-    updatedAt: Date;
-    sessionVersion: number;
-  }): AuthTokenPayload {
-    return {
-      ...this.toUserDto(user),
+      ...toUserDto(user),
       sessionVersion: user.sessionVersion,
     };
   }
@@ -132,23 +125,12 @@ export class AuthService {
     );
   }
 
-  private async ensureAdminUser() {
+  private async ensureAdminUser(): Promise<AuthUser> {
     const adminCredentials = this.getAdminCredentials();
 
     const existingAdmin = await this.prisma.user.findUnique({
       where: { email: adminCredentials.email },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        phone: true,
-        avatarUrl: true,
-        role: true,
-        password: true,
-        sessionVersion: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: authUserSelect,
     });
 
     if (!existingAdmin) {
@@ -163,18 +145,7 @@ export class AuthService {
           avatarUrl: null,
           role: 'ADMIN',
         },
-        select: {
-          id: true,
-          email: true,
-          username: true,
-          phone: true,
-          avatarUrl: true,
-          role: true,
-          password: true,
-          sessionVersion: true,
-          createdAt: true,
-          updatedAt: true,
-        },
+        select: authUserSelect,
       });
     }
 
@@ -197,18 +168,7 @@ export class AuthService {
         password: passwordHash,
         role: 'ADMIN',
       },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        phone: true,
-        avatarUrl: true,
-        role: true,
-        password: true,
-        sessionVersion: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: authUserSelect,
     });
   }
 
@@ -262,20 +222,10 @@ export class AuthService {
         phone: null,
         avatarUrl: null,
       },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        phone: true,
-        avatarUrl: true,
-        role: true,
-        sessionVersion: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: authSessionUserSelect,
     });
 
-    const userDto = this.toUserDto(user);
+    const userDto = toUserDto(user);
     const tokens = this.tokenService.generateTokens(this.toTokenPayload(user));
     await this.tokenService.saveToken(user.id, tokens.refreshToken);
 
@@ -288,7 +238,7 @@ export class AuthService {
   async login({ email, password }: LoginBody): Promise<TokensDto & UserDto> {
     if (this.isAdminCredentials(email, password)) {
       const adminUser = await this.ensureAdminUser();
-      const userDto = this.toUserDto(adminUser);
+      const userDto = toUserDto(adminUser);
       const tokens = this.tokenService.generateTokens(
         this.toTokenPayload(adminUser),
       );
@@ -302,18 +252,7 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({
       where: { email },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        phone: true,
-        avatarUrl: true,
-        role: true,
-        password: true,
-        sessionVersion: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: authUserSelect,
     });
 
     if (!user) {
@@ -325,7 +264,7 @@ export class AuthService {
       throw new UnauthorizedException('Неверный email или пароль');
     }
 
-    const userDto = this.toUserDto(user);
+    const userDto = toUserDto(user);
     const tokens = this.tokenService.generateTokens(this.toTokenPayload(user));
     await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
 
@@ -373,17 +312,7 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({
       where: { id: userData.id },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        phone: true,
-        avatarUrl: true,
-        role: true,
-        sessionVersion: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: authSessionUserSelect,
     });
 
     if (!user) {
@@ -394,7 +323,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const userDto = this.toUserDto(user);
+    const userDto = toUserDto(user);
     const tokens = this.tokenService.generateTokens(this.toTokenPayload(user));
     await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
 
