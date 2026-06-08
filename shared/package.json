@@ -15,6 +15,11 @@
       "types": "./dist/contracts/cars/index.d.ts",
       "require": "./dist/contracts/cars/index.js",
       "default": "./dist/contracts/cars/index.js"
+    },
+    "./services": {
+      "types": "./dist/contracts/services/index.d.ts",
+      "require": "./dist/contracts/services/index.js",
+      "default": "./dist/contracts/services/index.js"
     }
   },
   "scripts": {

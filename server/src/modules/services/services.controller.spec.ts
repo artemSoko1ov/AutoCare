@@ -1,20 +1,22 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ServicesController } from './services.controller';
 import { ServicesService } from './services.service';
 
 describe('ServicesController', () => {
   let controller: ServicesController;
+  let service: jest.Mocked<ServicesService>;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [ServicesController],
-      providers: [ServicesService],
-    }).compile();
+  beforeEach(() => {
+    service = {
+      getPublicServices: jest.fn(),
+    } as unknown as jest.Mocked<ServicesService>;
 
-    controller = module.get<ServicesController>(ServicesController);
+    controller = new ServicesController(service);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  it('delegates public list request to service', async () => {
+    service.getPublicServices.mockResolvedValue([] as never);
+
+    await expect(controller.getServices()).resolves.toEqual([]);
+    expect(service.getPublicServices).toHaveBeenCalledTimes(1);
   });
 });

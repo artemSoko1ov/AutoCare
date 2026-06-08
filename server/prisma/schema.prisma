@@ -11,6 +11,12 @@ enum UserRole {
   ADMIN
 }
 
+enum ServiceStatus {
+  active
+  draft
+  hidden
+}
+
 model User {
   id             String   @id @default(uuid())
   email          String   @unique
@@ -68,4 +74,19 @@ model CarSnapshot {
   sourceCar Car? @relation(fields: [sourceCarId], references: [id], onDelete: SetNull)
 
   @@index([sourceCarId])
+}
+
+model Service {
+  id            String        @id @default(uuid())
+  title         String
+  category      String
+  summary       String
+  priceFrom     Int
+  durationLabel String
+  status        ServiceStatus @default(draft)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+  @@index([category])
 }
