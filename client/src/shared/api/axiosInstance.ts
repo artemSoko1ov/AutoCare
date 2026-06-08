@@ -1,6 +1,6 @@
 import axios from "axios";
 import { store } from "@app/providers/store/store.ts";
-import { logout, setCredentials } from "@/entities/session/model/sessionSlice.ts";
+import { sessionCleared, sessionEstablished } from "@/entities/session/model/session.actions.ts";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -39,12 +39,12 @@ axiosInstance.interceptors.response.use(
           skipAuthRefresh: true,
         });
         const { accessToken, user } = refreshResponse.data;
-        store.dispatch(setCredentials({ user, accessToken }));
+        store.dispatch(sessionEstablished({ user, accessToken }));
         originalRequest.headers ??= {};
         originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
         return axiosInstance(originalRequest);
       } catch {
-        store.dispatch(logout());
+        store.dispatch(sessionCleared());
         return Promise.reject(error);
       }
     }

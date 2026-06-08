@@ -1,0 +1,26 @@
+.dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: fluid(28, 20);
+  align-items: stretch;
+
+  @include laptop {
+    grid-template-columns: 1fr;
+  }
+}
+
+.primaryColumn,
+.secondaryColumn {
+  display: flex;
+  flex-direction: column;
+  gap: fluid(28, 20);
+  min-width: 0;
+}
+
+.primaryColumn {
+  height: 100%;
+
+  > * {
+    flex: 1 1 auto;
+  }
+}

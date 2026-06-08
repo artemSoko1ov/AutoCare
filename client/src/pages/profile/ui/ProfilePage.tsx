@@ -1,62 +1,33 @@
-import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
 import { useAppSelector } from "@app/providers/store/hooks";
-import axiosInstance from "@/shared/api/axiosInstance.ts";
-import type { UserDto } from "@shared/contracts/auth";
+import { createProfileDashboardData } from "@/entities/profile/model";
+import ProfileSidebar from "@/widgets/profile-sidebar";
+import styles from "./ProfilePage.module.scss";
 
 const ProfilePage = () => {
-  const sessionUser = useAppSelector((state) => state.session.user);
-  const [user, setUser] = useState<UserDto | null>(sessionUser);
-  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadProfile = async () => {
-      setStatus("loading");
-
-      try {
-        const response = await axiosInstance.get<UserDto>("/auth/me");
-
-        if (!isMounted) {
-          return;
-        }
-
-        setUser(response.data);
-        setStatus("idle");
-      } catch {
-        if (!isMounted) {
-          return;
-        }
-
-        setStatus("error");
-      }
-    };
-
-    void loadProfile();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (!user && status === "loading") {
-    return <div>Загрузка профиля...</div>;
-  }
-
-  if (!user && status === "error") {
-    return <div>Не удалось загрузить профиль.</div>;
-  }
-
-  if (!user) {
-    return <div>Пользователь не найден.</div>;
-  }
+  const currentUser = useAppSelector((state) => state.user.currentUser);
+  const profileData = createProfileDashboardData(currentUser);
 
   return (
-    <section>
-      <h1>Профиль</h1>
-      <p>Email: {user.email}</p>
-      <p>Имя: {user.username}</p>
-      <p>Создан: {new Date(user.createdAt).toLocaleString("ru-RU")}</p>
+    <section className={`section page-shell page-shell--accent ${styles.page}`}>
+      <div className="container container--wide">
+        <div className={styles.pageHeader}>
+          <h1 className={styles.pageTitle}>{profileData.pageTitle}</h1>
+          <p className={styles.pageDescription}>
+            Управляйте профилем, автомобилями, заказами и избранными услугами в одном месте.
+          </p>
+        </div>
+
+        <div className={styles.shell}>
+          <div className={styles.sidebarColumn}>
+            <ProfileSidebar items={profileData.sidebarItems} />
+          </div>
+
+          <div className={styles.content}>
+            <Outlet />
+          </div>
+        </div>
+      </div>
     </section>
   );
 };
