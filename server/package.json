@@ -8,6 +8,7 @@
   "scripts": {
     "shared:build": "pnpm --dir .. --filter @shared/contracts build",
     "prisma:generate": "pnpm exec prisma generate --schema prisma/schema.prisma",
+    "db:seed": "pnpm exec prisma db seed --schema prisma/schema.prisma",
     "workspace:prepare": "npm run shared:build && npm run prisma:generate",
     "prebuild": "npm run workspace:prepare",
     "build": "nest build",
@@ -32,6 +33,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "pretest:e2e": "npm run workspace:prepare",
     "test:e2e": "jest --config ./test/jest-e2e.json"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
