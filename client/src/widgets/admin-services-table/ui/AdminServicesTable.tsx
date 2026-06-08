@@ -1,7 +1,16 @@
-import { useState } from "react";
+import { type ChangeEvent, useState } from "react";
+import type { CreateServiceBody, ServiceDto, ServiceStatus } from "@shared/contracts/services";
 import clsx from "clsx";
-import type { AdminService } from "@/entities/admin/model";
+import { formatServiceId, formatServicePrice, formatServiceStatus } from "@/entities/service";
+import {
+  getServiceErrorMessage,
+  getServiceFieldErrors,
+  useCreateServiceMutation,
+  useDeleteServiceMutation,
+  useUpdateServiceMutation,
+} from "@/features/service/manage";
 import Button from "@/shared/ui/Button";
+import Empty from "@/shared/ui/Empty";
 import Icon from "@/shared/ui/Icon";
 import Input from "@/shared/ui/Input";
 import Modal from "@/shared/ui/Modal";
@@ -9,20 +18,21 @@ import Select, { type SelectOption } from "@/shared/ui/Select";
 import styles from "./AdminServicesTable.module.scss";
 
 type AdminServicesTableProps = {
-  services: AdminService[];
+  services: ServiceDto[];
 };
 
 type ServiceFormState = {
   title: string;
   category: string;
-  price: string;
-  duration: string;
-  tone: AdminService["tone"];
+  summary: string;
+  priceFrom: string;
+  durationLabel: string;
+  status: ServiceStatus;
 };
 
 type NoticeState = {
   text: string;
-  tone: "success" | "info";
+  tone: "success" | "info" | "error";
 };
 
 const statusOptions: SelectOption[] = [
@@ -33,124 +43,180 @@ const statusOptions: SelectOption[] = [
 
 const NEW_SERVICE_ID = "__new_service__";
 
-const getStatusLabel = (tone: AdminService["tone"]) => {
-  switch (tone) {
-    case "active":
-      return "Активна";
-    case "draft":
-      return "Черновик";
-    case "hidden":
-      return "Скрыта";
-    default:
-      return "";
-  }
-};
+const createEmptyFormState = (): ServiceFormState => ({
+  title: "",
+  category: "",
+  summary: "",
+  priceFrom: "",
+  durationLabel: "",
+  status: "active",
+});
+
+const createFormState = (service: ServiceDto): ServiceFormState => ({
+  title: service.title,
+  category: service.category,
+  summary: service.summary,
+  priceFrom: String(service.priceFrom),
+  durationLabel: service.durationLabel,
+  status: service.status,
+});
 
 const AdminServicesTable = ({ services }: AdminServicesTableProps) => {
-  const [items, setItems] = useState(services);
+  const createServiceMutation = useCreateServiceMutation();
+  const updateServiceMutation = useUpdateServiceMutation();
+  const deleteServiceMutation = useDeleteServiceMutation();
+
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<NoticeState | null>(null);
-  const [formState, setFormState] = useState<ServiceFormState>({
-    title: "",
-    category: "",
-    price: "",
-    duration: "",
-    tone: "active",
-  });
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof CreateServiceBody, string>>>(
+    {},
+  );
+  const [formState, setFormState] = useState<ServiceFormState>(createEmptyFormState);
 
-  const editingItem = items.find((item) => item.id === editingId) ?? null;
+  const editingItem = services.find((service) => service.id === editingId) ?? null;
   const isCreateMode = editingId === NEW_SERVICE_ID;
+  const isSaving = createServiceMutation.isPending || updateServiceMutation.isPending;
 
-  const handleCreateOpen = () => {
-    setEditingId(NEW_SERVICE_ID);
-    setFormState({
-      title: "",
-      category: "",
-      price: "",
-      duration: "",
-      tone: "active",
-    });
+  const clearFieldError = (field: keyof CreateServiceBody) => {
+    setFieldErrors((currentState) => ({
+      ...currentState,
+      [field]: undefined,
+    }));
   };
 
-  const handleEditOpen = (service: AdminService) => {
+  const resetFeedback = () => {
+    setNotice(null);
+    setFieldErrors({});
+  };
+
+  const handleCreateOpen = () => {
+    resetFeedback();
+    setEditingId(NEW_SERVICE_ID);
+    setFormState(createEmptyFormState());
+  };
+
+  const handleEditOpen = (service: ServiceDto) => {
+    resetFeedback();
     setEditingId(service.id);
-    setFormState({
-      title: service.title,
-      category: service.category,
-      price: service.price,
-      duration: service.duration,
-      tone: service.tone,
-    });
+    setFormState(createFormState(service));
   };
 
   const handleEditClose = () => {
     setEditingId(null);
+    setFieldErrors({});
   };
 
-  const handleSave = () => {
-    if (isCreateMode) {
-      const nextNumber = items.length + 301;
-      const nextTitle = formState.title;
+  const handleInputChange =
+    (field: keyof Pick<ServiceFormState, "title" | "category" | "priceFrom" | "durationLabel">) =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      clearFieldError(field === "priceFrom" ? "priceFrom" : field);
+      setNotice(null);
+      setFormState((currentState) => ({
+        ...currentState,
+        [field]: event.target.value,
+      }));
+    };
 
-      setItems((currentItems) => [
-        {
-          id: `SRV-${nextNumber}`,
-          title: nextTitle,
-          category: formState.category,
-          price: formState.price,
-          duration: formState.duration,
-          tone: formState.tone,
-          status: getStatusLabel(formState.tone),
-        },
-        ...currentItems,
-      ]);
+  const handleSummaryChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    clearFieldError("summary");
+    setNotice(null);
+    setFormState((currentState) => ({
+      ...currentState,
+      summary: event.target.value,
+    }));
+  };
+
+  const handleStatusChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    clearFieldError("status");
+    setNotice(null);
+    setFormState((currentState) => ({
+      ...currentState,
+      status: event.target.value as ServiceStatus,
+    }));
+  };
+
+  const handleSave = async () => {
+    const normalizedPrice = Number.parseInt(formState.priceFrom.trim(), 10);
+
+    if (!Number.isFinite(normalizedPrice)) {
+      setFieldErrors((currentState) => ({
+        ...currentState,
+        priceFrom: "Укажите цену целым числом",
+      }));
+      return;
+    }
+
+    const payload: CreateServiceBody = {
+      title: formState.title.trim(),
+      category: formState.category.trim(),
+      summary: formState.summary.trim(),
+      priceFrom: normalizedPrice,
+      durationLabel: formState.durationLabel.trim(),
+      status: formState.status,
+    };
+
+    resetFeedback();
+
+    try {
+      if (isCreateMode) {
+        const createdService = await createServiceMutation.mutateAsync(payload);
+
+        setNotice({
+          text: `Услуга "${createdService.title}" создана и уже доступна в административном списке.`,
+          tone: "success",
+        });
+        handleEditClose();
+        return;
+      }
+
+      if (!editingItem) {
+        return;
+      }
+
+      const updatedService = await updateServiceMutation.mutateAsync({
+        serviceId: editingItem.id,
+        data: payload,
+      });
+
       setNotice({
-        text: `Услуга "${nextTitle}" создана локально.`,
-        tone: "success",
+        text: `Услуга "${updatedService.title}" обновлена.`,
+        tone: "info",
       });
       handleEditClose();
-      return;
-    }
+    } catch (error) {
+      const { fieldErrors: nextFieldErrors } = getServiceFieldErrors(error);
 
-    if (!editingItem) {
-      return;
+      setFieldErrors(nextFieldErrors);
+      setNotice({
+        text: getServiceErrorMessage(error),
+        tone: "error",
+      });
     }
-
-    setItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === editingItem.id
-          ? {
-              ...item,
-              title: formState.title,
-              category: formState.category,
-              price: formState.price,
-              duration: formState.duration,
-              tone: formState.tone,
-              status: getStatusLabel(formState.tone),
-            }
-          : item,
-      ),
-    );
-    setNotice({
-      text: `Услуга "${formState.title}" обновлена.`,
-      tone: "info",
-    });
-    handleEditClose();
   };
 
-  const handleDelete = (serviceId: string) => {
-    const deletedItem = items.find((item) => item.id === serviceId);
+  const handleDelete = async (service: ServiceDto) => {
+    setDeletingId(service.id);
+    setNotice(null);
 
-    setItems((currentItems) => currentItems.filter((item) => item.id !== serviceId));
-    setNotice({
-      text: deletedItem
-        ? `Услуга "${deletedItem.title}" удалена из локального списка.`
-        : "Услуга удалена из локального списка.",
-      tone: "info",
-    });
+    try {
+      await deleteServiceMutation.mutateAsync(service.id);
 
-    if (editingId === serviceId) {
-      handleEditClose();
+      setNotice({
+        text: `Услуга "${service.title}" удалена.`,
+        tone: "info",
+      });
+
+      if (editingId === service.id) {
+        handleEditClose();
+      }
+    } catch (error) {
+      setNotice({
+        text: getServiceErrorMessage(error),
+        tone: "error",
+      });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -160,7 +226,8 @@ const AdminServicesTable = ({ services }: AdminServicesTableProps) => {
         <div className={styles.headerMain}>
           <h2 className={styles.title}>Услуги</h2>
           <p className={styles.description}>
-            Простая таблица услуг на моковых данных с локальным редактированием и удалением.
+            Таблица подключена к реальному API: здесь можно создавать, редактировать и удалять
+            услуги, а активные позиции сразу появляются на публичной странице.
           </p>
         </div>
 
@@ -175,11 +242,11 @@ const AdminServicesTable = ({ services }: AdminServicesTableProps) => {
         </Button>
       </div>
 
-      {notice && (
+      {notice ? (
         <div
           aria-live="polite"
           className={clsx(styles.notice, styles[`notice--${notice.tone}`])}
-          role="status"
+          role={notice.tone === "error" ? "alert" : "status"}
         >
           <span className={styles.noticeText}>{notice.text}</span>
           <button
@@ -195,139 +262,166 @@ const AdminServicesTable = ({ services }: AdminServicesTableProps) => {
             </span>
           </button>
         </div>
-      )}
+      ) : null}
 
-      <div className={styles.tableWrap}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Название</th>
-              <th>Категория</th>
-              <th>Цена</th>
-              <th>Длительность</th>
-              <th>Статус</th>
-              <th>Действия</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((service) => (
-              <tr key={service.id}>
-                <td data-label="ID">{service.id}</td>
-                <td data-label="Название">{service.title}</td>
-                <td data-label="Категория">{service.category}</td>
-                <td data-label="Цена">{service.price}</td>
-                <td data-label="Длительность">{service.duration}</td>
-                <td data-label="Статус">
-                  <span className={clsx(styles.status, styles[`status--${service.tone}`])}>
-                    {service.status}
-                  </span>
-                </td>
-                <td data-label="Действия">
-                  <div className={styles.actions}>
-                    <Button
-                      className={styles.actionButton}
-                      leftIcon={<Icon name="pencil" />}
-                      onClick={() => {
-                        handleEditOpen(service);
-                      }}
-                      size="sm"
-                      variant="secondary"
-                    >
-                      Редактировать
-                    </Button>
-                    <Button
-                      className={clsx(styles.actionButton, styles.deleteButton)}
-                      leftIcon={<Icon name="trash" />}
-                      onClick={() => {
-                        handleDelete(service.id);
-                      }}
-                      size="sm"
-                      variant="ghost"
-                    >
-                      Удалить
-                    </Button>
-                  </div>
-                </td>
+      {services.length === 0 ? (
+        <div className={styles.emptyState}>
+          <Empty
+            action={
+              <Button leftIcon={<Icon name="plus" />} onClick={handleCreateOpen} size="sm">
+                Создать первую услугу
+              </Button>
+            }
+            description="В списке пока нет услуг. Создайте первую запись, и она сразу появится в админке."
+            icon="wrench"
+            title="Услуги ещё не добавлены"
+          />
+        </div>
+      ) : (
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Категория</th>
+                <th>Описание</th>
+                <th>Цена</th>
+                <th>Длительность</th>
+                <th>Статус</th>
+                <th>Действия</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {services.map((service) => (
+                <tr key={service.id}>
+                  <td data-label="ID">
+                    <span className={styles.idValue} title={service.id}>
+                      {formatServiceId(service.id)}
+                    </span>
+                  </td>
+                  <td data-label="Название">{service.title}</td>
+                  <td data-label="Категория">{service.category}</td>
+                  <td className={styles.summaryCell} data-label="Описание" title={service.summary}>
+                    {service.summary}
+                  </td>
+                  <td data-label="Цена">{formatServicePrice(service.priceFrom)}</td>
+                  <td data-label="Длительность">{service.durationLabel}</td>
+                  <td data-label="Статус">
+                    <span className={clsx(styles.status, styles[`status--${service.status}`])}>
+                      {formatServiceStatus(service.status)}
+                    </span>
+                  </td>
+                  <td data-label="Действия">
+                    <div className={styles.actions}>
+                      <Button
+                        className={styles.actionButton}
+                        leftIcon={<Icon name="pencil" />}
+                        onClick={() => {
+                          handleEditOpen(service);
+                        }}
+                        size="sm"
+                        variant="secondary"
+                      >
+                        Редактировать
+                      </Button>
+                      <Button
+                        className={clsx(styles.actionButton, styles.deleteButton)}
+                        leftIcon={<Icon name="trash" />}
+                        loading={deletingId === service.id}
+                        onClick={() => {
+                          void handleDelete(service);
+                        }}
+                        size="sm"
+                        variant="ghost"
+                      >
+                        Удалить
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <Modal
         actions={
           <>
-            <Button onClick={handleEditClose} size="sm" variant="ghost">
+            <Button disabled={isSaving} onClick={handleEditClose} size="sm" variant="ghost">
               Отмена
             </Button>
-            <Button onClick={handleSave} size="sm" variant="primary">
+            <Button
+              loading={isSaving}
+              onClick={() => void handleSave()}
+              size="sm"
+              variant="primary"
+            >
               {isCreateMode ? "Создать" : "Сохранить"}
             </Button>
           </>
         }
-        description="Изменения сохраняются только локально в моковой таблице."
+        description="Изменения сохраняются на сервере и сразу синхронизируются с публичным каталогом услуг."
         isOpen={editingId !== null}
         onClose={handleEditClose}
-        title={
-          isCreateMode
-            ? "Создание услуги"
-            : editingItem
-              ? `Редактирование ${editingItem.id}`
-              : "Редактирование услуги"
-        }
+        title={isCreateMode ? "Создание услуги" : "Редактирование услуги"}
       >
         <div className={styles.modalGrid}>
           <Input
+            error={fieldErrors.title}
             label="Название"
-            onChange={(event) => {
-              setFormState((currentState) => ({
-                ...currentState,
-                title: event.target.value,
-              }));
-            }}
+            onChange={handleInputChange("title")}
             value={formState.title}
           />
+
           <Input
+            error={fieldErrors.category}
             label="Категория"
-            onChange={(event) => {
-              setFormState((currentState) => ({
-                ...currentState,
-                category: event.target.value,
-              }));
-            }}
+            onChange={handleInputChange("category")}
             value={formState.category}
           />
+
+          <label
+            className={clsx(styles.textareaField, {
+              [styles["textareaField--invalid"]]: Boolean(fieldErrors.summary),
+            })}
+          >
+            <span className={styles.textareaLabel}>Описание</span>
+            <textarea
+              className={styles.textarea}
+              onChange={handleSummaryChange}
+              rows={5}
+              value={formState.summary}
+            />
+            {fieldErrors.summary ? (
+              <span className={styles.textareaDescription}>{fieldErrors.summary}</span>
+            ) : null}
+          </label>
+
           <Input
-            label="Цена"
-            onChange={(event) => {
-              setFormState((currentState) => ({
-                ...currentState,
-                price: event.target.value,
-              }));
-            }}
-            value={formState.price}
+            error={fieldErrors.priceFrom}
+            inputMode="numeric"
+            label="Цена от"
+            min="0"
+            onChange={handleInputChange("priceFrom")}
+            type="number"
+            value={formState.priceFrom}
           />
+
           <Input
+            error={fieldErrors.durationLabel}
             label="Длительность"
-            onChange={(event) => {
-              setFormState((currentState) => ({
-                ...currentState,
-                duration: event.target.value,
-              }));
-            }}
-            value={formState.duration}
+            onChange={handleInputChange("durationLabel")}
+            value={formState.durationLabel}
           />
+
           <Select
+            error={fieldErrors.status}
             label="Статус"
-            onChange={(event) => {
-              setFormState((currentState) => ({
-                ...currentState,
-                tone: event.target.value as AdminService["tone"],
-              }));
-            }}
+            onChange={handleStatusChange}
             options={statusOptions}
-            value={formState.tone}
+            value={formState.status}
           />
         </div>
       </Modal>

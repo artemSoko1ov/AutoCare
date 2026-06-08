@@ -32,6 +32,7 @@
 }
 
 .description {
+  max-width: 48rem;
   font-size: fluid(14, 13);
   line-height: 1.6;
   color: var(--color-text-secondary);
@@ -60,6 +61,12 @@
     color: var(--color-primary);
     background-color: rgb(var(--color-primary-rgb) / 8%);
     border-color: rgb(var(--color-primary-rgb) / 16%);
+  }
+
+  &--error {
+    color: var(--color-danger);
+    background-color: rgb(var(--color-danger-rgb) / 10%);
+    border-color: rgb(var(--color-danger-rgb) / 18%);
   }
 }
 
@@ -97,13 +104,17 @@
   }
 }
 
+.emptyState {
+  padding: fluid(12, 10) 0;
+}
+
 .tableWrap {
   overflow-x: auto;
 }
 
 .table {
   width: 100%;
-  min-width: 980px;
+  min-width: 1180px;
   border-collapse: collapse;
 
   thead th {
@@ -179,6 +190,19 @@
   }
 }
 
+.idValue {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-heading);
+  color: var(--color-primary);
+  letter-spacing: 0.04em;
+}
+
+.summaryCell {
+  min-width: 20rem;
+  max-width: 24rem;
+  color: var(--color-text-secondary);
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -202,6 +226,62 @@
 .modalGrid {
   display: grid;
   gap: fluid(16, 12);
+}
+
+.textarea {
+  min-height: 8.5rem;
+  padding: 0.95rem 1rem;
+  font: inherit;
+  line-height: 1.6;
+  color: var(--color-text-heading);
+  resize: vertical;
+  outline: none;
+  background-color: rgb(255 255 255 / 78%);
+  border: var(--border-soft);
+  border-radius: var(--radius-lg);
+  transition:
+    border-color var(--transition-duration-base) ease,
+    box-shadow var(--transition-duration-base) ease,
+    background-color var(--transition-duration-base) ease;
+
+  @include hover {
+    border-color: rgb(var(--color-primary-rgb) / 24%);
+  }
+
+  &:focus-visible {
+    background-color: var(--color-surface-strong);
+    border-color: rgb(var(--color-primary-rgb) / 34%);
+    box-shadow: 0 0 0 4px rgb(var(--color-primary-rgb) / 10%);
+  }
+}
+
+.textareaDescription {
+  font-size: fluid(12, 11);
+  line-height: 1.5;
+  color: var(--color-text-tertiary);
+}
+
+.textareaField {
+  display: grid;
+  gap: 8px;
+
+  &--invalid {
+    .textarea {
+      border-color: rgb(var(--color-danger-rgb) / 36%);
+      box-shadow: 0 0 0 4px rgb(var(--color-danger-rgb) / 10%);
+    }
+
+    .textareaDescription {
+      color: var(--color-danger);
+    }
+  }
+}
+
+.textareaLabel {
+  font-size: fluid(13, 12);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.45;
+  color: var(--color-text-heading);
 }
 
 .status {
