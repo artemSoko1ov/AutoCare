@@ -23,6 +23,7 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  cars  Car[]
   Token Token?
 }
 
@@ -32,4 +33,21 @@ model Token {
   refreshToken String @unique
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Car {
+  id           String   @id @default(uuid())
+  userId       String
+  brand        String
+  model        String
+  year         Int
+  licensePlate String   @unique
+  vin          String?  @unique
+  mileage      Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

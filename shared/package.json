@@ -10,6 +10,11 @@
       "types": "./dist/contracts/auth/index.d.ts",
       "require": "./dist/contracts/auth/index.js",
       "default": "./dist/contracts/auth/index.js"
+    },
+    "./cars": {
+      "types": "./dist/contracts/cars/index.d.ts",
+      "require": "./dist/contracts/cars/index.js",
+      "default": "./dist/contracts/cars/index.js"
     }
   },
   "scripts": {
