@@ -1,8 +1,8 @@
 import { useState } from "react";
-import type { AxiosError } from "axios";
 import type { LoginBody } from "@shared/contracts/auth";
 import { useAppDispatch } from "@app/providers/store/hooks";
 import { sessionEstablished } from "@/entities/session/model/session.actions.ts";
+import { getApiErrorMessage } from "@/shared/lib/api/validation";
 import { loginApi } from "../api/loginApi";
 
 export const useLogin = () => {
@@ -19,9 +19,8 @@ export const useLogin = () => {
       dispatch(sessionEstablished({ user: response.user, accessToken: response.accessToken }));
       return response;
     } catch (err: unknown) {
-      const axiosErr = err as AxiosError<{ message: string }>;
-      setError(axiosErr.response?.data?.message || "Ошибка при входе");
-      throw err;
+      setError(getApiErrorMessage(err, "Ошибка при входе"));
+      return null;
     } finally {
       setLoading(false);
     }

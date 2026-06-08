@@ -1,8 +1,8 @@
 import { useState } from "react";
-import type { AxiosError } from "axios";
 import type { RegisterBody } from "@shared/contracts/auth";
 import { useAppDispatch } from "@app/providers/store/hooks";
 import { sessionEstablished } from "@/entities/session/model/session.actions.ts";
+import { getApiErrorMessage } from "@/shared/lib/api/validation";
 import { registerApi } from "../api/registerApi.ts";
 
 export const useRegister = () => {
@@ -19,9 +19,8 @@ export const useRegister = () => {
       dispatch(sessionEstablished({ user: response.user, accessToken: response.accessToken }));
       return response;
     } catch (err: unknown) {
-      const axiosErr = err as AxiosError<{ message: string }>;
-      setError(axiosErr.response?.data?.message || "Ошибка регистрации");
-      throw err;
+      setError(getApiErrorMessage(err, "Ошибка регистрации"));
+      return null;
     } finally {
       setLoading(false);
     }

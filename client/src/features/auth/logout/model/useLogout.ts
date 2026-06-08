@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type { AxiosError } from "axios";
 import { useAppDispatch } from "@app/providers/store/hooks";
 import { sessionCleared } from "@/entities/session/model/session.actions.ts";
+import { getApiErrorMessage } from "@/shared/lib/api/validation";
 import { logoutApi } from "../api/logoutApi";
 
 export const useLogout = () => {
@@ -16,10 +16,10 @@ export const useLogout = () => {
     try {
       await logoutApi();
       dispatch(sessionCleared());
+      return true;
     } catch (err: unknown) {
-      const axiosErr = err as AxiosError<{ message: string }>;
-      setError(axiosErr.response?.data?.message || "Ошибка выхода");
-      throw err;
+      setError(getApiErrorMessage(err, "Ошибка выхода"));
+      return false;
     } finally {
       setLoading(false);
     }

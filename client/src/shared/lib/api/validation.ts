@@ -10,9 +10,21 @@ export type ValidationErrorResponse = {
   errors?: ValidationIssue[];
 };
 
-export const getApiErrorMessage = (error: unknown, fallbackMessage: string) => {
+const DEFAULT_NETWORK_ERROR_MESSAGE =
+  "Сервер недоступен. Проверьте, что backend запущен на http://localhost:7000.";
+
+export const getApiErrorMessage = (
+  error: unknown,
+  fallbackMessage: string,
+  networkErrorMessage = DEFAULT_NETWORK_ERROR_MESSAGE,
+) => {
   const axiosError = error as AxiosError<ValidationErrorResponse>;
-  return axiosError.response?.data?.message || fallbackMessage;
+
+  if (axiosError.code === "ERR_NETWORK" || !axiosError.response) {
+    return networkErrorMessage;
+  }
+
+  return axiosError.response.data?.message || fallbackMessage;
 };
 
 export const getValidationIssues = (error: unknown) => {
