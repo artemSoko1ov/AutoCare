@@ -1,8 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
-import type { ServiceDto } from '@shared/contracts/services';
+import type {
+  CreateServiceBody,
+  ServiceDto,
+  UpdateServiceBody,
+} from '@shared/contracts/services';
 import {
   serviceDtoSelect,
+  type ServiceDtoSource,
   toServiceDto,
 } from '../../common/mappers/service-dto.mapper';
 
@@ -18,5 +23,63 @@ export class ServicesService {
     });
 
     return services.map(toServiceDto);
+  }
+
+  async getAdminServices(): Promise<ServiceDto[]> {
+    const services = await this.prisma.service.findMany({
+      orderBy: [{ updatedAt: 'desc' }, { createdAt: 'desc' }],
+      select: serviceDtoSelect,
+    });
+
+    return services.map(toServiceDto);
+  }
+
+  async createService(data: CreateServiceBody): Promise<ServiceDto> {
+    const service = await this.prisma.service.create({
+      data,
+      select: serviceDtoSelect,
+    });
+
+    return toServiceDto(service);
+  }
+
+  async updateService(
+    serviceId: string,
+    data: UpdateServiceBody,
+  ): Promise<ServiceDto> {
+    await this.findServiceOrThrow(serviceId);
+
+    const service = await this.prisma.service.update({
+      where: { id: serviceId },
+      data,
+      select: serviceDtoSelect,
+    });
+
+    return toServiceDto(service);
+  }
+
+  async deleteService(serviceId: string): Promise<ServiceDto> {
+    const service = await this.findServiceOrThrow(serviceId);
+
+    await this.prisma.service.delete({
+      where: { id: serviceId },
+    });
+
+    return toServiceDto(service);
+  }
+
+  private async findServiceOrThrow(
+    serviceId: string,
+  ): Promise<ServiceDtoSource> {
+    const service = await this.prisma.service.findUnique({
+      where: { id: serviceId },
+      select: serviceDtoSelect,
+    });
+
+    if (!service) {
+      throw new NotFoundException('Service not found');
+    }
+
+    return service;
   }
 }
