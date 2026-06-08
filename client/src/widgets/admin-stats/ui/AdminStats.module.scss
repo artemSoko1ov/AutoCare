@@ -1,0 +1,86 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: fluid(24, 18);
+  padding: fluid(28, 20);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+
+  @include mobile {
+    border-radius: var(--radius-xl);
+  }
+}
+
+.header {
+  display: grid;
+  gap: 6px;
+}
+
+.title {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  color: var(--color-text-heading);
+}
+
+.description {
+  font-size: fluid(14, 13);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: fluid(16, 12);
+
+  @include tablet {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: grid;
+  gap: 8px;
+  padding: fluid(20, 16);
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 88%) 0%,
+    rgb(var(--color-primary-rgb) / 4%) 100%
+  );
+  border: var(--border-soft);
+  border-radius: var(--radius-xl);
+}
+
+.icon {
+  @include flex-center;
+  @include square(3rem);
+
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 10%);
+  border-radius: 50%;
+
+  svg {
+    @include square(1.2rem);
+  }
+}
+
+.value {
+  font-size: fluid(34, 28);
+  font-weight: var(--font-weight-display);
+  line-height: 1;
+  color: var(--color-text-heading);
+}
+
+.cardTitle {
+  font-size: fluid(18, 15);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.35;
+  color: var(--color-text-heading);
+}
+
+.hint {
+  font-size: fluid(13, 12);
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}

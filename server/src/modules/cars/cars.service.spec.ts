@@ -16,6 +16,7 @@ describe('CarsService', () => {
     licensePlate: 'A123BC77',
     vin: 'XW7BF4FK90S123456',
     mileage: 65000,
+    photoUrl: 'https://example.com/camry.jpg',
     createdAt: new Date('2026-06-08T10:00:00.000Z'),
     updatedAt: new Date('2026-06-08T11:00:00.000Z'),
   };
@@ -39,6 +40,7 @@ describe('CarsService', () => {
         licensePlate: 'A123BC77',
         vin: 'XW7BF4FK90S123456',
         mileage: 65000,
+        photoUrl: 'https://example.com/camry.jpg',
         createdAt: '2026-06-08T10:00:00.000Z',
         updatedAt: '2026-06-08T11:00:00.000Z',
       },
@@ -68,6 +70,7 @@ describe('CarsService', () => {
       licensePlate: 'A123BC77',
       vin: 'XW7BF4FK90S123456',
       mileage: 65000,
+      photoUrl: 'https://example.com/camry.jpg',
       createdAt: '2026-06-08T10:00:00.000Z',
       updatedAt: '2026-06-08T11:00:00.000Z',
     });
@@ -104,6 +107,7 @@ describe('CarsService', () => {
         licensePlate: 'A123BC77',
         vin: 'XW7BF4FK90S123456',
         mileage: 65000,
+        photoUrl: 'https://example.com/camry.jpg',
       }),
     ).resolves.toEqual({
       id: 'car-1',
@@ -114,6 +118,7 @@ describe('CarsService', () => {
       licensePlate: 'A123BC77',
       vin: 'XW7BF4FK90S123456',
       mileage: 65000,
+      photoUrl: 'https://example.com/camry.jpg',
       createdAt: '2026-06-08T10:00:00.000Z',
       updatedAt: '2026-06-08T11:00:00.000Z',
     });
@@ -148,6 +153,7 @@ describe('CarsService', () => {
       licensePlate: 'A123BC77',
       vin: 'XW7BF4FK90S123456',
       mileage: 70000,
+      photoUrl: 'https://example.com/camry.jpg',
       createdAt: '2026-06-08T10:00:00.000Z',
       updatedAt: '2026-06-09T09:00:00.000Z',
     });
@@ -177,6 +183,7 @@ describe('CarsService', () => {
       licensePlate: 'A123BC77',
       vin: 'XW7BF4FK90S123456',
       mileage: 65000,
+      photoUrl: 'https://example.com/camry.jpg',
       createdAt: '2026-06-08T10:00:00.000Z',
       updatedAt: '2026-06-08T11:00:00.000Z',
     });
@@ -212,6 +219,7 @@ describe('CarsService', () => {
         licensePlate: 'A123BC77',
         vin: null,
         mileage: 65000,
+        photoUrl: null,
       }),
     ).rejects.toBeInstanceOf(ConflictException);
   });

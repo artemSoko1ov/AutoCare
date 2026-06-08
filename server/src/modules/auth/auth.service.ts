@@ -15,12 +15,61 @@ import type {
 import type { AuthTokenPayload } from '../../common/types/auth-token-payload';
 import { TokensService } from '../tokens/tokens.service';
 
+const DEFAULT_ADMIN_EMAIL = 'admin@admin.admin';
+const DEFAULT_ADMIN_PASSWORD = 'admin.admin';
+const DEFAULT_ADMIN_USERNAME = 'Administrator';
+
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly tokenService: TokensService,
   ) {}
+
+  private normalizeEnvValue(value: string): string {
+    const trimmedValue = value.trim().replace(/;+$/, '').trim();
+
+    if (
+      (trimmedValue.startsWith("'") && trimmedValue.endsWith("'")) ||
+      (trimmedValue.startsWith('"') && trimmedValue.endsWith('"'))
+    ) {
+      return trimmedValue.slice(1, -1).trim();
+    }
+
+    return trimmedValue;
+  }
+
+  private getOptionalEnvValue(value: string | undefined, fallbackValue: string) {
+    if (typeof value !== 'string' || value.trim().length === 0) {
+      return fallbackValue;
+    }
+
+    const normalizedValue = this.normalizeEnvValue(value);
+    return normalizedValue.length > 0 ? normalizedValue : fallbackValue;
+  }
+
+  private getAdminCredentials() {
+    const email = this.getOptionalEnvValue(
+      process.env.ADMIN_EMAIL,
+      DEFAULT_ADMIN_EMAIL,
+    ).toLowerCase();
+
+    const password = this.getOptionalEnvValue(
+      process.env.ADMIN_PASSWORD,
+      DEFAULT_ADMIN_PASSWORD,
+    );
+
+    const username = this.getOptionalEnvValue(
+      process.env.ADMIN_USERNAME,
+      DEFAULT_ADMIN_USERNAME,
+    );
+
+    return {
+      email,
+      password,
+      username,
+    };
+  }
 
   private toUserDto(user: {
     id: string;
@@ -70,6 +119,99 @@ export class AuthService {
     return accessToken || null;
   }
 
+  private isReservedAdminEmail(email: string): boolean {
+    return email.trim().toLowerCase() === this.getAdminCredentials().email;
+  }
+
+  private isAdminCredentials(email: string, password: string): boolean {
+    const adminCredentials = this.getAdminCredentials();
+
+    return (
+      email.trim().toLowerCase() === adminCredentials.email &&
+      password === adminCredentials.password
+    );
+  }
+
+  private async ensureAdminUser() {
+    const adminCredentials = this.getAdminCredentials();
+
+    const existingAdmin = await this.prisma.user.findUnique({
+      where: { email: adminCredentials.email },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        phone: true,
+        avatarUrl: true,
+        role: true,
+        password: true,
+        sessionVersion: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!existingAdmin) {
+      const passwordHash = await bcrypt.hash(adminCredentials.password, 10);
+
+      return this.prisma.user.create({
+        data: {
+          email: adminCredentials.email,
+          username: adminCredentials.username,
+          password: passwordHash,
+          phone: null,
+          avatarUrl: null,
+          role: 'ADMIN',
+        },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          phone: true,
+          avatarUrl: true,
+          role: true,
+          password: true,
+          sessionVersion: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+    }
+
+    const hasExpectedPassword = await bcrypt.compare(
+      adminCredentials.password,
+      existingAdmin.password,
+    );
+
+    if (existingAdmin.role === 'ADMIN' && hasExpectedPassword) {
+      return existingAdmin;
+    }
+
+    const passwordHash = await bcrypt.hash(adminCredentials.password, 10);
+
+    return this.prisma.user.update({
+      where: { id: existingAdmin.id },
+      data: {
+        email: adminCredentials.email,
+        username: adminCredentials.username,
+        password: passwordHash,
+        role: 'ADMIN',
+      },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        phone: true,
+        avatarUrl: true,
+        role: true,
+        password: true,
+        sessionVersion: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
   private resolveUserIdFromTokens(
     refreshToken?: string,
     authHeader?: string,
@@ -95,6 +237,12 @@ export class AuthService {
     username,
     password,
   }: RegisterBody): Promise<TokensDto & UserDto> {
+    if (this.isReservedAdminEmail(email)) {
+      throw new ConflictException(
+        'Этот email зарезервирован для администратора',
+      );
+    }
+
     const candidate = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -138,6 +286,20 @@ export class AuthService {
   }
 
   async login({ email, password }: LoginBody): Promise<TokensDto & UserDto> {
+    if (this.isAdminCredentials(email, password)) {
+      const adminUser = await this.ensureAdminUser();
+      const userDto = this.toUserDto(adminUser);
+      const tokens = this.tokenService.generateTokens(
+        this.toTokenPayload(adminUser),
+      );
+      await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+      return {
+        ...tokens,
+        ...userDto,
+      };
+    }
+
     const user = await this.prisma.user.findUnique({
       where: { email },
       select: {

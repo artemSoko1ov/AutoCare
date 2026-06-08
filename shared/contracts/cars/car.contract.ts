@@ -1,14 +1,16 @@
 import { z } from 'zod';
+import { carBrandValues } from './car-catalog';
 
 export const carDtoSchema = z.object({
   id: z.string(),
   userId: z.string(),
-  brand: z.string(),
+  brand: z.enum(carBrandValues),
   model: z.string(),
   year: z.number().int(),
   licensePlate: z.string(),
   vin: z.string().nullable(),
   mileage: z.number().int(),
+  photoUrl: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

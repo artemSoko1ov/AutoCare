@@ -84,8 +84,13 @@ const ProfileCars = ({
           {section.items.map((item) => (
             <article className={styles.card} key={item.id}>
               <div className={styles.cardHeader}>
-                <div className={clsx(styles.thumb, styles[`thumb--${item.accent}`])}>
-                  <Icon name="car" />
+                <div
+                  className={clsx(styles.thumb, styles[`thumb--${item.accent}`], {
+                    [styles["thumb--image"]]: Boolean(item.photoUrl),
+                  })}
+                  style={item.photoUrl ? { backgroundImage: `url(${item.photoUrl})` } : undefined}
+                >
+                  {!item.photoUrl ? <Icon name="car" /> : null}
                 </div>
 
                 <div className={styles.cardHead}>

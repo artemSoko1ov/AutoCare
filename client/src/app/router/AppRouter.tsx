@@ -14,6 +14,7 @@ import ProfilePage from "@/pages/profile/ui/ProfilePage";
 import ServicesPage from "@/pages/services/ui/ServicesPage";
 import SignUpPage from "@/pages/sign-up/ui/SignUpPage";
 import MainLayout from "@/widgets/layout/ui/MainLayout";
+import AdminRoute from "./AdminRoute";
 import GuestOnlyRoute from "./GuestOnlyRoute";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -21,15 +22,18 @@ const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<MainLayout />} path="/">
-          <Route element={<HomePage />} index />
-          <Route element={<AdminPage />} path="admin">
+        <Route element={<AdminRoute />} path="/admin">
+          <Route element={<AdminPage />}>
             <Route element={<Navigate replace to="dashboard" />} index />
             <Route element={<AdminDashboardPage />} path="dashboard" />
             <Route element={<AdminRequestsPage />} path="requests" />
             <Route element={<AdminReviewsPage />} path="reviews" />
             <Route element={<AdminServicesPage />} path="services" />
           </Route>
+        </Route>
+
+        <Route element={<MainLayout />} path="/">
+          <Route element={<HomePage />} index />
           <Route element={<ServicesPage />} path="services" />
           <Route element={<ContactsPage />} path="contacts" />
           <Route element={<GuestOnlyRoute />}>

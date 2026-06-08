@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { carDtoSchema } from './car.contract';
+import { isCarBrand, isCarModelForBrand } from './car-catalog';
 
 const currentYear = new Date().getFullYear() + 1;
 
@@ -20,18 +21,40 @@ const normalizeUppercase = (value: unknown) => {
   return value.trim().toUpperCase();
 };
 
+const normalizeOptionalPhoto = (value: unknown) => {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const normalizedValue = value.trim();
+  return normalizedValue === '' ? null : normalizedValue;
+};
+
+const isSupportedImageValue = (value: string) => {
+  if (value.startsWith('data:image/')) {
+    return true;
+  }
+
+  try {
+    const parsedUrl = new URL(value);
+    return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 export const UpdateCarBodySchema = z
   .object({
     brand: z
       .string()
-      .trim()
-      .min(1, 'Укажите марку автомобиля')
-      .max(50, 'Марка не должна быть длиннее 50 символов')
+      .refine(isCarBrand, {
+        message: 'Выберите марку автомобиля из списка',
+      })
       .optional(),
     model: z
       .string()
       .trim()
-      .min(1, 'Укажите модель автомобиля')
+      .min(1, 'Выберите модель автомобиля')
       .max(50, 'Модель не должна быть длиннее 50 символов')
       .optional(),
     year: z
@@ -63,11 +86,32 @@ export const UpdateCarBodySchema = z
       .min(0, 'Пробег не может быть отрицательным')
       .max(2_000_000, 'Пробег выглядит некорректным')
       .optional(),
+    photoUrl: z.preprocess(
+      normalizeOptionalPhoto,
+      z
+        .string()
+        .refine(isSupportedImageValue, 'Укажите корректное изображение автомобиля')
+        .nullable()
+        .optional(),
+    ),
   })
   .refine(
     (data) => Object.values(data).some((value) => value !== undefined),
     'Передайте хотя бы одно поле для обновления',
-  );
+  )
+  .superRefine((data, context) => {
+    if (!data.brand || !data.model) {
+      return;
+    }
+
+    if (!isCarModelForBrand(data.brand, data.model)) {
+      context.addIssue({
+        code: 'custom',
+        message: 'Выберите модель из списка для выбранной марки',
+        path: ['model'],
+      });
+    }
+  });
 
 export const UpdateCarResponseSchema = carDtoSchema;
 

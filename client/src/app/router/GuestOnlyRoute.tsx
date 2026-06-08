@@ -3,13 +3,21 @@ import { useAppSelector } from "@app/providers/store/hooks";
 
 const GuestOnlyRoute = () => {
   const { isAuth } = useAppSelector((state) => state.session);
+  const currentUser = useAppSelector((state) => state.user.currentUser);
   const location = useLocation();
 
   if (isAuth) {
     const state =
       typeof location.state === "object" && location.state !== null ? location.state : null;
-    const redirectTo =
-      state && "from" in state && typeof state.from === "string" ? state.from : "/profile";
+    const requestedPath =
+      state && "from" in state && typeof state.from === "string" ? state.from : null;
+    const isAdmin = currentUser?.role === "ADMIN";
+
+    const redirectTo = isAdmin
+      ? "/admin"
+      : requestedPath?.startsWith("/admin")
+        ? "/profile"
+        : (requestedPath ?? "/profile");
 
     return <Navigate replace to={redirectTo} />;
   }

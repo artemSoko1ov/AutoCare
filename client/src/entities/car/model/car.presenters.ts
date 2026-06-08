@@ -9,6 +9,7 @@ export type ProfileGarageCarItem = {
   plate: string;
   details: string;
   accent: CarAccent;
+  photoUrl: string | null;
 };
 
 export type ProfileGarageSection = {
@@ -37,6 +38,7 @@ export type ProfileCarsItem = {
   vin: string;
   createdAt: string;
   accent: CarAccent;
+  photoUrl: string | null;
 };
 
 export type ProfileCarsSection = {
@@ -87,6 +89,7 @@ export const createProfileGarageSection = (cars: CarDto[]): ProfileGarageSection
       plate: car.licensePlate,
       details: `${car.year} • ${formatMileage(car.mileage)}`,
       accent: getAccent(index),
+      photoUrl: car.photoUrl,
     })),
   };
 };
@@ -136,6 +139,7 @@ export const createProfileCarsSection = (cars: CarDto[]): ProfileCarsSection => 
       vin: car.vin ?? "Не указан",
       createdAt: formatDate(car.createdAt),
       accent: getAccent(index),
+      photoUrl: car.photoUrl,
     })),
   };
 };

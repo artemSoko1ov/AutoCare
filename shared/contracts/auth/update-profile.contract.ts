@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { userDtoSchema } from './user.contract';
+import { nullableImageValueSchema, userDtoSchema } from './user.contract';
 
 const emptyStringToNull = (value: unknown) => {
   if (typeof value !== 'string') {
@@ -25,7 +25,7 @@ export const UpdateProfileBodySchema = z.object({
   ),
   avatarUrl: z.preprocess(
     emptyStringToNull,
-    z.url('Некорректная ссылка на аватар').nullable(),
+    nullableImageValueSchema,
   ),
 });
 

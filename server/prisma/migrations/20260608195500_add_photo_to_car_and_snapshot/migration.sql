@@ -1,0 +1,5 @@
+ALTER TABLE "Car"
+ADD COLUMN "photoUrl" TEXT;
+
+ALTER TABLE "CarSnapshot"
+ADD COLUMN "photoUrl" TEXT;

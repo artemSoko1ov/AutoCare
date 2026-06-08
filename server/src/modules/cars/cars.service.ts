@@ -21,6 +21,7 @@ const carSelect = {
   licensePlate: true,
   vin: true,
   mileage: true,
+  photoUrl: true,
   createdAt: true,
   updatedAt: true,
 } satisfies Prisma.CarSelect;
@@ -55,6 +56,7 @@ export class CarsService {
           licensePlate: data.licensePlate,
           vin: data.vin,
           mileage: data.mileage,
+          photoUrl: data.photoUrl,
         },
         select: carSelect,
       });

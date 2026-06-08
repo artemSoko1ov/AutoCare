@@ -64,8 +64,13 @@ const ProfileGarage = ({
         <div className={styles.list}>
           {section.items.map((item) => (
             <div className={styles.item} key={item.id}>
-              <div className={clsx(styles.thumb, styles[`thumb--${item.accent}`])}>
-                <Icon name="car" />
+              <div
+                className={clsx(styles.thumb, styles[`thumb--${item.accent}`], {
+                  [styles["thumb--image"]]: Boolean(item.photoUrl),
+                })}
+                style={item.photoUrl ? { backgroundImage: `url(${item.photoUrl})` } : undefined}
+              >
+                {!item.photoUrl ? <Icon name="car" /> : null}
               </div>
 
               <div className={styles.body}>

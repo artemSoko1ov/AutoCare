@@ -1,6 +1,7 @@
 import { type MouseEvent, type ReactNode, useEffect } from "react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
+import Icon from "@/shared/ui/Icon";
 import styles from "./Modal.module.scss";
 
 type ModalProps = {
@@ -64,7 +65,9 @@ const Modal = ({ actions, children, description, isOpen, onClose, title }: Modal
             onClick={onClose}
             type="button"
           >
-            <span className={styles.closeIcon} />
+            <span className={styles.closeIcon}>
+              <Icon name="x-mark" />
+            </span>
           </button>
         </div>
 

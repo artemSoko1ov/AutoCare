@@ -102,6 +102,8 @@
 
   width: fluid(92, 76);
   aspect-ratio: 1.45;
+  background-position: center;
+  background-size: cover;
   border-radius: var(--radius-md);
 
   svg {
@@ -149,6 +151,12 @@
     background:
       radial-gradient(circle at 22% 24%, rgb(15 23 42 / 16%), transparent 40%),
       linear-gradient(135deg, #f4f6f8 0%, #fbfcfd 100%);
+  }
+
+  &--image {
+    color: transparent;
+    border: 1px solid rgb(var(--color-primary-rgb) / 10%);
+    box-shadow: var(--shadow-soft);
   }
 }
 

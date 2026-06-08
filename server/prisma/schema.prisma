@@ -44,6 +44,7 @@ model Car {
   licensePlate String   @unique
   vin          String?  @unique
   mileage      Int      @default(0)
+  photoUrl     String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -61,6 +62,7 @@ model CarSnapshot {
   year        Int
   mileage     Int
   plateNumber String
+  photoUrl    String?
   createdAt   DateTime @default(now())
 
   sourceCar Car? @relation(fields: [sourceCarId], references: [id], onDelete: SetNull)

@@ -1,0 +1,219 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: fluid(20, 16);
+  padding: fluid(28, 20);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+
+  @include mobile {
+    border-radius: var(--radius-xl);
+  }
+}
+
+.header {
+  display: grid;
+  gap: 6px;
+}
+
+.title {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  color: var(--color-text-heading);
+}
+
+.description {
+  font-size: fluid(14, 13);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.notice {
+  display: flex;
+  gap: fluid(12, 10);
+  align-items: center;
+  justify-content: space-between;
+  padding: fluid(16, 14) fluid(18, 16);
+  border: var(--border-soft);
+  border-radius: var(--radius-lg);
+
+  &--success {
+    color: var(--color-success);
+    background-color: rgb(var(--color-success-rgb) / 10%);
+    border-color: rgb(var(--color-success-rgb) / 18%);
+  }
+
+  &--info {
+    color: var(--color-primary);
+    background-color: rgb(var(--color-primary-rgb) / 8%);
+    border-color: rgb(var(--color-primary-rgb) / 16%);
+  }
+}
+
+.noticeText {
+  font-size: fluid(14, 13);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+}
+
+.noticeClose {
+  @include flex-center;
+  @include square(2rem);
+
+  flex-shrink: 0;
+  color: currentcolor;
+  background-color: rgb(255 255 255 / 54%);
+  border: 1px solid transparent;
+  border-radius: 50%;
+
+  @include hover {
+    background-color: rgb(255 255 255 / 72%);
+    border-color: rgb(255 255 255 / 52%);
+  }
+}
+
+.noticeCloseIcon {
+  @include flex-center;
+
+  width: 0.8rem;
+  height: 0.8rem;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 940px;
+  border-collapse: collapse;
+
+  thead th {
+    padding-bottom: fluid(14, 12);
+    font-size: fluid(12, 11);
+    font-weight: var(--font-weight-heading);
+    line-height: 1.4;
+    color: var(--color-text-tertiary);
+    text-align: left;
+    border-bottom: var(--border-soft);
+  }
+
+  tbody td {
+    padding-block: fluid(16, 14);
+    padding-right: fluid(14, 10);
+    font-size: fluid(14, 13);
+    line-height: 1.5;
+    vertical-align: top;
+    color: var(--color-text-heading);
+    border-bottom: var(--border-soft);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  @include tablet {
+    min-width: 0;
+
+    thead {
+      display: none;
+    }
+
+    tbody,
+    tr,
+    td {
+      display: block;
+      width: 100%;
+    }
+
+    tbody {
+      display: flex;
+      flex-direction: column;
+      gap: fluid(14, 12);
+    }
+
+    tr {
+      padding: fluid(16, 14);
+      background-color: rgb(255 255 255 / 72%);
+      border: var(--border-soft);
+      border-radius: var(--radius-lg);
+    }
+
+    td {
+      padding-block: 0;
+      padding-right: 0;
+      border-bottom: none;
+
+      &::before {
+        display: block;
+        margin-bottom: 4px;
+        font-size: fluid(11, 10);
+        font-weight: var(--font-weight-heading);
+        line-height: 1.4;
+        color: var(--color-text-tertiary);
+        content: attr(data-label);
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 10px;
+      }
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.actionButton {
+  min-width: 0;
+}
+
+.deleteButton {
+  color: var(--color-danger);
+
+  @include hover {
+    color: var(--color-danger);
+    background-color: rgb(var(--color-danger-rgb) / 8%);
+  }
+}
+
+.modalGrid {
+  display: grid;
+  gap: fluid(16, 12);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.45rem 0.75rem;
+  font-size: fluid(12, 11);
+  font-weight: var(--font-weight-heading);
+  line-height: 1;
+  border-radius: 999px;
+
+  &--new {
+    color: var(--color-primary);
+    background-color: rgb(var(--color-primary-rgb) / 10%);
+  }
+
+  &--progress {
+    color: var(--color-warning);
+    background-color: rgb(var(--color-warning-rgb) / 12%);
+  }
+
+  &--done {
+    color: var(--color-success);
+    background-color: rgb(var(--color-success-rgb) / 12%);
+  }
+}

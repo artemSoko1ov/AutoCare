@@ -48,6 +48,7 @@ describe('CarsController', () => {
           licensePlate: 'A123BC77',
           vin: null,
           mileage: 65000,
+          photoUrl: null,
         },
       ),
     ).resolves.toEqual({ id: 'car-1' });
@@ -58,6 +59,7 @@ describe('CarsController', () => {
       licensePlate: 'A123BC77',
       vin: null,
       mileage: 65000,
+      photoUrl: null,
     });
   });
 
