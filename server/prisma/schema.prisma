@@ -47,7 +47,23 @@ model Car {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  snapshots CarSnapshot[]
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model CarSnapshot {
+  id          String   @id @default(uuid())
+  sourceCarId String?
+  brand       String
+  model       String
+  year        Int
+  mileage     Int
+  plateNumber String
+  createdAt   DateTime @default(now())
+
+  sourceCar Car? @relation(fields: [sourceCarId], references: [id], onDelete: SetNull)
+
+  @@index([sourceCarId])
 }
