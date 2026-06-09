@@ -42,7 +42,7 @@
 
 .section--plain.section--md,
 .section--plain.section--lg {
-  padding-inline: 0;
+  padding-inline: var(--container-padding-x);
 }
 
 .header {

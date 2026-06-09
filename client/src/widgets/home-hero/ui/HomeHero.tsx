@@ -10,7 +10,7 @@ const HomeHero = () => {
 
   return (
     <section className={clsx("page-shell", "page-shell--accent", styles.hero)}>
-      <div className="container container--wide">
+      <div className="container">
         <div className={styles.shell}>
           <div className={styles.content}>
             <div className={clsx("pill", styles.eyebrow)}>

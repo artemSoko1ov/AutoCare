@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Section from "@/shared/ui/Section";
 import Icon, { type IconName } from "@/shared/ui/Icon";
+import PageBreadcrumbs from "@/widgets/page-breadcrumbs";
 import styles from "./ContactsPage.module.scss";
 
 type ContactItem = {
@@ -80,6 +81,7 @@ const factItems: FactItem[] = [
 const ContactsPage = () => {
   return (
     <Section
+      breadcrumbs={<PageBreadcrumbs />}
       bodyClassName={styles.content}
       className={clsx("page-shell", "page-shell--accent", styles.page)}
       description="Свяжитесь с AutoCare удобным способом, приезжайте в офис или откройте карту, чтобы быстро построить маршрут."

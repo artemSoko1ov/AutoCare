@@ -63,7 +63,7 @@ const Header = () => {
 
   return (
     <header className={styles.header}>
-      <div className="container container--wide">
+      <div className="container">
         <div
           className={clsx("surface", "surface--glass", styles.shell, {
             [styles["shell--menu-open"]]: isMenuOpen,

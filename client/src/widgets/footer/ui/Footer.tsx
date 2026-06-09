@@ -14,7 +14,7 @@ const Footer = () => {
 
   return (
     <footer className={styles.footer}>
-      <div className="container container--wide">
+      <div className="container">
         <div className={clsx("surface", "surface--glass", styles.shell)}>
           <div className={styles.main}>
             <div className={styles.brand}>

@@ -5,6 +5,7 @@ import Button from "@/shared/ui/Button";
 import Empty from "@/shared/ui/Empty";
 import Icon from "@/shared/ui/Icon";
 import Section from "@/shared/ui/Section";
+import PageBreadcrumbs from "@/widgets/page-breadcrumbs";
 import ServicesCatalog from "@/widgets/services-catalog";
 import styles from "./ServicesPage.module.scss";
 
@@ -23,6 +24,7 @@ const ServicesPage = () => {
 
   return (
     <Section
+      breadcrumbs={<PageBreadcrumbs />}
       bodyClassName={styles.content}
       className={clsx("page-shell", "page-shell--accent", styles.page)}
       description="Подберите подходящую услугу для диагностики, сопровождения сделки или регулярного обслуживания автомобиля."

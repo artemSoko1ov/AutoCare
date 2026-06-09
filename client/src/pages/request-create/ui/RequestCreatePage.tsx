@@ -5,6 +5,7 @@ import { formatServicePrice, useServiceQuery } from "@/entities/service";
 import Button from "@/shared/ui/Button";
 import Icon from "@/shared/ui/Icon";
 import Section from "@/shared/ui/Section";
+import PageBreadcrumbs from "@/widgets/page-breadcrumbs";
 import styles from "./RequestCreatePage.module.scss";
 
 const RequestCreatePage = () => {
@@ -23,6 +24,7 @@ const RequestCreatePage = () => {
 
   return (
     <Section
+      breadcrumbs={<PageBreadcrumbs />}
       bodyClassName={styles.content}
       className={clsx("page-shell", "page-shell--accent", styles.page)}
       description={description}

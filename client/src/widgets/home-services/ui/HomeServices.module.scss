@@ -1,0 +1,243 @@
+.section {
+  position: relative;
+  background: none;
+}
+
+.content {
+  gap: fluid(28, 20);
+}
+
+.headerActions {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.catalogLink {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: fluid(14, 13);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.35;
+  color: var(--color-primary);
+
+  @include hover {
+    color: var(--color-primary-hover);
+  }
+}
+
+.catalogLinkIcon {
+  @include flex-center;
+
+  width: 1rem;
+  height: 1rem;
+}
+
+.navigation {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.navigationButton {
+  min-width: auto;
+  padding-inline: fluid(14, 12);
+}
+
+.navigationIcon {
+  @include flex-center;
+
+  width: 1rem;
+  height: 1rem;
+
+  &--prev {
+    rotate: 180deg;
+  }
+}
+
+.slider {
+  position: relative;
+  overflow: clip;
+  background-color: transparent;
+}
+
+.track {
+  --slides-per-view: 3;
+  --track-gap: #{fluid(18, 14)};
+
+  display: flex;
+  gap: var(--track-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @include tablet {
+    --slides-per-view: 2;
+  }
+
+  @include mobile {
+    --slides-per-view: 1;
+  }
+}
+
+.card {
+  display: flex;
+  flex: 0 0 calc((100% - (var(--slides-per-view) - 1) * var(--track-gap)) / var(--slides-per-view));
+  flex-direction: column;
+  gap: fluid(14, 12);
+  min-height: fluid(262, 220);
+  padding: fluid(20, 18);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+}
+
+.cardHeader {
+  display: grid;
+  gap: 12px;
+}
+
+.serviceIcon {
+  @include square(3.75rem);
+
+  border-radius: 1.2rem;
+  box-shadow: 0 14px 30px rgb(var(--color-primary-rgb) / 10%);
+}
+
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.category,
+.duration {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.45rem 0.75rem;
+  font-size: fluid(12, 11);
+  font-weight: var(--font-weight-heading);
+  line-height: 1;
+  border-radius: 999px;
+}
+
+.category {
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 10%);
+}
+
+.duration {
+  color: var(--color-text-secondary);
+  background-color: transparent;
+  border: 1px solid rgb(15 23 42 / 10%);
+}
+
+.cardBody {
+  display: grid;
+  gap: 8px;
+}
+
+.title {
+  font-size: fluid(20, 18);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.18;
+  color: var(--color-text-heading);
+}
+
+.summary {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 3;
+  font-size: fluid(14, 13);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  -webkit-box-orient: vertical;
+}
+
+.stateCard {
+  padding: fluid(24, 18);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+}
+
+.cardSkeleton {
+  pointer-events: none;
+}
+
+.skeletonHeader,
+.skeletonTitle,
+.skeletonSummary,
+.skeletonSummaryShort,
+.skeletonFooter {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--color-primary-rgb) / 8%) 0%,
+    rgb(var(--color-primary-rgb) / 16%) 50%,
+    rgb(var(--color-primary-rgb) / 8%) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 999px;
+  animation: shimmer 1.6s linear infinite;
+}
+
+.skeletonHeader {
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 1.2rem;
+}
+
+.skeletonTitle {
+  width: 78%;
+  height: 1.25rem;
+}
+
+.skeletonSummary {
+  width: 100%;
+  height: 0.9rem;
+}
+
+.skeletonSummaryShort {
+  width: 86%;
+  height: 0.9rem;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@include tablet {
+  .headerActions {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+@include mobile {
+  .headerActions {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .catalogLink {
+    order: 1;
+  }
+
+  .navigation {
+    order: 2;
+    margin-left: auto;
+  }
+}

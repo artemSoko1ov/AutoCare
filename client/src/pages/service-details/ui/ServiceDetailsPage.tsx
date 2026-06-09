@@ -7,6 +7,7 @@ import Button from "@/shared/ui/Button";
 import Empty from "@/shared/ui/Empty";
 import Icon from "@/shared/ui/Icon";
 import Section from "@/shared/ui/Section";
+import PageBreadcrumbs from "@/widgets/page-breadcrumbs";
 import ServiceReviews, { type ServiceReviewItem } from "@/widgets/service-reviews";
 import styles from "./ServiceDetailsPage.module.scss";
 
@@ -97,6 +98,7 @@ const ServiceDetailsPage = () => {
   if (isLoading) {
     return (
       <Section
+        breadcrumbs={<PageBreadcrumbs />}
         bodyClassName={styles.content}
         className={clsx("page-shell", "page-shell--accent", styles.page)}
         description="Подготавливаем подробную информацию по выбранной услуге."
@@ -122,6 +124,7 @@ const ServiceDetailsPage = () => {
   if (isError || !service) {
     return (
       <Section
+        breadcrumbs={<PageBreadcrumbs />}
         bodyClassName={styles.content}
         className={clsx("page-shell", "page-shell--accent", styles.page)}
         description="Похоже, эта услуга недоступна или была скрыта из публичного каталога."
@@ -166,6 +169,7 @@ const ServiceDetailsPage = () => {
 
   return (
     <Section
+      breadcrumbs={<PageBreadcrumbs />}
       bodyClassName={styles.content}
       className={clsx("page-shell", "page-shell--accent", styles.page)}
       description={service.summary}

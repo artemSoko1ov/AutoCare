@@ -8,6 +8,7 @@ export type SectionAlign = "start" | "center";
 export type SectionTitleSize = "h1" | "h2" | "h3";
 
 export interface SectionProps extends Omit<ComponentPropsWithoutRef<"section">, "title"> {
+  breadcrumbs?: ReactNode;
   eyebrow?: ReactNode;
   title?: ReactNode;
   description?: ReactNode;
@@ -27,6 +28,7 @@ const Section = ({
   actions,
   align = "start",
   bodyClassName,
+  breadcrumbs,
   children,
   className,
   description,
@@ -44,13 +46,14 @@ const Section = ({
 }: SectionProps) => {
   const generatedId = useId();
   const headingId = title ? `${id ?? generatedId}-title` : undefined;
-  const hasHeader = Boolean(eyebrow || title || description || actions);
+  const hasHeader = Boolean(breadcrumbs || eyebrow || title || description || actions);
 
   return (
     <section
       {...props}
       aria-labelledby={headingId}
       className={clsx(
+        "container",
         styles.section,
         styles[`section--${surface}`],
         styles[`section--${spacing}`],
@@ -59,10 +62,11 @@ const Section = ({
       )}
       id={id}
     >
-      <div className={clsx("container", "flow", styles.inner)}>
+      <div className={clsx("flow", styles.inner)}>
         {hasHeader && (
           <div className={clsx(styles.header, headerClassName)}>
             <div className={clsx("flow", styles.headerMain)}>
+              {breadcrumbs}
               {eyebrow && <div className={clsx("pill", styles.eyebrow)}>{eyebrow}</div>}
               {title && (
                 <TitleTag
