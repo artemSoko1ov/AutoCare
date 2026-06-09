@@ -81,6 +81,9 @@ model Service {
   title         String
   category      String
   summary       String
+  iconPath      String
+  includedItems String[]      @default([])
+  workflowSteps String[]      @default([])
   priceFrom     Int
   durationLabel String
   status        ServiceStatus @default(draft)

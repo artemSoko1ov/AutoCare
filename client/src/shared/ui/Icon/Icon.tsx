@@ -17,6 +17,7 @@ import settingsSvg from "@/shared/assets/icons/settings.svg?raw";
 import treeDotSvg from "@/shared/assets/icons/tree-dot.svg?raw";
 import trashSvg from "@/shared/assets/icons/trash.svg?raw";
 import userSvg from "@/shared/assets/icons/user.svg?raw";
+import walletSvg from "@/shared/assets/icons/wallet.svg?raw";
 import wrenchSvg from "@/shared/assets/icons/wrench.svg?raw";
 import xMarkSvg from "@/shared/assets/icons/x-mark.svg?raw";
 import styles from "./Icon.module.scss";
@@ -47,6 +48,7 @@ export type IconName =
   | "x-mark"
   | "chevron-right"
   | "more"
+  | "wallet"
   | "wrench";
 
 type SvgIconProps = SVGProps<SVGSVGElement>;
@@ -76,6 +78,7 @@ const inlineIcons: Partial<Record<IconName, string>> = {
   pencil: normalizeSvgMarkup(pencilSvg),
   trash: normalizeSvgMarkup(trashSvg),
   more: normalizeSvgMarkup(treeDotSvg),
+  wallet: normalizeSvgMarkup(walletSvg),
   wrench: normalizeSvgMarkup(wrenchSvg),
   "x-mark": normalizeSvgMarkup(xMarkSvg),
 };

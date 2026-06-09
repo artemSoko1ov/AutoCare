@@ -11,6 +11,8 @@ import NotFoundPage from "@/pages/not-found/ui/NotFoundPage";
 import ProfileCarsPage from "@/pages/profile/ui/ProfileCarsPage";
 import ProfileDashboardPage from "@/pages/profile/ui/ProfileDashboardPage";
 import ProfilePage from "@/pages/profile/ui/ProfilePage";
+import RequestCreatePage from "@/pages/request-create/ui/RequestCreatePage";
+import ServiceDetailsPage from "@/pages/service-details/ui/ServiceDetailsPage";
 import ServicesPage from "@/pages/services/ui/ServicesPage";
 import SignUpPage from "@/pages/sign-up/ui/SignUpPage";
 import MainLayout from "@/widgets/layout/ui/MainLayout";
@@ -35,12 +37,14 @@ const AppRouter = () => {
         <Route element={<MainLayout />} path="/">
           <Route element={<HomePage />} index />
           <Route element={<ServicesPage />} path="services" />
+          <Route element={<ServiceDetailsPage />} path="services/:serviceId" />
           <Route element={<ContactsPage />} path="contacts" />
           <Route element={<GuestOnlyRoute />}>
             <Route element={<LoginPage />} path="login" />
             <Route element={<SignUpPage />} path="sign-up" />
           </Route>
           <Route element={<ProtectedRoute />}>
+            <Route element={<RequestCreatePage />} path="requests/new" />
             <Route element={<ProfilePage />} path="profile">
               <Route element={<ProfileDashboardPage />} index />
               <Route element={<ProfileCarsPage />} path="cars" />

@@ -1,0 +1,237 @@
+.page {
+  min-width: 0;
+}
+
+.content {
+  --flow-gap: #{fluid(26, 18)};
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(18rem, 0.95fr);
+  gap: fluid(22, 16);
+
+  @include laptop {
+    grid-template-columns: 1fr;
+  }
+}
+
+.overviewCard,
+.ctaCard,
+.infoCard,
+.stateCard {
+  padding: fluid(28, 20);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+}
+
+.overviewCard {
+  display: grid;
+  gap: fluid(20, 16);
+}
+
+.overviewHeader {
+  display: grid;
+  gap: 16px;
+}
+
+.heroIcon {
+  @include square(5.25rem);
+
+  border-radius: 1.6rem;
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.category,
+.duration {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.65rem 0.95rem;
+  font-size: fluid(13, 12);
+  font-weight: var(--font-weight-heading);
+  line-height: 1;
+  border-radius: 999px;
+}
+
+.category {
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 10%);
+}
+
+.duration {
+  color: var(--color-text-secondary);
+  background-color: rgb(15 23 42 / 6%);
+}
+
+.lead {
+  max-width: 48rem;
+  font-size: fluid(16, 15);
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+}
+
+.factsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+
+  @include tablet {
+    grid-template-columns: 1fr;
+  }
+}
+
+.factCard {
+  display: flex;
+  gap: 12px;
+  align-items: start;
+  padding: fluid(18, 16);
+  background-color: rgb(255 255 255 / 68%);
+  border: var(--border-soft);
+  border-radius: var(--radius-xl);
+}
+
+.factIcon,
+.stateIcon,
+.infoItemIcon {
+  @include flex-center;
+  @include square(2.75rem);
+
+  flex-shrink: 0;
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 10%);
+  border-radius: 50%;
+}
+
+.factBody {
+  display: grid;
+  gap: 4px;
+}
+
+.factLabel {
+  font-size: fluid(12, 11);
+  line-height: 1.4;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.factValue {
+  font-size: fluid(16, 15);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.35;
+  color: var(--color-text-heading);
+}
+
+.ctaCard {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.ctaBody {
+  display: grid;
+  gap: 10px;
+}
+
+.ctaTitle,
+.infoTitle,
+.reviewsTitle,
+.stateTitle {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  color: var(--color-text-heading);
+}
+
+.ctaText,
+.reviewsDescription,
+.stateDescription,
+.ctaNote {
+  font-size: fluid(14, 13);
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: fluid(22, 16);
+
+  @include laptop {
+    grid-template-columns: 1fr;
+  }
+}
+
+.infoCard {
+  display: grid;
+  gap: 18px;
+}
+
+.infoList,
+.stepsList {
+  display: grid;
+  gap: 14px;
+}
+
+.infoItem,
+.stepItem {
+  display: flex;
+  gap: 12px;
+  align-items: start;
+  font-size: fluid(15, 14);
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+.stepIndex {
+  @include flex-center;
+  @include square(2rem);
+
+  flex-shrink: 0;
+  font-size: fluid(13, 12);
+  font-weight: var(--font-weight-heading);
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 10%);
+  border-radius: 50%;
+}
+
+.reviewsSection {
+  display: grid;
+  gap: 18px;
+}
+
+.reviewsHeader {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  justify-content: space-between;
+
+  @include tablet {
+    align-items: start;
+  }
+}
+
+.stateCard {
+  display: grid;
+  gap: 16px;
+}
+
+.stateHeader {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.stateActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}

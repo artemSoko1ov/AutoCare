@@ -1,0 +1,80 @@
+.page {
+  min-width: 0;
+}
+
+.content {
+  --flow-gap: #{fluid(24, 18)};
+}
+
+.card {
+  display: grid;
+  gap: fluid(22, 16);
+  padding: fluid(28, 20);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+}
+
+.cardHeader {
+  display: flex;
+  gap: 14px;
+  align-items: start;
+}
+
+.cardIcon {
+  @include flex-center;
+  @include square(3rem);
+
+  flex-shrink: 0;
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 10%);
+  border-radius: 50%;
+}
+
+.cardBody,
+.serviceCard {
+  display: grid;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  color: var(--color-text-heading);
+}
+
+.cardText,
+.serviceMeta {
+  font-size: fluid(15, 14);
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+.serviceCard {
+  padding: fluid(20, 16);
+  background-color: rgb(255 255 255 / 72%);
+  border: var(--border-soft);
+  border-radius: var(--radius-xl);
+}
+
+.serviceLabel {
+  font-size: fluid(12, 11);
+  line-height: 1.4;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.serviceTitle {
+  font-size: fluid(22, 18);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.2;
+  color: var(--color-text-heading);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}

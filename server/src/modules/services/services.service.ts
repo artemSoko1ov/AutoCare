@@ -25,6 +25,22 @@ export class ServicesService {
     return services.map(toServiceDto);
   }
 
+  async getPublicServiceById(serviceId: string): Promise<ServiceDto> {
+    const service = await this.prisma.service.findFirst({
+      where: {
+        id: serviceId,
+        status: 'active',
+      },
+      select: serviceDtoSelect,
+    });
+
+    if (!service) {
+      throw new NotFoundException('Service not found');
+    }
+
+    return toServiceDto(service);
+  }
+
   async getAdminServices(): Promise<ServiceDto[]> {
     const services = await this.prisma.service.findMany({
       orderBy: [{ updatedAt: 'desc' }, { createdAt: 'desc' }],

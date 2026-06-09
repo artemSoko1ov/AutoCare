@@ -1,0 +1,24 @@
+.icon {
+  @include flex-center;
+
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgb(255 255 255 / 92%), rgb(var(--color-primary-rgb) / 10%)),
+    linear-gradient(180deg, rgb(var(--color-primary-rgb) / 10%), rgb(255 255 255 / 78%));
+  border: 1px solid rgb(var(--color-primary-rgb) / 12%);
+  border-radius: inherit;
+}
+
+.glyph {
+  width: 62%;
+  height: 62%;
+  background-color: var(--color-primary);
+  mask-image: var(--service-icon-mask);
+  mask-image: var(--service-icon-mask);
+  mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-position: center;
+  mask-size: contain;
+  mask-size: contain;
+}

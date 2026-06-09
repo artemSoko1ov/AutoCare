@@ -8,12 +8,23 @@ describe('ServicesService', () => {
     title: 'Диагностика перед покупкой',
     category: 'Диагностика',
     summary: 'Проверим кузов, технику и историю автомобиля перед сделкой.',
+    iconPath: '/icons/services/magnifying-glass-plus.svg',
     priceFrom: 3500,
     durationLabel: '2 часа',
+    includedItems: [
+      'Проверка кузова и лакокрасочного покрытия.',
+      'Диагностика основных электронных систем.',
+      'Рекомендации по рискам перед покупкой.',
+    ],
+    workflowSteps: [
+      'Сначала уточняем, какой автомобиль планируете смотреть.',
+      'Потом проводим диагностику и фиксируем замечания.',
+      'В конце выдаем понятное заключение по состоянию авто.',
+    ],
     status: 'active',
     createdAt: new Date('2026-06-08T10:00:00.000Z'),
     updatedAt: new Date('2026-06-08T11:00:00.000Z'),
-  };
+  } as const;
 
   it('returns only active public services ordered by category, price and title', async () => {
     const prisma = {
@@ -30,8 +41,19 @@ describe('ServicesService', () => {
         title: 'Диагностика перед покупкой',
         category: 'Диагностика',
         summary: 'Проверим кузов, технику и историю автомобиля перед сделкой.',
+        iconPath: '/icons/services/magnifying-glass-plus.svg',
         priceFrom: 3500,
         durationLabel: '2 часа',
+        includedItems: [
+          'Проверка кузова и лакокрасочного покрытия.',
+          'Диагностика основных электронных систем.',
+          'Рекомендации по рискам перед покупкой.',
+        ],
+        workflowSteps: [
+          'Сначала уточняем, какой автомобиль планируете смотреть.',
+          'Потом проводим диагностику и фиксируем замечания.',
+          'В конце выдаем понятное заключение по состоянию авто.',
+        ],
         status: 'active',
         createdAt: '2026-06-08T10:00:00.000Z',
         updatedAt: '2026-06-08T11:00:00.000Z',
@@ -61,6 +83,47 @@ describe('ServicesService', () => {
     });
   });
 
+  it('returns one active public service by id', async () => {
+    const prisma = {
+      service: {
+        findFirst: jest.fn().mockResolvedValue(baseService),
+      },
+    } as unknown as PrismaService;
+
+    const service = new ServicesService(prisma);
+
+    await expect(service.getPublicServiceById('service-1')).resolves.toEqual({
+      id: 'service-1',
+      title: 'Диагностика перед покупкой',
+      category: 'Диагностика',
+      summary: 'Проверим кузов, технику и историю автомобиля перед сделкой.',
+      iconPath: '/icons/services/magnifying-glass-plus.svg',
+      priceFrom: 3500,
+      durationLabel: '2 часа',
+      includedItems: [
+        'Проверка кузова и лакокрасочного покрытия.',
+        'Диагностика основных электронных систем.',
+        'Рекомендации по рискам перед покупкой.',
+      ],
+      workflowSteps: [
+        'Сначала уточняем, какой автомобиль планируете смотреть.',
+        'Потом проводим диагностику и фиксируем замечания.',
+        'В конце выдаем понятное заключение по состоянию авто.',
+      ],
+      status: 'active',
+      createdAt: '2026-06-08T10:00:00.000Z',
+      updatedAt: '2026-06-08T11:00:00.000Z',
+    });
+
+    expect(prisma.service.findFirst).toHaveBeenCalledWith({
+      where: {
+        id: 'service-1',
+        status: 'active',
+      },
+      select: expect.any(Object),
+    });
+  });
+
   it('creates a service and returns dto', async () => {
     const prisma = {
       service: {
@@ -75,8 +138,19 @@ describe('ServicesService', () => {
         title: 'Диагностика перед покупкой',
         category: 'Диагностика',
         summary: 'Проверим кузов, технику и историю автомобиля перед сделкой.',
+        iconPath: '/icons/services/magnifying-glass-plus.svg',
         priceFrom: 3500,
         durationLabel: '2 часа',
+        includedItems: [
+          'Проверка кузова и лакокрасочного покрытия.',
+          'Диагностика основных электронных систем.',
+          'Рекомендации по рискам перед покупкой.',
+        ],
+        workflowSteps: [
+          'Сначала уточняем, какой автомобиль планируете смотреть.',
+          'Потом проводим диагностику и фиксируем замечания.',
+          'В конце выдаем понятное заключение по состоянию авто.',
+        ],
         status: 'active',
       }),
     ).resolves.toEqual({
@@ -84,8 +158,19 @@ describe('ServicesService', () => {
       title: 'Диагностика перед покупкой',
       category: 'Диагностика',
       summary: 'Проверим кузов, технику и историю автомобиля перед сделкой.',
+      iconPath: '/icons/services/magnifying-glass-plus.svg',
       priceFrom: 3500,
       durationLabel: '2 часа',
+      includedItems: [
+        'Проверка кузова и лакокрасочного покрытия.',
+        'Диагностика основных электронных систем.',
+        'Рекомендации по рискам перед покупкой.',
+      ],
+      workflowSteps: [
+        'Сначала уточняем, какой автомобиль планируете смотреть.',
+        'Потом проводим диагностику и фиксируем замечания.',
+        'В конце выдаем понятное заключение по состоянию авто.',
+      ],
       status: 'active',
       createdAt: '2026-06-08T10:00:00.000Z',
       updatedAt: '2026-06-08T11:00:00.000Z',
@@ -117,12 +202,24 @@ describe('ServicesService', () => {
       title: 'Диагностика перед покупкой',
       category: 'Диагностика',
       summary: 'Проверим кузов, технику и историю автомобиля перед сделкой.',
+      iconPath: '/icons/services/magnifying-glass-plus.svg',
       priceFrom: 3500,
       durationLabel: '2 часа',
+      includedItems: [
+        'Проверка кузова и лакокрасочного покрытия.',
+        'Диагностика основных электронных систем.',
+        'Рекомендации по рискам перед покупкой.',
+      ],
+      workflowSteps: [
+        'Сначала уточняем, какой автомобиль планируете смотреть.',
+        'Потом проводим диагностику и фиксируем замечания.',
+        'В конце выдаем понятное заключение по состоянию авто.',
+      ],
       status: 'hidden',
       createdAt: '2026-06-08T10:00:00.000Z',
       updatedAt: '2026-06-09T09:00:00.000Z',
     });
+
     expect(prisma.service.update).toHaveBeenCalledWith({
       where: { id: 'service-1' },
       data: { status: 'hidden' },
@@ -145,12 +242,24 @@ describe('ServicesService', () => {
       title: 'Диагностика перед покупкой',
       category: 'Диагностика',
       summary: 'Проверим кузов, технику и историю автомобиля перед сделкой.',
+      iconPath: '/icons/services/magnifying-glass-plus.svg',
       priceFrom: 3500,
       durationLabel: '2 часа',
+      includedItems: [
+        'Проверка кузова и лакокрасочного покрытия.',
+        'Диагностика основных электронных систем.',
+        'Рекомендации по рискам перед покупкой.',
+      ],
+      workflowSteps: [
+        'Сначала уточняем, какой автомобиль планируете смотреть.',
+        'Потом проводим диагностику и фиксируем замечания.',
+        'В конце выдаем понятное заключение по состоянию авто.',
+      ],
       status: 'active',
       createdAt: '2026-06-08T10:00:00.000Z',
       updatedAt: '2026-06-08T11:00:00.000Z',
     });
+
     expect(prisma.service.delete).toHaveBeenCalledWith({
       where: { id: 'service-1' },
     });
@@ -170,5 +279,19 @@ describe('ServicesService', () => {
         status: 'hidden',
       }),
     ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('throws when active public service is missing', async () => {
+    const prisma = {
+      service: {
+        findFirst: jest.fn().mockResolvedValue(null),
+      },
+    } as unknown as PrismaService;
+
+    const service = new ServicesService(prisma);
+
+    await expect(service.getPublicServiceById('missing')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 });

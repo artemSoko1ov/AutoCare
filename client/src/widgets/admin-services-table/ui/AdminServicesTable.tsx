@@ -1,7 +1,12 @@
 import { type ChangeEvent, useState } from "react";
 import type { CreateServiceBody, ServiceDto, ServiceStatus } from "@shared/contracts/services";
 import clsx from "clsx";
-import { formatServiceId, formatServicePrice, formatServiceStatus } from "@/entities/service";
+import {
+  formatServiceId,
+  formatServicePrice,
+  formatServiceStatus,
+  ServiceIcon,
+} from "@/entities/service";
 import {
   getServiceErrorMessage,
   getServiceFieldErrors,
@@ -25,6 +30,9 @@ type ServiceFormState = {
   title: string;
   category: string;
   summary: string;
+  iconPath: string;
+  includedItems: string;
+  workflowSteps: string;
   priceFrom: string;
   durationLabel: string;
   status: ServiceStatus;
@@ -43,10 +51,20 @@ const statusOptions: SelectOption[] = [
 
 const NEW_SERVICE_ID = "__new_service__";
 
+const normalizeListInput = (value: string) => {
+  return value
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+};
+
 const createEmptyFormState = (): ServiceFormState => ({
   title: "",
   category: "",
   summary: "",
+  iconPath: "/icons/services/wrench.svg",
+  includedItems: "",
+  workflowSteps: "",
   priceFrom: "",
   durationLabel: "",
   status: "active",
@@ -56,6 +74,9 @@ const createFormState = (service: ServiceDto): ServiceFormState => ({
   title: service.title,
   category: service.category,
   summary: service.summary,
+  iconPath: service.iconPath,
+  includedItems: service.includedItems.join("\n"),
+  workflowSteps: service.workflowSteps.join("\n"),
   priceFrom: String(service.priceFrom),
   durationLabel: service.durationLabel,
   status: service.status,
@@ -108,9 +129,14 @@ const AdminServicesTable = ({ services }: AdminServicesTableProps) => {
   };
 
   const handleInputChange =
-    (field: keyof Pick<ServiceFormState, "title" | "category" | "priceFrom" | "durationLabel">) =>
+    (
+      field: keyof Pick<
+        ServiceFormState,
+        "title" | "category" | "iconPath" | "priceFrom" | "durationLabel"
+      >,
+    ) =>
     (event: ChangeEvent<HTMLInputElement>) => {
-      clearFieldError(field === "priceFrom" ? "priceFrom" : field);
+      clearFieldError(field);
       setNotice(null);
       setFormState((currentState) => ({
         ...currentState,
@@ -118,14 +144,16 @@ const AdminServicesTable = ({ services }: AdminServicesTableProps) => {
       }));
     };
 
-  const handleSummaryChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    clearFieldError("summary");
-    setNotice(null);
-    setFormState((currentState) => ({
-      ...currentState,
-      summary: event.target.value,
-    }));
-  };
+  const handleTextareaChange =
+    (field: keyof Pick<ServiceFormState, "summary" | "includedItems" | "workflowSteps">) =>
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      clearFieldError(field);
+      setNotice(null);
+      setFormState((currentState) => ({
+        ...currentState,
+        [field]: event.target.value,
+      }));
+    };
 
   const handleStatusChange = (event: ChangeEvent<HTMLSelectElement>) => {
     clearFieldError("status");
@@ -151,6 +179,9 @@ const AdminServicesTable = ({ services }: AdminServicesTableProps) => {
       title: formState.title.trim(),
       category: formState.category.trim(),
       summary: formState.summary.trim(),
+      iconPath: formState.iconPath.trim(),
+      includedItems: normalizeListInput(formState.includedItems),
+      workflowSteps: normalizeListInput(formState.workflowSteps),
       priceFrom: normalizedPrice,
       durationLabel: formState.durationLabel.trim(),
       status: formState.status,
@@ -285,6 +316,7 @@ const AdminServicesTable = ({ services }: AdminServicesTableProps) => {
                 <th>ID</th>
                 <th>Название</th>
                 <th>Категория</th>
+                <th>Иконка</th>
                 <th>Описание</th>
                 <th>Цена</th>
                 <th>Длительность</th>
@@ -302,6 +334,14 @@ const AdminServicesTable = ({ services }: AdminServicesTableProps) => {
                   </td>
                   <td data-label="Название">{service.title}</td>
                   <td data-label="Категория">{service.category}</td>
+                  <td data-label="Иконка">
+                    <div className={styles.iconMeta}>
+                      <ServiceIcon className={styles.iconCell} src={service.iconPath} />
+                      <span className={styles.iconPath} title={service.iconPath}>
+                        {service.iconPath}
+                      </span>
+                    </div>
+                  </td>
                   <td className={styles.summaryCell} data-label="Описание" title={service.summary}>
                     {service.summary}
                   </td>
@@ -382,6 +422,22 @@ const AdminServicesTable = ({ services }: AdminServicesTableProps) => {
             value={formState.category}
           />
 
+          <Input
+            error={fieldErrors.iconPath}
+            hint="/icons/services/wrench.svg"
+            label="Путь к иконке"
+            onChange={handleInputChange("iconPath")}
+            value={formState.iconPath}
+          />
+
+          <div className={styles.iconPreview}>
+            <ServiceIcon className={styles.iconPreviewMedia} src={formState.iconPath} />
+            <div className={styles.iconPreviewBody}>
+              <span className={styles.iconPreviewTitle}>Предпросмотр иконки</span>
+              <span className={styles.iconPreviewPath}>{formState.iconPath}</span>
+            </div>
+          </div>
+
           <label
             className={clsx(styles.textareaField, {
               [styles["textareaField--invalid"]]: Boolean(fieldErrors.summary),
@@ -390,13 +446,47 @@ const AdminServicesTable = ({ services }: AdminServicesTableProps) => {
             <span className={styles.textareaLabel}>Описание</span>
             <textarea
               className={styles.textarea}
-              onChange={handleSummaryChange}
+              onChange={handleTextareaChange("summary")}
               rows={5}
               value={formState.summary}
             />
-            {fieldErrors.summary ? (
-              <span className={styles.textareaDescription}>{fieldErrors.summary}</span>
-            ) : null}
+            <span className={styles.textareaDescription}>
+              {fieldErrors.summary ?? "Краткое описание услуги для каталога и карточки."}
+            </span>
+          </label>
+
+          <label
+            className={clsx(styles.textareaField, {
+              [styles["textareaField--invalid"]]: Boolean(fieldErrors.includedItems),
+            })}
+          >
+            <span className={styles.textareaLabel}>Что входит в услугу</span>
+            <textarea
+              className={styles.textarea}
+              onChange={handleTextareaChange("includedItems")}
+              rows={6}
+              value={formState.includedItems}
+            />
+            <span className={styles.textareaDescription}>
+              {fieldErrors.includedItems ?? "Один пункт с новой строки. Минимум 3 пункта."}
+            </span>
+          </label>
+
+          <label
+            className={clsx(styles.textareaField, {
+              [styles["textareaField--invalid"]]: Boolean(fieldErrors.workflowSteps),
+            })}
+          >
+            <span className={styles.textareaLabel}>Как проходит работа</span>
+            <textarea
+              className={styles.textarea}
+              onChange={handleTextareaChange("workflowSteps")}
+              rows={6}
+              value={formState.workflowSteps}
+            />
+            <span className={styles.textareaDescription}>
+              {fieldErrors.workflowSteps ?? "Один шаг с новой строки. Минимум 3 шага."}
+            </span>
           </label>
 
           <Input

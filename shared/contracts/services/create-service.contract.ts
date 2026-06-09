@@ -1,5 +1,11 @@
 import { z } from 'zod';
-import { serviceDtoSchema, serviceStatusSchema } from './service.contract';
+import {
+  serviceDtoSchema,
+  serviceIconPathSchema,
+  serviceIncludedItemsSchema,
+  serviceStatusSchema,
+  serviceWorkflowStepsSchema,
+} from './service.contract';
 
 export const CreateServiceBodySchema = z.object({
   title: z
@@ -17,6 +23,9 @@ export const CreateServiceBodySchema = z.object({
     .trim()
     .min(10, 'Добавьте краткое описание услуги')
     .max(280, 'Описание не должно быть длиннее 280 символов'),
+  iconPath: serviceIconPathSchema,
+  includedItems: serviceIncludedItemsSchema,
+  workflowSteps: serviceWorkflowStepsSchema,
   priceFrom: z
     .number()
     .int('Цена должна быть целым числом')

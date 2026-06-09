@@ -114,7 +114,7 @@
 
 .table {
   width: 100%;
-  min-width: 1180px;
+  min-width: 1300px;
   border-collapse: collapse;
 
   thead th {
@@ -203,6 +203,27 @@
   color: var(--color-text-secondary);
 }
 
+.iconMeta {
+  display: grid;
+  gap: 8px;
+  align-items: start;
+}
+
+.iconCell {
+  @include square(2.75rem);
+
+  border-radius: 0.95rem;
+}
+
+.iconPath {
+  display: inline-block;
+  max-width: 13rem;
+  font-size: fluid(12, 11);
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -226,6 +247,42 @@
 .modalGrid {
   display: grid;
   gap: fluid(16, 12);
+}
+
+.iconPreview {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 0.95rem 1rem;
+  background-color: rgb(255 255 255 / 70%);
+  border: var(--border-soft);
+  border-radius: var(--radius-lg);
+}
+
+.iconPreviewMedia {
+  @include square(3rem);
+
+  flex-shrink: 0;
+  border-radius: 1rem;
+}
+
+.iconPreviewBody {
+  display: grid;
+  gap: 4px;
+}
+
+.iconPreviewTitle {
+  font-size: fluid(13, 12);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.45;
+  color: var(--color-text-heading);
+}
+
+.iconPreviewPath {
+  font-size: fluid(12, 11);
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
 }
 
 .textarea {

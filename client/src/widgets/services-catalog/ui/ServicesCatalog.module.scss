@@ -9,65 +9,6 @@
   box-shadow: var(--shadow-large);
 }
 
-.highlights {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: fluid(18, 14);
-
-  @include laptop {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @include tablet {
-    grid-template-columns: 1fr;
-  }
-}
-
-.highlightCard {
-  display: flex;
-  gap: fluid(14, 12);
-  align-items: start;
-  padding: fluid(22, 18);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-large);
-}
-
-.highlightIcon {
-  @include flex-center;
-  @include square(3.5rem);
-
-  flex-shrink: 0;
-  color: var(--color-primary);
-  background: linear-gradient(180deg, rgb(var(--color-primary-rgb) / 14%), rgb(255 255 255 / 80%));
-  border: 1px solid rgb(var(--color-primary-rgb) / 12%);
-  border-radius: 1.25rem;
-}
-
-.highlightBody {
-  display: grid;
-  gap: 6px;
-}
-
-.highlightValue {
-  font-size: fluid(26, 22);
-  font-weight: var(--font-weight-heading);
-  line-height: 1.05;
-  color: var(--color-text-heading);
-}
-
-.highlightLabel {
-  font-size: fluid(15, 14);
-  font-weight: var(--font-weight-heading);
-  line-height: 1.35;
-  color: var(--color-text-heading);
-}
-
-.highlightText {
-  font-size: fluid(14, 13);
-  line-height: 1.6;
-  color: var(--color-text-secondary);
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -92,15 +33,22 @@
 }
 
 .cardHeader {
+  display: grid;
+  gap: 14px;
+}
+
+.serviceIcon {
+  @include square(4.25rem);
+
+  border-radius: 1.4rem;
+  box-shadow: 0 18px 38px rgb(var(--color-primary-rgb) / 12%);
+}
+
+.cardMeta {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
-  justify-content: space-between;
-
-  @include mobile {
-    flex-direction: column;
-    align-items: start;
-  }
 }
 
 .category,
@@ -172,24 +120,32 @@
   color: var(--color-text-heading);
 }
 
-.meta {
+.actions {
   display: flex;
-  gap: 10px;
   align-items: center;
 }
 
-.metaIcon {
-  @include flex-center;
-  @include square(2.5rem);
-
-  flex-shrink: 0;
+.detailsLink {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: fluid(14, 13);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.4;
   color: var(--color-primary);
-  background-color: rgb(var(--color-primary-rgb) / 9%);
-  border-radius: 50%;
+  transition:
+    color var(--transition-duration-base) ease,
+    transform var(--transition-duration-base) ease;
+
+  @include hover {
+    color: var(--color-primary-hover);
+    transform: translateX(2px);
+  }
 }
 
-.metaText {
-  font-size: fluid(13, 12);
-  line-height: 1.55;
-  color: var(--color-text-secondary);
+.detailsLinkIcon {
+  @include flex-center;
+
+  width: 1rem;
+  height: 1rem;
 }
