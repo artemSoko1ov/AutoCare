@@ -1,7 +1,9 @@
 import Button from "@/shared/ui/Button";
 import Icon from "@/shared/ui/Icon";
 import BookingCta from "@/widgets/booking-cta/ui/BookingCta.tsx";
+import HomeBenefits from "@/widgets/home-benefits";
 import HomeHero from "@/widgets/home-hero";
+import HomeProcess from "@/widgets/home-process";
 import HomeReviews from "@/widgets/home-reviews";
 import HomeServices from "@/widgets/home-services";
 
@@ -10,7 +12,9 @@ const HomePage = () => {
     <>
       <HomeHero />
       <HomeServices />
+      <HomeProcess />
       <HomeReviews />
+      <HomeBenefits />
       <BookingCta
         action={
           <Button leftIcon={<Icon name="phone" />} size="lg">
