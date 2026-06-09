@@ -2,9 +2,13 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAppSelector } from "@app/providers/store/hooks";
 
 const GuestOnlyRoute = () => {
-  const { isAuth } = useAppSelector((state) => state.session);
+  const { isAuth, isInitialized } = useAppSelector((state) => state.session);
   const currentUser = useAppSelector((state) => state.user.currentUser);
   const location = useLocation();
+
+  if (!isInitialized) {
+    return null;
+  }
 
   if (isAuth) {
     const state =

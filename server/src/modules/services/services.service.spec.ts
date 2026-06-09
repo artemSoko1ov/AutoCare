@@ -1,5 +1,6 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '@prisma/prisma.service';
+import { createServiceSlug } from './service-slug.util';
 import { ServicesService } from './services.service';
 
 describe('ServicesService', () => {
@@ -185,10 +186,20 @@ describe('ServicesService', () => {
       status: 'hidden',
       updatedAt: new Date('2026-06-09T09:00:00.000Z'),
     };
+    const findUnique = jest
+      .fn()
+      .mockResolvedValueOnce({
+        id: baseService.id,
+        title: baseService.title,
+        category: baseService.category,
+      })
+      .mockResolvedValueOnce({
+        id: baseService.id,
+      });
 
     const prisma = {
       service: {
-        findUnique: jest.fn().mockResolvedValue(baseService),
+        findUnique,
         update: jest.fn().mockResolvedValue(updatedService),
       },
     } as unknown as PrismaService;
@@ -224,7 +235,59 @@ describe('ServicesService', () => {
 
     expect(prisma.service.update).toHaveBeenCalledWith({
       where: { id: 'service-1' },
-      data: { status: 'hidden' },
+      data: {
+        status: 'hidden',
+        slug: createServiceSlug(baseService.title, baseService.category),
+      },
+      select: expect.any(Object),
+    });
+  });
+
+  it('recomputes slug when title or category changes during update', async () => {
+    const nextTitle = 'РќРѕРІР°СЏ РґРёР°РіРЅРѕСЃС‚РёРєР°';
+    const nextCategory = 'РџСЂРµРјРёСѓРј';
+    const updatedService = {
+      ...baseService,
+      title: nextTitle,
+      category: nextCategory,
+      updatedAt: new Date('2026-06-09T09:00:00.000Z'),
+    };
+    const findUnique = jest
+      .fn()
+      .mockResolvedValueOnce({
+        id: baseService.id,
+        title: baseService.title,
+        category: baseService.category,
+      })
+      .mockResolvedValueOnce(null);
+
+    const prisma = {
+      service: {
+        findUnique,
+        update: jest.fn().mockResolvedValue(updatedService),
+      },
+    } as unknown as PrismaService;
+
+    const service = new ServicesService(prisma);
+
+    await expect(
+      service.updateService(baseService.id, {
+        title: nextTitle,
+        category: nextCategory,
+      }),
+    ).resolves.toMatchObject({
+      id: baseService.id,
+      title: nextTitle,
+      category: nextCategory,
+    });
+
+    expect(prisma.service.update).toHaveBeenCalledWith({
+      where: { id: baseService.id },
+      data: {
+        title: nextTitle,
+        category: nextCategory,
+        slug: createServiceSlug(nextTitle, nextCategory),
+      },
       select: expect.any(Object),
     });
   });
@@ -241,6 +304,36 @@ describe('ServicesService', () => {
     await expect(service.createService(createPayload)).rejects.toBeInstanceOf(
       ConflictException,
     );
+  });
+
+  it('throws when updated title and category conflict with another service', async () => {
+    const nextTitle = 'РќРѕРІР°СЏ РґРёР°РіРЅРѕСЃС‚РёРєР°';
+    const nextCategory = 'РџСЂРµРјРёСѓРј';
+    const findUnique = jest
+      .fn()
+      .mockResolvedValueOnce({
+        id: baseService.id,
+        title: baseService.title,
+        category: baseService.category,
+      })
+      .mockResolvedValueOnce({ id: 'service-2' });
+    const prisma = {
+      service: {
+        findUnique,
+        update: jest.fn(),
+      },
+    } as unknown as PrismaService;
+
+    const service = new ServicesService(prisma);
+
+    await expect(
+      service.updateService(baseService.id, {
+        title: nextTitle,
+        category: nextCategory,
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+
+    expect(prisma.service.update).not.toHaveBeenCalled();
   });
 
   it('deletes existing service and returns dto', async () => {

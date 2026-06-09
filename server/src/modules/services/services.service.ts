@@ -12,6 +12,12 @@ import {
 } from '../../common/mappers/service-dto.mapper';
 import { createServiceSlug } from './service-slug.util';
 
+type ServiceIdentitySource = {
+  id: string;
+  title: string;
+  category: string;
+};
+
 @Injectable()
 export class ServicesService {
   constructor(private readonly prisma: PrismaService) {}
@@ -53,16 +59,7 @@ export class ServicesService {
 
   async createService(data: CreateServiceBody): Promise<ServiceDto> {
     const slug = createServiceSlug(data.title, data.category);
-    const existingService = await this.prisma.service.findUnique({
-      where: { slug },
-      select: { id: true },
-    });
-
-    if (existingService) {
-      throw new ConflictException(
-        'Service with the same title and category already exists',
-      );
-    }
+    await this.assertServiceSlugAvailable(slug);
 
     const service = await this.prisma.service.create({
       data: {
@@ -79,11 +76,20 @@ export class ServicesService {
     serviceId: string,
     data: UpdateServiceBody,
   ): Promise<ServiceDto> {
-    await this.findServiceOrThrow(serviceId);
+    const currentService = await this.findServiceIdentityOrThrow(serviceId);
+    const nextSlug = createServiceSlug(
+      data.title ?? currentService.title,
+      data.category ?? currentService.category,
+    );
+
+    await this.assertServiceSlugAvailable(nextSlug, serviceId);
 
     const service = await this.prisma.service.update({
       where: { id: serviceId },
-      data,
+      data: {
+        ...data,
+        slug: nextSlug,
+      },
       select: serviceDtoSelect,
     });
 
@@ -113,5 +119,40 @@ export class ServicesService {
     }
 
     return service;
+  }
+
+  private async findServiceIdentityOrThrow(
+    serviceId: string,
+  ): Promise<ServiceIdentitySource> {
+    const service = await this.prisma.service.findUnique({
+      where: { id: serviceId },
+      select: {
+        id: true,
+        title: true,
+        category: true,
+      },
+    });
+
+    if (!service) {
+      throw new NotFoundException('Service not found');
+    }
+
+    return service;
+  }
+
+  private async assertServiceSlugAvailable(
+    slug: string,
+    ignoredServiceId?: string,
+  ): Promise<void> {
+    const existingService = await this.prisma.service.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+
+    if (existingService && existingService.id !== ignoredServiceId) {
+      throw new ConflictException(
+        'Service with the same title and category already exists',
+      );
+    }
   }
 }
