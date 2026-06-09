@@ -1,7 +1,7 @@
 import { useAppSelector } from "@app/providers/store/hooks";
 import { createProfileGarageSection, useCarsQuery } from "@/entities/car";
 import { createProfileOrdersSection, useOrdersQuery } from "@/entities/order";
-import { createProfileDashboardData } from "@/entities/profile/model";
+import { createProfileDashboardData, createProfileOverviewStats } from "@/entities/profile/model";
 import { CarFormModal, useGarageManager } from "@/features/car/manage";
 import ProfileFavorites from "@/widgets/profile-favorites";
 import ProfileGarage from "@/widgets/profile-garage";
@@ -15,6 +15,9 @@ const ProfileDashboardPage = () => {
   const profileData = createProfileDashboardData(currentUser);
   const carsQuery = useCarsQuery();
   const ordersQuery = useOrdersQuery();
+  const overviewStats = createProfileOverviewStats({
+    orders: ordersQuery.data ?? [],
+  });
   const garageSection = createProfileGarageSection(carsQuery.data ?? []);
   const ordersSection = createProfileOrdersSection(ordersQuery.data ?? []);
   const garageManager = useGarageManager(carsQuery.data ?? []);
@@ -32,7 +35,7 @@ const ProfileDashboardPage = () => {
       <ProfileOverview
         editLabel={profileData.editLabel}
         profile={profileData.profile}
-        stats={profileData.stats}
+        stats={overviewStats}
       />
 
       <div className={styles.dashboard}>

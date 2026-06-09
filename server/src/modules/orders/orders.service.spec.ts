@@ -287,12 +287,20 @@ describe('OrdersService', () => {
   });
 
   it('deletes order and returns removed dto', async () => {
+    const transaction = {
+      order: {
+        delete: jest.fn().mockResolvedValue(baseOrder),
+      },
+      carSnapshot: {
+        delete: jest.fn().mockResolvedValue({ id: 'snapshot-1' }),
+      },
+    };
     const order = {
       findUnique: jest.fn().mockResolvedValue(baseOrder),
-      delete: jest.fn().mockResolvedValue(baseOrder),
     };
     const prisma = {
       order,
+      $transaction: jest.fn((callback) => callback(transaction)),
     } as unknown as PrismaService;
 
     const service = new OrdersService(prisma);
@@ -301,8 +309,11 @@ describe('OrdersService', () => {
       id: 'order-1',
     });
 
-    expect(order.delete).toHaveBeenCalledWith({
+    expect(transaction.order.delete).toHaveBeenCalledWith({
       where: { id: 'order-1' },
+    });
+    expect(transaction.carSnapshot.delete).toHaveBeenCalledWith({
+      where: { id: 'snapshot-1' },
     });
   });
 

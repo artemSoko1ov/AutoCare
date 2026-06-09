@@ -225,7 +225,7 @@ export const createProfileDashboardData = (user: UserDto | null): ProfileDashboa
       {
         id: "orders-total",
         value: "8",
-        label: "Заявок всего",
+        label: "Заявок всего отправлено",
         description: "Все обращения в сервис",
         icon: "briefcase",
         accent: "blue",

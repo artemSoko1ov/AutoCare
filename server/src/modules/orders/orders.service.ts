@@ -138,8 +138,14 @@ export class OrdersService {
   async deleteOrder(orderId: string): Promise<OrderDto> {
     const order = await this.findOrderOrThrow(orderId);
 
-    await this.prisma.order.delete({
-      where: { id: orderId },
+    await this.prisma.$transaction(async (transaction) => {
+      await transaction.order.delete({
+        where: { id: orderId },
+      });
+
+      await transaction.carSnapshot.delete({
+        where: { id: order.carSnapshot.id },
+      });
     });
 
     return toOrderDto(order);

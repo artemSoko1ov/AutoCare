@@ -121,7 +121,6 @@ const ProfileOverview = ({ editLabel, profile, stats }: ProfileOverviewProps) =>
               <div className={styles.statBody}>
                 <span className={styles.statValue}>{stat.value}</span>
                 <span className={styles.statLabel}>{stat.label}</span>
-                <span className={styles.statDescription}>{stat.description}</span>
               </div>
             </div>
           ))}
