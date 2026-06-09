@@ -13,6 +13,20 @@ export type ServiceReviewCardItem = {
   text: string;
 };
 
+export type HomeReviewCardItem = {
+  id: string;
+  author: string;
+  authorAvatarUrl: string | null;
+  serviceTitle: string;
+  serviceCategory: string;
+  serviceIconPath: string;
+  car: string;
+  date: string;
+  rating: number;
+  text: string;
+  to: string;
+};
+
 export type ProfileReviewItem = {
   id: string;
   title: string;
@@ -75,6 +89,22 @@ export const createServiceReviewItems = (reviews: ReviewDto[]): ServiceReviewCar
     date: formatReviewDate(review.createdAt),
     rating: review.rating,
     text: review.comment,
+  }));
+};
+
+export const createHomeReviewItems = (reviews: ReviewDto[]): HomeReviewCardItem[] => {
+  return reviews.map((review) => ({
+    id: review.id,
+    author: review.author.name,
+    authorAvatarUrl: review.author.avatarUrl,
+    serviceTitle: review.service.title,
+    serviceCategory: review.service.category,
+    serviceIconPath: review.service.iconPath,
+    car: getCarLabel(review),
+    date: formatReviewDate(review.createdAt),
+    rating: review.rating,
+    text: review.comment,
+    to: `/services/${review.service.id}`,
   }));
 };
 
