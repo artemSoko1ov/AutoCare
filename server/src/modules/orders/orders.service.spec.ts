@@ -286,6 +286,26 @@ describe('OrdersService', () => {
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 
+  it('deletes order and returns removed dto', async () => {
+    const order = {
+      findUnique: jest.fn().mockResolvedValue(baseOrder),
+      delete: jest.fn().mockResolvedValue(baseOrder),
+    };
+    const prisma = {
+      order,
+    } as unknown as PrismaService;
+
+    const service = new OrdersService(prisma);
+
+    await expect(service.deleteOrder('order-1')).resolves.toMatchObject({
+      id: 'order-1',
+    });
+
+    expect(order.delete).toHaveBeenCalledWith({
+      where: { id: 'order-1' },
+    });
+  });
+
   it('throws when order is missing during update', async () => {
     const prisma = {
       order: {

@@ -13,6 +13,7 @@ describe('AdminOrdersController', () => {
       getAdminOrderById: jest.fn(),
       createOrder: jest.fn(),
       updateOrder: jest.fn(),
+      deleteOrder: jest.fn(),
     } as unknown as jest.Mocked<OrdersService>;
 
     controller = new AdminOrdersController(service);
@@ -45,5 +46,14 @@ describe('AdminOrdersController', () => {
     expect(service.updateOrder).toHaveBeenCalledWith('order-1', {
       status: 'confirmed',
     });
+  });
+
+  it('delegates admin delete request to service', async () => {
+    service.deleteOrder.mockResolvedValue({ id: 'order-1' } as never);
+
+    await expect(controller.deleteOrder('order-1')).resolves.toEqual({
+      id: 'order-1',
+    });
+    expect(service.deleteOrder).toHaveBeenCalledWith('order-1');
   });
 });

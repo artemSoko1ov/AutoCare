@@ -54,6 +54,7 @@ export const orderDtoSchema = z.object({
 
 export const getOrdersResponseSchema = z.array(orderDtoSchema);
 export const getOrderResponseSchema = orderDtoSchema;
+export const deleteOrderResponseSchema = orderDtoSchema;
 
 export type OrderStatus = z.infer<typeof orderStatusSchema>;
 export type OrderCustomer = z.infer<typeof orderCustomerSchema>;
@@ -62,3 +63,4 @@ export type OrderCarSnapshot = z.infer<typeof orderCarSnapshotSchema>;
 export type OrderDto = z.infer<typeof orderDtoSchema>;
 export type GetOrdersResponse = z.infer<typeof getOrdersResponseSchema>;
 export type GetOrderResponse = z.infer<typeof getOrderResponseSchema>;
+export type DeleteOrderResponse = z.infer<typeof deleteOrderResponseSchema>;

@@ -25,6 +25,7 @@ describe('OrdersController', () => {
       getAdminOrderById: jest.fn(),
       createOrder: jest.fn(),
       updateOrder: jest.fn(),
+      deleteOrder: jest.fn(),
     } as unknown as jest.Mocked<OrdersService>;
 
     controller = new OrdersController(service);

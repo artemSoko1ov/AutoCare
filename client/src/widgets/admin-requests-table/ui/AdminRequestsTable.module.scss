@@ -49,6 +49,12 @@
     background-color: rgb(var(--color-primary-rgb) / 8%);
     border-color: rgb(var(--color-primary-rgb) / 16%);
   }
+
+  &--error {
+    color: var(--color-danger);
+    background-color: rgb(var(--color-danger-rgb) / 10%);
+    border-color: rgb(var(--color-danger-rgb) / 18%);
+  }
 }
 
 .noticeText {
@@ -91,7 +97,7 @@
 
 .table {
   width: 100%;
-  min-width: 940px;
+  min-width: 1120px;
   border-collapse: collapse;
 
   thead th {
@@ -167,6 +173,33 @@
   }
 }
 
+.idValue {
+  display: inline-flex;
+  align-items: center;
+  font-weight: var(--font-weight-heading);
+  letter-spacing: 0.04em;
+}
+
+.cellMeta {
+  display: grid;
+  gap: 4px;
+}
+
+.cellTitle {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-heading);
+}
+
+.cellSubline {
+  font-size: fluid(13, 12);
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.emptyState {
+  padding: fluid(8, 4) 0;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -192,6 +225,55 @@
   gap: fluid(16, 12);
 }
 
+.textareaField {
+  display: grid;
+  gap: 10px;
+}
+
+.textareaLabel {
+  font-size: fluid(14, 13);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
+  color: var(--color-text-heading);
+}
+
+.textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 8rem;
+  padding: 0.95rem 1rem;
+  font: inherit;
+  line-height: 1.6;
+  color: var(--color-text-heading);
+  resize: vertical;
+  background-color: rgb(255 255 255 / 78%);
+  border: var(--border-soft);
+  border-radius: var(--radius-lg);
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    background-color var(--transition-base);
+
+  &:focus-visible {
+    outline: none;
+    border-color: rgb(var(--color-primary-rgb) / 30%);
+    box-shadow: 0 0 0 3px rgb(var(--color-primary-rgb) / 10%);
+  }
+}
+
+.textareaDescription {
+  font-size: fluid(13, 12);
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.textareaField--invalid {
+  .textarea {
+    border-color: rgb(var(--color-danger-rgb) / 30%);
+    box-shadow: 0 0 0 3px rgb(var(--color-danger-rgb) / 10%);
+  }
+}
+
 .status {
   display: inline-flex;
   align-items: center;
@@ -207,13 +289,23 @@
     background-color: rgb(var(--color-primary-rgb) / 10%);
   }
 
-  &--progress {
+  &--confirmed {
+    color: rgb(19 86 214);
+    background-color: rgb(var(--color-primary-rgb) / 12%);
+  }
+
+  &--in-progress {
     color: var(--color-warning);
     background-color: rgb(var(--color-warning-rgb) / 12%);
   }
 
-  &--done {
+  &--completed {
     color: var(--color-success);
     background-color: rgb(var(--color-success-rgb) / 12%);
+  }
+
+  &--cancelled {
+    color: var(--color-danger);
+    background-color: rgb(var(--color-danger-rgb) / 12%);
   }
 }

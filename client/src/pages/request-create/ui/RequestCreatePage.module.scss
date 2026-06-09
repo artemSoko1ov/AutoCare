@@ -6,6 +6,7 @@
   --flow-gap: #{fluid(24, 18)};
 }
 
+.stateCard,
 .card {
   display: grid;
   gap: fluid(22, 16);
@@ -14,12 +15,18 @@
   box-shadow: var(--shadow-large);
 }
 
+.stateCard {
+  align-items: start;
+}
+
+.stateHeader,
 .cardHeader {
   display: flex;
   gap: 14px;
   align-items: start;
 }
 
+.stateIcon,
 .cardIcon {
   @include flex-center;
   @include square(3rem);
@@ -30,12 +37,7 @@
   border-radius: 50%;
 }
 
-.cardBody,
-.serviceCard {
-  display: grid;
-  gap: 8px;
-}
-
+.stateTitle,
 .cardTitle {
   font-size: var(--font-size-h3);
   font-weight: var(--font-weight-heading);
@@ -43,11 +45,18 @@
   color: var(--color-text-heading);
 }
 
+.stateDescription,
 .cardText,
 .serviceMeta {
   font-size: fluid(15, 14);
   line-height: 1.7;
   color: var(--color-text-secondary);
+}
+
+.cardBody,
+.serviceCard {
+  display: grid;
+  gap: 8px;
 }
 
 .serviceCard {
@@ -72,6 +81,7 @@
   color: var(--color-text-heading);
 }
 
+.stateActions,
 .actions {
   display: flex;
   flex-wrap: wrap;

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -36,5 +37,10 @@ export class AdminOrdersController {
     @Body(new ZodValidationPipe(UpdateOrderBodySchema)) data: UpdateOrderBody,
   ) {
     return this.ordersService.updateOrder(id, data);
+  }
+
+  @Delete(':id')
+  deleteOrder(@Param('id') id: string) {
+    return this.ordersService.deleteOrder(id);
   }
 }

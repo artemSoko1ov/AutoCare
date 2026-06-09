@@ -135,6 +135,16 @@ export class OrdersService {
     return toOrderDto(order);
   }
 
+  async deleteOrder(orderId: string): Promise<OrderDto> {
+    const order = await this.findOrderOrThrow(orderId);
+
+    await this.prisma.order.delete({
+      where: { id: orderId },
+    });
+
+    return toOrderDto(order);
+  }
+
   private async findOwnedCarOrThrow(userId: string, carId: string) {
     const car = await this.prisma.car.findFirst({
       where: {
