@@ -1,5 +1,6 @@
 require("dotenv/config");
 
+const { createHash } = require("node:crypto");
 const { PrismaPg } = require("@prisma/adapter-pg");
 const { PrismaClient } = require("@prisma/client");
 
@@ -12,6 +13,19 @@ if (!connectionString) {
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString }),
 });
+
+const normalizeSlugValue = (value) => {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+};
+
+const createServiceSlug = (title, category) => {
+  const hash = createHash("md5")
+    .update(`${normalizeSlugValue(title)}|${normalizeSlugValue(category)}`)
+    .digest("hex")
+    .slice(0, 16);
+
+  return `service-${hash}`;
+};
 
 const defaultServices = [
   {
@@ -318,29 +332,20 @@ const defaultServices = [
 
 const syncDefaultServices = async () => {
   for (const serviceData of defaultServices) {
-    const existingService = await prisma.service.findFirst({
+    const slug = createServiceSlug(serviceData.title, serviceData.category);
+
+    await prisma.service.upsert({
       where: {
-        title: serviceData.title,
-        category: serviceData.category,
+        slug,
       },
-      select: {
-        id: true,
+      update: {
+        ...serviceData,
+        slug,
       },
-    });
-
-    if (existingService) {
-      await prisma.service.update({
-        where: {
-          id: existingService.id,
-        },
-        data: serviceData,
-      });
-
-      continue;
-    }
-
-    await prisma.service.create({
-      data: serviceData,
+      create: {
+        ...serviceData,
+        slug,
+      },
     });
   }
 };

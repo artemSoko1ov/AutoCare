@@ -16,6 +16,7 @@ import ServiceDetailsPage from "@/pages/service-details/ui/ServiceDetailsPage";
 import ServicesPage from "@/pages/services/ui/ServicesPage";
 import SignUpPage from "@/pages/sign-up/ui/SignUpPage";
 import MainLayout from "@/widgets/layout/ui/MainLayout";
+import TopLoader from "@/widgets/top-loader";
 import AdminRoute from "./AdminRoute";
 import GuestOnlyRoute from "./GuestOnlyRoute";
 import ProtectedRoute from "./ProtectedRoute";
@@ -23,6 +24,7 @@ import ProtectedRoute from "./ProtectedRoute";
 const AppRouter = () => {
   return (
     <BrowserRouter>
+      <TopLoader />
       <Routes>
         <Route element={<AdminRoute />} path="/admin">
           <Route element={<AdminPage />}>

@@ -6,7 +6,7 @@ import type {
   UpdateServiceBody,
   UpdateServiceResponse,
 } from "@shared/contracts/services";
-import { adminServicesQueryKey, servicesQueryKey } from "@/entities/service";
+import { adminServicesQueryKey, serviceQueryKey, servicesQueryKey } from "@/entities/service";
 import {
   getApiErrorMessage,
   getValidationIssues,
@@ -37,6 +37,13 @@ const invalidateServiceQueries = async (queryClient: ReturnType<typeof useQueryC
     queryClient.invalidateQueries({ queryKey: adminServicesQueryKey }),
     queryClient.invalidateQueries({ queryKey: servicesQueryKey }),
   ]);
+};
+
+const syncServiceDetailsQuery = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  service: GetServiceResponse,
+) => {
+  queryClient.setQueryData(serviceQueryKey(service.id), service);
 };
 
 export const getServiceErrorMessage = (error: unknown) => {
@@ -72,7 +79,8 @@ export const useUpdateServiceMutation = () => {
     { serviceId: string; data: UpdateServiceBody }
   >({
     mutationFn: ({ serviceId, data }) => updateServiceApi(serviceId, data),
-    onSuccess: async () => {
+    onSuccess: async (service) => {
+      syncServiceDetailsQuery(queryClient, service);
       await invalidateServiceQueries(queryClient);
     },
   });
@@ -83,7 +91,8 @@ export const useDeleteServiceMutation = () => {
 
   return useMutation<GetServiceResponse, unknown, string>({
     mutationFn: deleteServiceApi,
-    onSuccess: async () => {
+    onSuccess: async (_, serviceId) => {
+      queryClient.removeQueries({ queryKey: serviceQueryKey(serviceId) });
       await invalidateServiceQueries(queryClient);
     },
   });

@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '@prisma/prisma.service';
 import { ServicesService } from './services.service';
 
@@ -25,6 +25,18 @@ describe('ServicesService', () => {
     createdAt: new Date('2026-06-08T10:00:00.000Z'),
     updatedAt: new Date('2026-06-08T11:00:00.000Z'),
   } as const;
+
+  const createPayload = {
+    title: baseService.title,
+    category: baseService.category,
+    summary: baseService.summary,
+    iconPath: baseService.iconPath,
+    priceFrom: baseService.priceFrom,
+    durationLabel: baseService.durationLabel,
+    includedItems: [...baseService.includedItems],
+    workflowSteps: [...baseService.workflowSteps],
+    status: 'active' as const,
+  };
 
   it('returns only active public services ordered by category, price and title', async () => {
     const prisma = {
@@ -127,33 +139,14 @@ describe('ServicesService', () => {
   it('creates a service and returns dto', async () => {
     const prisma = {
       service: {
+        findUnique: jest.fn().mockResolvedValue(null),
         create: jest.fn().mockResolvedValue(baseService),
       },
     } as unknown as PrismaService;
 
     const service = new ServicesService(prisma);
 
-    await expect(
-      service.createService({
-        title: 'Диагностика перед покупкой',
-        category: 'Диагностика',
-        summary: 'Проверим кузов, технику и историю автомобиля перед сделкой.',
-        iconPath: '/icons/services/magnifying-glass-plus.svg',
-        priceFrom: 3500,
-        durationLabel: '2 часа',
-        includedItems: [
-          'Проверка кузова и лакокрасочного покрытия.',
-          'Диагностика основных электронных систем.',
-          'Рекомендации по рискам перед покупкой.',
-        ],
-        workflowSteps: [
-          'Сначала уточняем, какой автомобиль планируете смотреть.',
-          'Потом проводим диагностику и фиксируем замечания.',
-          'В конце выдаем понятное заключение по состоянию авто.',
-        ],
-        status: 'active',
-      }),
-    ).resolves.toEqual({
+    await expect(service.createService(createPayload)).resolves.toEqual({
       id: 'service-1',
       title: 'Диагностика перед покупкой',
       category: 'Диагностика',
@@ -174,6 +167,15 @@ describe('ServicesService', () => {
       status: 'active',
       createdAt: '2026-06-08T10:00:00.000Z',
       updatedAt: '2026-06-08T11:00:00.000Z',
+    });
+
+    expect(prisma.service.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        title: baseService.title,
+        category: baseService.category,
+        slug: expect.stringMatching(/^service-[a-f0-9]{16}$/),
+      }),
+      select: expect.any(Object),
     });
   });
 
@@ -225,6 +227,20 @@ describe('ServicesService', () => {
       data: { status: 'hidden' },
       select: expect.any(Object),
     });
+  });
+
+  it('throws when a service with the same slug already exists during create', async () => {
+    const prisma = {
+      service: {
+        findUnique: jest.fn().mockResolvedValue({ id: 'service-1' }),
+      },
+    } as unknown as PrismaService;
+
+    const service = new ServicesService(prisma);
+
+    await expect(service.createService(createPayload)).rejects.toBeInstanceOf(
+      ConflictException,
+    );
   });
 
   it('deletes existing service and returns dto', async () => {

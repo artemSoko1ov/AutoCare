@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import type {
   CreateServiceBody,
@@ -10,6 +10,7 @@ import {
   type ServiceDtoSource,
   toServiceDto,
 } from '../../common/mappers/service-dto.mapper';
+import { createServiceSlug } from './service-slug.util';
 
 @Injectable()
 export class ServicesService {
@@ -51,8 +52,23 @@ export class ServicesService {
   }
 
   async createService(data: CreateServiceBody): Promise<ServiceDto> {
+    const slug = createServiceSlug(data.title, data.category);
+    const existingService = await this.prisma.service.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+
+    if (existingService) {
+      throw new ConflictException(
+        'Service with the same title and category already exists',
+      );
+    }
+
     const service = await this.prisma.service.create({
-      data,
+      data: {
+        ...data,
+        slug,
+      },
       select: serviceDtoSelect,
     });
 

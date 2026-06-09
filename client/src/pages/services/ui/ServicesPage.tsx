@@ -33,18 +33,16 @@ const ServicesPage = () => {
       titleSize="h1"
     >
       {isLoading ? (
-        <article className={clsx("surface", "surface--glass", styles.stateCard)}>
-          <div className={styles.stateHeader}>
-            <span className={styles.stateIcon}>
-              <Icon name="wrench" />
-            </span>
-            <h2 className={styles.stateTitle}>Загружаем каталог услуг</h2>
-          </div>
-
-          <p className={styles.stateDescription}>
-            Получаем актуальные предложения сервиса, чтобы показать только активные позиции.
-          </p>
-        </article>
+        <div className={styles.skeletonGrid}>
+          {Array.from({ length: 3 }, (_, index) => (
+            <article className={clsx("surface", "surface--glass", styles.skeletonCard)} key={index}>
+              <div className={styles.skeletonIcon} />
+              <div className={clsx(styles.skeletonLine, styles["skeletonLine--title"])} />
+              <div className={clsx(styles.skeletonLine, styles["skeletonLine--wide"])} />
+              <div className={clsx(styles.skeletonLine, styles["skeletonLine--medium"])} />
+            </article>
+          ))}
+        </div>
       ) : null}
 
       {!isLoading && isError ? (
