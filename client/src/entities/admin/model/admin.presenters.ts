@@ -1,46 +1,67 @@
 import type { OrderDto } from "@shared/contracts/orders";
 import type { ReviewDto } from "@shared/contracts/reviews";
-import type { ServiceDto } from "@shared/contracts/services";
 import type { AdminStat } from "./adminData";
 
 const countFormatter = new Intl.NumberFormat("ru-RU");
+const ratingFormatter = new Intl.NumberFormat("ru-RU", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
 
 type CreateAdminStatsArgs = {
   orders: OrderDto[];
   reviews: ReviewDto[];
-  services: ServiceDto[];
 };
 
 const formatCount = (value: number) => countFormatter.format(value);
+const formatRating = (value: number) => ratingFormatter.format(value);
 
-export const createAdminStats = ({
-  orders,
-  reviews,
-  services,
-}: CreateAdminStatsArgs): AdminStat[] => {
-  const activeServicesCount = services.filter((service) => service.status === "active").length;
+export const createAdminStats = ({ orders, reviews }: CreateAdminStatsArgs): AdminStat[] => {
+  const inProgressOrdersCount = orders.filter(
+    (order) => order.status === "confirmed" || order.status === "in_progress",
+  ).length;
+  const completedOrdersCount = orders.filter((order) => order.status === "completed").length;
+  const cancelledOrdersCount = orders.filter((order) => order.status === "cancelled").length;
+  const averageRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+      : 0;
 
   return [
     {
-      id: "requests-total",
-      title: "Всего заявок",
-      value: formatCount(orders.length),
-      hint: "Все обращения, которые сейчас доступны в административном разделе",
-      icon: "orders",
+      id: "requests-in-progress",
+      title: "Заявки в работе",
+      value: formatCount(inProgressOrdersCount),
+      hint: "Подтвержденные обращения и заявки, которые уже выполняются",
+      icon: "briefcase",
+    },
+    {
+      id: "requests-completed",
+      title: "Завершенные заявки",
+      value: formatCount(completedOrdersCount),
+      hint: "Обращения, которые успешно закрыты и завершены в системе",
+      icon: "check-circle",
+    },
+    {
+      id: "requests-cancelled",
+      title: "Отмененные заявки",
+      value: formatCount(cancelledOrdersCount),
+      hint: "Обращения, которые были отменены и не дошли до выполнения",
+      icon: "x-mark",
     },
     {
       id: "reviews-total",
-      title: "Отзывов в системе",
+      title: "Количество отзывов",
       value: formatCount(reviews.length),
-      hint: "Клиентские отзывы, которые можно просматривать и модерировать",
+      hint: "Все отзывы, которые сейчас есть в системе и доступны для админки",
       icon: "star",
     },
     {
-      id: "services-active",
-      title: "Активных услуг",
-      value: formatCount(activeServicesCount),
-      hint: "Позиции каталога со статусом «active», доступные в публичной части",
-      icon: "wrench",
+      id: "reviews-average-rating",
+      title: "Средний рейтинг отзывов",
+      value: formatRating(averageRating),
+      hint: "Средняя клиентская оценка по всем отзывам в системе",
+      icon: "heart",
     },
   ];
 };

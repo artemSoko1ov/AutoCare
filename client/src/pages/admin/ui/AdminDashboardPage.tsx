@@ -2,7 +2,6 @@ import clsx from "clsx";
 import { createAdminStats } from "@/entities/admin/model";
 import { useAdminOrdersQuery } from "@/entities/order";
 import { useAdminReviewsQuery } from "@/entities/review";
-import { useAdminServicesQuery } from "@/entities/service";
 import Button from "@/shared/ui/Button";
 import Icon from "@/shared/ui/Icon";
 import AdminStats from "@/widgets/admin-stats";
@@ -11,13 +10,12 @@ import styles from "./AdminDashboardPage.module.scss";
 const AdminDashboardPage = () => {
   const ordersQuery = useAdminOrdersQuery();
   const reviewsQuery = useAdminReviewsQuery();
-  const servicesQuery = useAdminServicesQuery();
 
-  const isLoading = ordersQuery.isPending || reviewsQuery.isPending || servicesQuery.isPending;
-  const isError = ordersQuery.isError || reviewsQuery.isError || servicesQuery.isError;
+  const isLoading = ordersQuery.isPending || reviewsQuery.isPending;
+  const isError = ordersQuery.isError || reviewsQuery.isError;
 
   const handleRetry = () => {
-    void Promise.all([ordersQuery.refetch(), reviewsQuery.refetch(), servicesQuery.refetch()]);
+    void Promise.all([ordersQuery.refetch(), reviewsQuery.refetch()]);
   };
 
   if (isLoading) {
@@ -31,7 +29,7 @@ const AdminDashboardPage = () => {
         </div>
 
         <p className={styles.stateDescription}>
-          Подтягиваем реальные показатели по заявкам, отзывам и услугам для административной сводки.
+          Подтягиваем реальные показатели по заявкам и отзывам для административной сводки.
         </p>
       </article>
     );
@@ -67,7 +65,6 @@ const AdminDashboardPage = () => {
   const stats = createAdminStats({
     orders: ordersQuery.data ?? [],
     reviews: reviewsQuery.data ?? [],
-    services: servicesQuery.data ?? [],
   });
 
   return <AdminStats items={stats} />;
