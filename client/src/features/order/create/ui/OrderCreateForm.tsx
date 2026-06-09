@@ -1,26 +1,20 @@
-import { type FormEvent, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { type FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import type { CarDto } from "@shared/contracts/cars";
 import type { CreateOrderBody, CreateOrderResponse } from "@shared/contracts/orders";
 import type { GetServiceResponse } from "@shared/contracts/services";
 import clsx from "clsx";
-import {
-  formatOrderDateTime,
-  formatOrderId,
-  formatOrderMoney,
-  toIsoFromDateTimeLocal,
-} from "@/entities/order";
+import { formatOrderDateTime, formatOrderId, toIsoFromDateTimeLocal } from "@/entities/order";
 import { formatServicePrice } from "@/entities/service";
+import Button from "@/shared/ui/Button";
+import Icon from "@/shared/ui/Icon";
+import Select from "@/shared/ui/Select";
 import {
   type CreateOrderFieldErrors,
   getCreateOrderErrorMessage,
   getCreateOrderFieldErrors,
   useCreateOrderMutation,
 } from "../model/useCreateOrder";
-import Button from "@/shared/ui/Button";
-import Form from "@/shared/ui/Form";
-import Icon from "@/shared/ui/Icon";
-import Select from "@/shared/ui/Select";
 import styles from "./OrderCreateForm.module.scss";
 
 type OrderCreateFormProps = {
@@ -35,6 +29,7 @@ type OrderCreateFormState = {
 };
 
 const mileageFormatter = new Intl.NumberFormat("ru-RU");
+const notesLimit = 1000;
 
 const getCarLabel = (car: CarDto) => `${car.brand} ${car.model} · ${car.licensePlate}`;
 
@@ -57,11 +52,6 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
 
   const selectedCar = cars.find((car) => car.id === formState.carId) ?? null;
 
-  const schedulePreview = useMemo(() => {
-    const isoValue = toIsoFromDateTimeLocal(formState.scheduledFor);
-    return isoValue ? formatOrderDateTime(isoValue) : "Согласуем после отправки заявки";
-  }, [formState.scheduledFor]);
-
   const resetForm = () => {
     setFormState({
       carId: cars[0]?.id ?? "",
@@ -69,6 +59,14 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
       notes: "",
     });
     setFieldErrors({});
+    setErrorMessage(null);
+  };
+
+  const clearFieldError = (field: keyof CreateOrderFieldErrors) => {
+    setFieldErrors((currentState) => ({
+      ...currentState,
+      [field]: undefined,
+    }));
     setErrorMessage(null);
   };
 
@@ -106,8 +104,8 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
           <div className={styles.successBody}>
             <h2 className={styles.successTitle}>Заявка отправлена</h2>
             <p className={styles.successText}>
-              Мы сохранили обращение и передали его в административную очередь. Дальше менеджер
-              свяжется с вами, чтобы подтвердить детали и удобное время.
+              Мы сохранили обращение и передали его менеджеру. Дальше свяжемся с вами, чтобы
+              подтвердить детали, автомобиль и удобное время посещения.
             </p>
           </div>
         </div>
@@ -129,9 +127,11 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
             </strong>
           </div>
           <div className={styles.successFact}>
-            <span className={styles.successLabel}>Предпочтительное время</span>
+            <span className={styles.successLabel}>Время посещения</span>
             <strong className={styles.successValue}>
-              {formatOrderDateTime(createdOrder.scheduledFor)}
+              {createdOrder.scheduledFor
+                ? formatOrderDateTime(createdOrder.scheduledFor)
+                : "Согласуем по телефону"}
             </strong>
           </div>
         </div>
@@ -149,11 +149,11 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
           </Button>
           <Button
             onClick={() => {
-              navigate("/services");
+              navigate("/profile/orders");
             }}
             size="md"
           >
-            Вернуться к услугам
+            Перейти к моим заявкам
           </Button>
         </div>
       </article>
@@ -161,140 +161,201 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
   }
 
   return (
-    <Form
-      actions={
-        <>
-          <Button disabled={createOrderMutation.isPending} size="md" type="submit">
-            Отправить заявку
-          </Button>
-          <Button
-            disabled={createOrderMutation.isPending}
-            size="md"
-            type="reset"
-            variant="secondary"
-          >
-            Очистить
-          </Button>
-        </>
-      }
-      bodyClassName={styles.body}
-      className={styles.form}
-      description="Выберите автомобиль из гаража, при желании оставьте комментарий и удобное время. Остальные данные подтянем из вашего профиля."
-      error={errorMessage}
-      onReset={resetForm}
-      onSubmit={handleSubmit}
-      surface="glass"
-      title="Оформление заявки"
-      titleAs="h2"
-      titleSize="h2"
-      width="lg"
-    >
-      <div className={styles.grid}>
-        <Select
-          error={fieldErrors.carId}
-          label="Автомобиль"
-          onChange={(event) => {
-            setFormState((currentState) => ({
-              ...currentState,
-              carId: event.target.value,
-            }));
-            setFieldErrors((currentState) => ({
-              ...currentState,
-              carId: undefined,
-            }));
-            setErrorMessage(null);
-          }}
-          options={carOptions}
-          value={formState.carId}
-        />
-
-        <label
-          className={clsx(styles.textareaField, {
-            [styles["textareaField--invalid"]]: Boolean(fieldErrors.notes),
-          })}
-        >
-          <span className={styles.textareaLabel}>Комментарий</span>
-          <textarea
-            className={styles.textarea}
-            onChange={(event) => {
-              setFormState((currentState) => ({
-                ...currentState,
-                notes: event.target.value,
-              }));
-              setFieldErrors((currentState) => ({
-                ...currentState,
-                notes: undefined,
-              }));
-              setErrorMessage(null);
-            }}
-            placeholder="Например: хочу проверить автомобиль до выходных, интересует выездная диагностика и предварительный созвон."
-            rows={5}
-            value={formState.notes}
-          />
-          <span className={styles.textareaDescription}>
-            {fieldErrors.notes ?? "Необязательное поле. Поможет менеджеру быстрее понять задачу."}
-          </span>
-        </label>
-
-        <label
-          className={clsx(styles.textareaField, {
-            [styles["textareaField--invalid"]]: Boolean(fieldErrors.scheduledFor),
-          })}
-        >
-          <span className={styles.textareaLabel}>Удобное время</span>
-          <input
-            className={styles.dateInput}
-            onChange={(event) => {
-              setFormState((currentState) => ({
-                ...currentState,
-                scheduledFor: event.target.value,
-              }));
-              setFieldErrors((currentState) => ({
-                ...currentState,
-                scheduledFor: undefined,
-              }));
-              setErrorMessage(null);
-            }}
-            type="datetime-local"
-            value={formState.scheduledFor}
-          />
-          <span className={styles.textareaDescription}>
-            {fieldErrors.scheduledFor ?? "Можно оставить пустым и согласовать время позже."}
-          </span>
-        </label>
-      </div>
-
-      <div className={styles.previewGrid}>
-        <article className={styles.previewCard}>
-          <span className={styles.previewLabel}>Услуга</span>
-          <h3 className={styles.previewTitle}>{service.title}</h3>
-          <p className={styles.previewMeta}>
-            {service.category} · {service.durationLabel} · {formatServicePrice(service.priceFrom)}
-          </p>
-        </article>
-
-        {selectedCar ? (
-          <article className={styles.previewCard}>
-            <span className={styles.previewLabel}>Автомобиль</span>
-            <h3 className={styles.previewTitle}>
-              {selectedCar.brand} {selectedCar.model}
-            </h3>
-            <p className={styles.previewMeta}>
-              {selectedCar.licensePlate} · {selectedCar.year} ·{" "}
-              {mileageFormatter.format(selectedCar.mileage)} км
-            </p>
-          </article>
+    <div className={styles.layout}>
+      <form className={clsx("surface", "surface--glass", styles.form)} onSubmit={handleSubmit}>
+        {errorMessage ? (
+          <div aria-live="polite" className={styles.formError} role="alert">
+            {errorMessage}
+          </div>
         ) : null}
 
-        <article className={styles.previewCard}>
-          <span className={styles.previewLabel}>Когда удобно</span>
-          <h3 className={styles.previewTitle}>{schedulePreview}</h3>
-          <p className={styles.previewMeta}>
-            Стоимость услуги от {formatOrderMoney(service.priceFrom)}
+        <div className={styles.formSection}>
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionNumber}>1.</span>
+            <div className={styles.sectionHeading}>
+              <h2 className={styles.sectionTitle}>Автомобиль</h2>
+              <p className={styles.sectionDescription}>Выберите автомобиль из гаража</p>
+            </div>
+          </div>
+
+          <Select
+            error={fieldErrors.carId}
+            label="Выберите автомобиль из гаража"
+            leftIcon={<Icon name="car" />}
+            onChange={(event) => {
+              setFormState((currentState) => ({
+                ...currentState,
+                carId: event.target.value,
+              }));
+              clearFieldError("carId");
+            }}
+            options={carOptions}
+            value={formState.carId}
+          />
+
+          <Link className={styles.addCarLink} to="/profile/cars">
+            <Icon name="plus" />
+            <span>Добавить новый автомобиль</span>
+          </Link>
+        </div>
+
+        <div className={styles.formSection}>
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionNumber}>2.</span>
+            <div className={styles.sectionHeading}>
+              <h2 className={styles.sectionTitle}>Комментарий</h2>
+              <p className={styles.sectionDescription}>Комментарий к заявке</p>
+            </div>
+          </div>
+
+          <label
+            className={clsx(styles.textareaField, {
+              [styles["textareaField--invalid"]]: Boolean(fieldErrors.notes),
+            })}
+          >
+            <span className={styles.fieldLabel}>Комментарий к заявке</span>
+            <textarea
+              className={styles.textarea}
+              maxLength={notesLimit}
+              onChange={(event) => {
+                setFormState((currentState) => ({
+                  ...currentState,
+                  notes: event.target.value,
+                }));
+                clearFieldError("notes");
+              }}
+              placeholder="Например: хочу проверить автомобиль до выходных, интересует выездная диагностика и предварительный созвон."
+              rows={6}
+              value={formState.notes}
+            />
+          </label>
+
+          <div className={styles.fieldMeta}>
+            <span
+              className={clsx(styles.helperText, {
+                [styles["helperText--error"]]: Boolean(fieldErrors.notes),
+              })}
+            >
+              {fieldErrors.notes ?? "Необязательное поле. Поможет менеджеру быстрее понять задачу."}
+            </span>
+            <span className={styles.counter}>
+              {formState.notes.length} / {notesLimit}
+            </span>
+          </div>
+        </div>
+
+        <div className={styles.formSection}>
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionNumber}>3.</span>
+            <div className={styles.sectionHeading}>
+              <h2 className={styles.sectionTitle}>Удобное время</h2>
+              <p className={styles.sectionDescription}>Выберите желаемую дату и время</p>
+            </div>
+          </div>
+
+          <label
+            className={clsx(styles.dateField, {
+              [styles["dateField--invalid"]]: Boolean(fieldErrors.scheduledFor),
+            })}
+          >
+            <span className={styles.fieldLabel}>Выберите желаемую дату и время</span>
+
+            <div className={styles.dateControl}>
+              <span className={styles.dateIcon}>
+                <Icon name="clock" />
+              </span>
+              <input
+                className={styles.dateInput}
+                onChange={(event) => {
+                  setFormState((currentState) => ({
+                    ...currentState,
+                    scheduledFor: event.target.value,
+                  }));
+                  clearFieldError("scheduledFor");
+                }}
+                type="datetime-local"
+                value={formState.scheduledFor}
+              />
+            </div>
+          </label>
+
+          {fieldErrors.scheduledFor ? (
+            <span className={clsx(styles.helperText, styles["helperText--error"])}>
+              {fieldErrors.scheduledFor}
+            </span>
+          ) : null}
+
+          <div className={styles.notice}>
+            <span className={styles.noticeIcon}>
+              <Icon name="phone" />
+            </span>
+
+            <div className={styles.noticeBody}>
+              <strong className={styles.noticeTitle}>Мы свяжемся для подтверждения</strong>
+              <p className={styles.noticeText}>
+                После отправки заявки наш менеджер свяжется с вами для подтверждения деталей и
+                согласования времени.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.formFooter}>
+          <Button loading={createOrderMutation.isPending} size="md" type="submit">
+            Отправить заявку
+          </Button>
+
+          <p className={styles.privacyText}>
+            <Icon name="shield" />
+            <span>Ваши данные защищены и не передаются третьим лицам</span>
           </p>
-        </article>
-      </div>
-    </Form>
+        </div>
+      </form>
+
+      <aside className={clsx("surface", "surface--glass", styles.summary)}>
+        <h2 className={styles.summaryTitle}>Выбранные данные</h2>
+
+        <div className={styles.summaryList}>
+          <article className={styles.summaryItem}>
+            <span className={styles.summaryIcon}>
+              <Icon name="wrench" />
+            </span>
+            <div className={styles.summaryBody}>
+              <span className={styles.summaryLabel}>Услуга</span>
+              <strong className={styles.summaryName}>{service.title}</strong>
+            </div>
+            <span className={styles.summaryAside}>{formatServicePrice(service.priceFrom)}</span>
+          </article>
+
+          {selectedCar ? (
+            <article className={styles.summaryItem}>
+              <span className={styles.summaryIcon}>
+                <Icon name="car" />
+              </span>
+              <div className={styles.summaryBody}>
+                <span className={styles.summaryLabel}>Автомобиль</span>
+                <strong className={styles.summaryName}>
+                  {selectedCar.brand} {selectedCar.model} · {selectedCar.licensePlate}
+                </strong>
+                <span className={styles.summaryMeta}>
+                  {selectedCar.year} год · {mileageFormatter.format(selectedCar.mileage)} км
+                </span>
+              </div>
+            </article>
+          ) : null}
+
+          <article className={styles.summaryItem}>
+            <span className={styles.summaryIcon}>
+              <Icon name="clock" />
+            </span>
+            <div className={styles.summaryBody}>
+              <span className={styles.summaryLabel}>Ориентировочное время выполнения</span>
+              <strong className={styles.summaryName}>{service.durationLabel}</strong>
+            </div>
+          </article>
+        </div>
+      </aside>
+    </div>
   );
 };
 

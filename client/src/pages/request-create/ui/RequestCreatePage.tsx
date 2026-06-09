@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import clsx from "clsx";
 import { useCarsQuery } from "@/entities/car";
-import { formatServicePrice, useServiceQuery } from "@/entities/service";
+import { useServiceQuery } from "@/entities/service";
 import { OrderCreateForm } from "@/features/order/create";
 import Button from "@/shared/ui/Button";
 import Empty from "@/shared/ui/Empty";
@@ -10,6 +10,10 @@ import Icon from "@/shared/ui/Icon";
 import Section from "@/shared/ui/Section";
 import PageBreadcrumbs from "@/widgets/page-breadcrumbs";
 import styles from "./RequestCreatePage.module.scss";
+
+const pageTitle = "Оформление заявки";
+const pageDescription =
+  "Выберите автомобиль из гаража, укажите удобное время посещения и оставьте комментарий. Мы свяжемся с вами для подтверждения записи.";
 
 const RequestCreatePage = () => {
   const navigate = useNavigate();
@@ -28,8 +32,8 @@ const RequestCreatePage = () => {
       breadcrumbs={<PageBreadcrumbs />}
       bodyClassName={styles.content}
       className={clsx("page-shell", "page-shell--accent", styles.page)}
-      description="Выберите услугу, автомобиль из гаража и отправьте заявку в несколько шагов."
-      title="Новая заявка"
+      description={pageDescription}
+      title={pageTitle}
       titleAs="h1"
       titleSize="h1"
     >
@@ -180,56 +184,12 @@ const RequestCreatePage = () => {
       breadcrumbs={<PageBreadcrumbs />}
       bodyClassName={styles.content}
       className={clsx("page-shell", "page-shell--accent", styles.page)}
-      description="Выберите автомобиль из гаража, уточните детали обращения и отправьте заявку в сервис."
-      title="Новая заявка"
+      description={pageDescription}
+      title={pageTitle}
       titleAs="h1"
       titleSize="h1"
     >
-      <article className={clsx("surface", "surface--glass", styles.card)}>
-        <div className={styles.cardHeader}>
-          <span className={styles.cardIcon}>
-            <Icon name="orders" />
-          </span>
-          <div className={styles.cardBody}>
-            <h2 className={styles.cardTitle}>Проверьте услугу и заполните короткую форму</h2>
-            <p className={styles.cardText}>
-              Мы сохраним снимок автомобиля на момент обращения, а менеджер получит все данные по
-              услуге, машине и вашему комментарию в одном месте.
-            </p>
-          </div>
-        </div>
-
-        <div className={styles.serviceCard}>
-          <span className={styles.serviceLabel}>Выбранная услуга</span>
-          <h3 className={styles.serviceTitle}>{service.title}</h3>
-          <p className={styles.serviceMeta}>
-            {service.category} · {service.durationLabel} · {formatServicePrice(service.priceFrom)}
-          </p>
-        </div>
-      </article>
-
       <OrderCreateForm cars={cars} service={service} />
-
-      <div className={styles.actions}>
-        <Button
-          onClick={() => {
-            navigate("/services");
-          }}
-          size="sm"
-          variant="secondary"
-        >
-          Вернуться к услугам
-        </Button>
-        <Button
-          onClick={() => {
-            navigate("/profile/cars");
-          }}
-          size="sm"
-          variant="ghost"
-        >
-          Открыть мой гараж
-        </Button>
-      </div>
     </Section>
   );
 };

@@ -1,5 +1,6 @@
 import { useAppSelector } from "@app/providers/store/hooks";
 import { createProfileGarageSection, useCarsQuery } from "@/entities/car";
+import { createProfileOrdersSection, useOrdersQuery } from "@/entities/order";
 import { createProfileDashboardData } from "@/entities/profile/model";
 import { CarFormModal, useGarageManager } from "@/features/car/manage";
 import ProfileFavorites from "@/widgets/profile-favorites";
@@ -13,11 +14,17 @@ const ProfileDashboardPage = () => {
   const currentUser = useAppSelector((state) => state.user.currentUser);
   const profileData = createProfileDashboardData(currentUser);
   const carsQuery = useCarsQuery();
+  const ordersQuery = useOrdersQuery();
   const garageSection = createProfileGarageSection(carsQuery.data ?? []);
+  const ordersSection = createProfileOrdersSection(ordersQuery.data ?? []);
   const garageManager = useGarageManager(carsQuery.data ?? []);
 
   const handleRetry = () => {
     void carsQuery.refetch();
+  };
+
+  const handleOrdersRetry = () => {
+    void ordersQuery.refetch();
   };
 
   return (
@@ -30,7 +37,12 @@ const ProfileDashboardPage = () => {
 
       <div className={styles.dashboard}>
         <div className={styles.primaryColumn}>
-          <ProfileOrders section={profileData.ordersSection} />
+          <ProfileOrders
+            errorMessage={ordersQuery.isError ? "Не удалось загрузить список заказов." : null}
+            isLoading={ordersQuery.isPending}
+            onRetry={handleOrdersRetry}
+            section={ordersSection}
+          />
         </div>
 
         <div className={styles.secondaryColumn}>

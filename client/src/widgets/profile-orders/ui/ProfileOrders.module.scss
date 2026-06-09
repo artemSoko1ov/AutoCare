@@ -38,6 +38,36 @@
   flex-direction: column;
 }
 
+.state {
+  display: grid;
+  gap: 8px;
+  padding: fluid(18, 16);
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 78%) 0%,
+    rgb(var(--color-primary-rgb) / 4%) 100%
+  );
+  border: var(--border-soft);
+  border-radius: var(--radius-xl);
+}
+
+.stateTitle {
+  font-size: fluid(18, 15);
+  font-weight: var(--font-weight-heading);
+  color: var(--color-text-heading);
+}
+
+.stateDescription {
+  font-size: fluid(14, 13);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.stateAction {
+  justify-self: start;
+  margin-top: 4px;
+}
+
 .item {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto auto;

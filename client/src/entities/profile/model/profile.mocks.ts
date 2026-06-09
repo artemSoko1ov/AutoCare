@@ -215,7 +215,7 @@ export const createProfileDashboardData = (user: UserDto | null): ProfileDashboa
     sidebarItems: [
       { id: "profile", label: "Профиль", icon: "user", to: "/profile" },
       { id: "cars", label: "Мои автомобили", icon: "car", to: "/profile/cars" },
-      { id: "orders", label: "Мои заказы", icon: "orders" },
+      { id: "orders", label: "Мои заказы", icon: "orders", to: "/profile/orders" },
       { id: "favorites", label: "Избранные услуги", icon: "heart" },
       { id: "reviews", label: "Отзывы", icon: "star" },
       { id: "notifications", label: "Уведомления", icon: "bell" },

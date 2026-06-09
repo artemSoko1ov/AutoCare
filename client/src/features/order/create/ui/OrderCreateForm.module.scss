@@ -1,44 +1,139 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(20rem, 1fr);
+  gap: fluid(20, 16);
+  align-items: start;
+
+  @include tablet {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form,
+.summary,
+.successCard {
+  display: grid;
+  gap: fluid(22, 16);
+  padding: fluid(28, 20);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+}
+
 .form {
-  width: 100%;
+  min-width: 0;
 }
 
-.body {
-  --flow-gap: #{fluid(20, 16)};
+.formError {
+  padding: fluid(14, 12) fluid(16, 14);
+  font-size: fluid(14, 13);
+  line-height: 1.5;
+  color: var(--color-danger);
+  background-color: var(--color-danger-bg);
+  border: 1px solid rgb(var(--color-danger-rgb) / 18%);
+  border-radius: var(--radius-lg);
 }
 
-.grid {
+.formSection {
   display: grid;
-  gap: fluid(18, 14);
+  gap: fluid(14, 12);
+
+  & + & {
+    padding-top: fluid(22, 18);
+    border-top: var(--border-soft);
+  }
 }
 
-.textareaField {
+.sectionHeader {
+  display: flex;
+  gap: 12px;
+  align-items: start;
+}
+
+.sectionNumber {
+  flex-shrink: 0;
+  font-size: fluid(22, 18);
+  font-weight: var(--font-weight-heading);
+  line-height: 1;
+  color: var(--color-text-heading);
+}
+
+.sectionHeading {
   display: grid;
-  gap: 10px;
+  gap: 4px;
+  min-width: 0;
 }
 
-.textareaLabel {
+.sectionTitle {
+  margin: 0;
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  color: var(--color-text-heading);
+}
+
+.sectionDescription,
+.helperText,
+.noticeText,
+.summaryMeta {
+  font-size: fluid(14, 13);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.addCarLink,
+.privacyText {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.addCarLink {
+  width: fit-content;
   font-size: fluid(14, 13);
   font-weight: var(--font-weight-medium);
-  line-height: 1.4;
+  line-height: 1.5;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-base);
+
+  &:hover {
+    color: var(--color-primary-hover);
+  }
+}
+
+.fieldLabel {
+  font-size: fluid(14, 13);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.45;
   color: var(--color-text-heading);
+}
+
+.textareaField,
+.dateField {
+  display: grid;
+  gap: 10px;
 }
 
 .textarea {
   width: 100%;
   min-width: 0;
-  min-height: 3.5rem;
-  padding: 0.95rem 1rem;
+  min-height: 10rem;
+  padding: 1rem;
   font: inherit;
   line-height: 1.6;
   color: var(--color-text-heading);
   resize: vertical;
-  background-color: rgb(255 255 255 / 78%);
+  background-color: rgb(255 255 255 / 82%);
   border: var(--border-soft);
   border-radius: var(--radius-lg);
   transition:
     border-color var(--transition-base),
     box-shadow var(--transition-base),
     background-color var(--transition-base);
+
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
 
   &:focus-visible {
     outline: none;
@@ -47,15 +142,30 @@
   }
 }
 
+.dateControl {
+  position: relative;
+}
+
+.dateIcon {
+  @include flex-center;
+
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
 .dateInput {
   width: 100%;
   min-width: 0;
   min-height: 3.5rem;
-  padding: 0.95rem 1rem;
+  padding: 0.95rem 1rem 0.95rem 3rem;
   font: inherit;
   line-height: 1.6;
   color: var(--color-text-heading);
-  background-color: rgb(255 255 255 / 78%);
+  background-color: rgb(255 255 255 / 82%);
   border: var(--border-soft);
   border-radius: var(--radius-lg);
   transition:
@@ -71,90 +181,182 @@
 }
 
 .textareaField--invalid {
-  .textarea,
+  .textarea {
+    border-color: rgb(var(--color-danger-rgb) / 30%);
+    box-shadow: 0 0 0 3px rgb(var(--color-danger-rgb) / 10%);
+  }
+}
+
+.dateField--invalid {
   .dateInput {
     border-color: rgb(var(--color-danger-rgb) / 30%);
     box-shadow: 0 0 0 3px rgb(var(--color-danger-rgb) / 10%);
   }
 }
 
-.textareaDescription {
-  font-size: fluid(13, 12);
-  line-height: 1.5;
-  color: var(--color-text-secondary);
-}
+.fieldMeta {
+  display: flex;
+  gap: 12px;
+  align-items: start;
+  justify-content: space-between;
 
-.previewGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: fluid(16, 12);
-
-  @include tablet {
-    grid-template-columns: 1fr;
+  @include mobile {
+    flex-direction: column;
   }
 }
 
-.previewCard {
-  display: grid;
-  gap: 8px;
-  padding: fluid(18, 14);
-  background-color: rgb(255 255 255 / 72%);
-  border: var(--border-soft);
+.helperText--error {
+  color: var(--color-danger);
+}
+
+.counter {
+  flex-shrink: 0;
+  font-size: fluid(13, 12);
+  line-height: 1.5;
+  color: var(--color-text-tertiary);
+}
+
+.notice {
+  display: flex;
+  gap: 14px;
+  align-items: start;
+  padding: fluid(18, 16);
+  background: linear-gradient(180deg, rgb(var(--color-primary-rgb) / 8%), rgb(255 255 255 / 72%));
+  border: 1px solid rgb(var(--color-primary-rgb) / 12%);
   border-radius: var(--radius-xl);
 }
 
-.previewLabel {
-  font-size: fluid(12, 11);
-  line-height: 1.4;
-  color: var(--color-text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.noticeIcon,
+.summaryIcon,
+.successIcon {
+  @include flex-center;
+
+  flex-shrink: 0;
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 10%);
+  border-radius: 50%;
 }
 
-.previewTitle {
-  font-size: fluid(20, 17);
+.noticeIcon,
+.summaryIcon {
+  @include square(2.75rem);
+}
+
+.noticeBody,
+.summaryBody,
+.successBody {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.noticeTitle {
+  font-size: fluid(16, 15);
   font-weight: var(--font-weight-heading);
-  line-height: 1.25;
+  line-height: 1.4;
   color: var(--color-text-heading);
 }
 
-.previewMeta {
-  font-size: fluid(14, 13);
-  line-height: 1.6;
-  color: var(--color-text-secondary);
+.formFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: fluid(4, 2);
+
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.privacyText {
+  margin: 0;
+  font-size: fluid(13, 12);
+  line-height: 1.5;
+  color: var(--color-text-tertiary);
+}
+
+.summary {
+  align-content: start;
+}
+
+.summaryTitle {
+  margin: 0;
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  color: var(--color-text-heading);
+}
+
+.summaryList {
+  display: grid;
+}
+
+.summaryItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  padding-block: fluid(18, 14);
+
+  & + & {
+    border-top: var(--border-soft);
+  }
+
+  @include mobile {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+}
+
+.summaryLabel,
+.successLabel {
+  font-size: fluid(12, 11);
+  line-height: 1.4;
+  color: var(--color-text-tertiary);
+}
+
+.summaryName,
+.successValue {
+  font-size: fluid(16, 15);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.45;
+  color: var(--color-text-heading);
+}
+
+.summaryAside {
+  font-size: fluid(16, 15);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.45;
+  color: var(--color-text-heading);
+  text-align: right;
+
+  @include mobile {
+    grid-column: 2;
+    text-align: left;
+  }
 }
 
 .successCard {
-  display: grid;
-  gap: fluid(22, 16);
-  padding: fluid(28, 20);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-large);
+  gap: fluid(24, 18);
 }
 
 .successHeader {
   display: flex;
   gap: 14px;
-  align-items: flex-start;
+  align-items: start;
 }
 
 .successIcon {
-  @include flex-center;
   @include square(3.25rem);
 
-  flex-shrink: 0;
   color: var(--color-success);
   background-color: rgb(var(--color-success-rgb) / 10%);
-  border-radius: 50%;
-}
-
-.successBody,
-.successGrid {
-  display: grid;
-  gap: 8px;
 }
 
 .successTitle {
+  margin: 0;
   font-size: var(--font-size-h2);
   font-weight: var(--font-weight-heading);
   line-height: var(--line-height-heading);
@@ -184,21 +386,6 @@
   background-color: rgb(255 255 255 / 72%);
   border: var(--border-soft);
   border-radius: var(--radius-lg);
-}
-
-.successLabel {
-  font-size: fluid(12, 11);
-  line-height: 1.4;
-  color: var(--color-text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.successValue {
-  font-size: fluid(17, 15);
-  font-weight: var(--font-weight-heading);
-  line-height: 1.4;
-  color: var(--color-text-heading);
 }
 
 .successActions {
