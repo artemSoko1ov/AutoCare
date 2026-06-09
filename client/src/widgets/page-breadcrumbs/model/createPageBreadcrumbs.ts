@@ -60,6 +60,10 @@ export const createPageBreadcrumbs = ({
     return [homeItem, { label: "Контакты" }];
   }
 
+  if (normalizedPathname === "/sitemap") {
+    return [homeItem, { label: "Карта сайта" }];
+  }
+
   if (normalizedPathname === "/login") {
     return [homeItem, { label: "Вход" }];
   }

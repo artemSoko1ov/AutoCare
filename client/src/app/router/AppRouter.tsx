@@ -16,6 +16,7 @@ import ProfilePage from "@/pages/profile/ui/ProfilePage";
 import ProfileReviewsPage from "@/pages/profile/ui/ProfileReviewsPage";
 import RequestCreatePage from "@/pages/request-create/ui/RequestCreatePage";
 import ServiceDetailsPage from "@/pages/service-details/ui/ServiceDetailsPage";
+import SitemapPage from "@/pages/sitemap/ui/SitemapPage";
 import ServicesPage from "@/pages/services/ui/ServicesPage";
 import SignUpPage from "@/pages/sign-up/ui/SignUpPage";
 import MainLayout from "@/widgets/layout/ui/MainLayout";
@@ -44,6 +45,7 @@ const AppRouter = () => {
           <Route element={<ServicesPage />} path="services" />
           <Route element={<ServiceDetailsPage />} path="services/:serviceId" />
           <Route element={<ContactsPage />} path="contacts" />
+          <Route element={<SitemapPage />} path="sitemap" />
           <Route element={<GuestOnlyRoute />}>
             <Route element={<LoginPage />} path="login" />
             <Route element={<SignUpPage />} path="sign-up" />

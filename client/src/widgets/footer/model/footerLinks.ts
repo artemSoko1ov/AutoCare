@@ -5,7 +5,8 @@ export type FooterContactItem = {
 
 export type FooterInfoLink = {
   label: string;
-  href: string;
+  href?: string;
+  to?: string;
 };
 
 export type FooterPageLink = {
@@ -26,7 +27,7 @@ export const footerInfoLinks: FooterInfoLink[] = [
   { label: "Согласие на обработку персональных данных", href: "#" },
   { label: "Политика конфиденциальности", href: "#" },
   { label: "Пользовательское соглашение", href: "#" },
-  { label: "Карта сайта", href: "#" },
+  { label: "Карта сайта", to: "/sitemap" },
   { label: "Реквизиты компании", href: "#" },
 ];
 

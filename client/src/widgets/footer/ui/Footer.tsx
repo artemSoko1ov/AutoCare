@@ -50,16 +50,22 @@ const Footer = () => {
                 <p className={styles.sectionTitle}>Информация</p>
 
                 <div className={clsx("flow", styles.sectionLinks)}>
-                  {footerInfoLinks.map((link) => (
-                    <a
-                      className={styles.link}
-                      href={link.href}
-                      key={link.label}
-                      onClick={handlePlaceholderLinkClick}
-                    >
-                      {link.label}
-                    </a>
-                  ))}
+                  {footerInfoLinks.map((link) =>
+                    link.to ? (
+                      <Link className={styles.link} key={link.label} to={link.to}>
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <a
+                        className={styles.link}
+                        href={link.href}
+                        key={link.label}
+                        onClick={handlePlaceholderLinkClick}
+                      >
+                        {link.label}
+                      </a>
+                    ),
+                  )}
                 </div>
               </nav>
 
