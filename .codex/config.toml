@@ -1,0 +1,74 @@
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+model_provider = "codex-sale"
+sandbox_mode = "workspace-write"
+
+[model_providers.codex-sale]
+name = "OpenAI"
+base_url = "https://codex.sale/backend-api/codex"
+wire_api = "responses"
+env_key = "CODEX_LB_API_KEY"
+supports_websockets = true
+requires_openai_auth = true
+
+[marketplaces.openai-bundled]
+last_updated = "2026-06-08T11:45:21Z"
+source_type = "local"
+source = '\\?\C:\Users\theje\.codex\.tmp\bundled-marketplaces\openai-bundled'
+
+[marketplaces.openai-primary-runtime]
+last_updated = "2026-06-02T05:22:44Z"
+source_type = "local"
+source = '\\?\C:\Users\theje\.cache\codex-runtimes\codex-primary-runtime\plugins\openai-primary-runtime'
+
+[features]
+js_repl = false
+
+[windows]
+sandbox = "elevated"
+
+[desktop.open-in-target-preferences]
+global = "vscode"
+
+[desktop.open-in-target-preferences.perPath]
+'D:\Project\AutoCare' = "vscode"
+'D:\Project\autocare-prototype' = "vscode"
+
+[projects.'d:\project\autocare-prototype']
+trust_level = "trusted"
+
+[projects.'d:\project\autocare']
+trust_level = "trusted"
+
+[projects.'c:\users\theje']
+trust_level = "trusted"
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[mcp_servers.node_repl]
+args = []
+command = 'C:\Users\theje\AppData\Local\OpenAI\Codex\bin\34ab3e1324cc55b5\node_repl.exe'
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = ""
+NODE_REPL_NODE_PATH = 'C:\Users\theje\AppData\Local\OpenAI\Codex\bin\5b9024f90663758b\node.exe'
+NODE_REPL_TRUSTED_CODE_PATHS = 'C:\Users\theje\.codex'
+CODEX_HOME = 'C:\Users\theje\.codex'
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "2de792ebdf729e85542c94275f6654821dddce546d9c7374c915f2297529e313,e13c388c2427308a68dffc803e1f28316077b719672e4518a621ae6ab56ad7cf"
+BROWSER_USE_AVAILABLE_BACKENDS = "iab"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+BROWSER_USE_CODEX_APP_VERSION = "26.602.40724"
+CODEX_CLI_PATH = 'C:\Users\theje\AppData\Local\OpenAI\Codex\bin\fb2111b91430cb17\codex.exe'

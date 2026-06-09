@@ -5,6 +5,7 @@ import cameraSvg from "@/shared/assets/icons/photo.svg?raw";
 import clockSvg from "@/shared/assets/icons/clock.svg?raw";
 import heartSvg from "@/shared/assets/icons/heart.svg?raw";
 import inboxSvg from "@/shared/assets/icons/inbox.svg?raw";
+import lockSvg from "@/shared/assets/icons/lock-closed.svg?raw";
 import logoutSvg from "@/shared/assets/icons/logout.svg?raw";
 import mailSvg from "@/shared/assets/icons/envelope.svg?raw";
 import mapPinSvg from "@/shared/assets/icons/map-pin.svg?raw";
@@ -37,6 +38,7 @@ export type IconName =
   | "crown"
   | "camera"
   | "mail"
+  | "lock"
   | "phone"
   | "map-pin"
   | "briefcase"
@@ -46,6 +48,8 @@ export type IconName =
   | "pencil"
   | "trash"
   | "x-mark"
+  | "eye"
+  | "eye-slash"
   | "chevron-right"
   | "more"
   | "wallet"
@@ -71,6 +75,7 @@ const inlineIcons: Partial<Record<IconName, string>> = {
   support: normalizeSvgMarkup(questionMarkCircleSvg),
   camera: normalizeSvgMarkup(cameraSvg),
   mail: normalizeSvgMarkup(mailSvg),
+  lock: normalizeSvgMarkup(lockSvg),
   phone: normalizeSvgMarkup(phoneSvg),
   "map-pin": normalizeSvgMarkup(mapPinSvg),
   clock: normalizeSvgMarkup(clockSvg),
@@ -221,6 +226,38 @@ const MoreSvg = (props: SvgIconProps) => (
   </svg>
 );
 
+const EyeSvg = (props: SvgIconProps) => (
+  <svg
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="1.8"
+    viewBox="0 0 24 24"
+    {...props}
+  >
+    <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const EyeSlashSvg = (props: SvgIconProps) => (
+  <svg
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="1.8"
+    viewBox="0 0 24 24"
+    {...props}
+  >
+    <path d="m3 3 18 18" />
+    <path d="M10.6 6.2A10.6 10.6 0 0 1 12 6c6 0 9.5 6 9.5 6a17.8 17.8 0 0 1-3 3.7" />
+    <path d="M6.6 6.6A18.4 18.4 0 0 0 2.5 12s3.5 6 9.5 6c1.8 0 3.4-.5 4.8-1.3" />
+    <path d="M9.9 9.9A3 3 0 0 0 14.1 14.1" />
+  </svg>
+);
+
 const fallbackIcons: Partial<Record<IconName, (props: SvgIconProps) => ReactElement>> = {
   car: CarSvg,
   orders: OrdersSvg,
@@ -232,6 +269,8 @@ const fallbackIcons: Partial<Record<IconName, (props: SvgIconProps) => ReactElem
   "check-circle": CheckCircleSvg,
   "chevron-right": ChevronRightSvg,
   more: MoreSvg,
+  eye: EyeSvg,
+  "eye-slash": EyeSlashSvg,
 };
 
 export interface IconProps extends Omit<HTMLAttributes<HTMLSpanElement>, "children"> {

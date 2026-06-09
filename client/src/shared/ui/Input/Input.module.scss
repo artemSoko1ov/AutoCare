@@ -103,6 +103,10 @@
   }
 }
 
+.icon--action {
+  color: inherit;
+}
+
 .description {
   font-size: fluid(13, 12);
   line-height: var(--line-height-small);

@@ -10,6 +10,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   error?: ReactNode;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
+  rightAction?: ReactNode;
   fullWidth?: boolean;
   inputClassName?: string;
   size?: InputSize;
@@ -27,6 +28,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       inputClassName,
       label,
       leftIcon,
+      rightAction,
       rightIcon,
       size = "md",
       type = "text",
@@ -77,7 +79,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             type={type}
           />
 
-          {rightIcon && (
+          {rightAction && (
+            <span className={clsx(styles.icon, styles["icon--action"])}>{rightAction}</span>
+          )}
+
+          {!rightAction && rightIcon && (
             <span aria-hidden="true" className={styles.icon}>
               {rightIcon}
             </span>
