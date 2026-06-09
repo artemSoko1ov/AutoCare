@@ -195,6 +195,7 @@ export class AuthService {
   async register({
     email,
     username,
+    phone,
     password,
   }: RegisterBody): Promise<TokensDto & UserDto> {
     if (this.isReservedAdminEmail(email)) {
@@ -219,7 +220,7 @@ export class AuthService {
         email,
         username,
         password: hashPassword,
-        phone: null,
+        phone,
         avatarUrl: null,
       },
       select: authSessionUserSelect,

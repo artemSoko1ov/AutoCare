@@ -205,6 +205,7 @@ describe('AuthService', () => {
         service.register({
           email: 'admin@admin.admin',
           username: 'tester',
+          phone: null,
           password: 'secret123',
         }),
       ).rejects.toThrow('Этот email зарезервирован для администратора');
