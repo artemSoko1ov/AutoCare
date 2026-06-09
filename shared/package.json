@@ -20,6 +20,11 @@
       "types": "./dist/contracts/services/index.d.ts",
       "require": "./dist/contracts/services/index.js",
       "default": "./dist/contracts/services/index.js"
+    },
+    "./orders": {
+      "types": "./dist/contracts/orders/index.d.ts",
+      "require": "./dist/contracts/orders/index.js",
+      "default": "./dist/contracts/orders/index.js"
     }
   },
   "scripts": {

@@ -17,6 +17,14 @@ enum ServiceStatus {
   hidden
 }
 
+enum OrderStatus {
+  new
+  confirmed
+  in_progress
+  completed
+  cancelled
+}
+
 model User {
   id             String   @id @default(uuid())
   email          String   @unique
@@ -30,6 +38,7 @@ model User {
   updatedAt      DateTime @updatedAt
 
   cars  Car[]
+  orders Order[]
   Token Token?
 }
 
@@ -71,6 +80,7 @@ model CarSnapshot {
   photoUrl    String?
   createdAt   DateTime @default(now())
 
+  order Order?
   sourceCar Car? @relation(fields: [sourceCarId], references: [id], onDelete: SetNull)
 
   @@index([sourceCarId])
@@ -91,6 +101,37 @@ model Service {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
+  orders Order[]
+
   @@index([status])
   @@index([category])
+}
+
+model Order {
+  id                   String      @id @default(uuid())
+  userId               String
+  serviceId            String?
+  carSnapshotId        String      @unique
+  customerName         String
+  customerEmail        String
+  customerPhone        String?
+  serviceTitle         String
+  serviceCategory      String
+  serviceIconPath      String
+  servicePriceFrom     Int
+  serviceDurationLabel String
+  status               OrderStatus @default(new)
+  notes                String?
+  scheduledFor         DateTime?
+  quotedPrice          Int?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service     Service?    @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  carSnapshot CarSnapshot @relation(fields: [carSnapshotId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@index([serviceId])
 }
