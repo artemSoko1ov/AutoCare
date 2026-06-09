@@ -215,7 +215,7 @@ export const createProfileDashboardData = (user: UserDto | null): ProfileDashboa
     sidebarItems: [
       { id: "profile", label: "Профиль", icon: "user", to: "/profile" },
       { id: "cars", label: "Мои автомобили", icon: "car", to: "/profile/cars" },
-      { id: "orders", label: "Мои заказы", icon: "orders", to: "/profile/orders" },
+      { id: "orders", label: "Мои заявки", icon: "orders", to: "/profile/requests" },
       { id: "favorites", label: "Избранные услуги", icon: "heart" },
       { id: "reviews", label: "Отзывы", icon: "star" },
       { id: "notifications", label: "Уведомления", icon: "bell" },
@@ -225,7 +225,7 @@ export const createProfileDashboardData = (user: UserDto | null): ProfileDashboa
       {
         id: "orders-total",
         value: "8",
-        label: "Заказов всего",
+        label: "Заявок всего",
         description: "Все обращения в сервис",
         icon: "briefcase",
         accent: "blue",
@@ -233,7 +233,7 @@ export const createProfileDashboardData = (user: UserDto | null): ProfileDashboa
       {
         id: "orders-done",
         value: "6",
-        label: "Завершено заказов",
+        label: "Завершено заявок",
         description: "Успешно выполненные работы",
         icon: "check-circle",
         accent: "green",
@@ -241,7 +241,7 @@ export const createProfileDashboardData = (user: UserDto | null): ProfileDashboa
       {
         id: "orders-progress",
         value: "1",
-        label: "В процессе заказ",
+        label: "В процессе заявка",
         description: "Текущие активные работы",
         icon: "clock",
         accent: "amber",
@@ -256,7 +256,7 @@ export const createProfileDashboardData = (user: UserDto | null): ProfileDashboa
       },
     ],
     ordersSection: {
-      title: "Последние заказы",
+      title: "Последние заявки",
       actionLabel: "Смотреть все",
       items: [
         {

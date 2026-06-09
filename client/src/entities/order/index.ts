@@ -1,7 +1,9 @@
 export {
   adminOrdersQueryKey,
+  orderQueryKey,
   ordersQueryKey,
   useAdminOrdersQuery,
+  useOrderQuery,
   useOrdersQuery,
 } from "./model/useOrdersQuery";
 export {

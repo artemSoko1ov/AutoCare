@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import clsx from "clsx";
 import type { ProfileOrdersPageSection as ProfileOrdersPageSectionData } from "@/entities/order";
 import Button from "@/shared/ui/Button";
@@ -47,14 +48,14 @@ const ProfileOrdersPageSection = ({
 
       {isLoading ? (
         <div className={styles.state}>
-          <p className={styles.stateTitle}>Загружаем список заказов</p>
+          <p className={styles.stateTitle}>Загружаем список заявок</p>
           <p className={styles.stateDescription}>
             Получаем актуальные обращения из вашего профиля.
           </p>
         </div>
       ) : errorMessage ? (
         <div className={styles.state}>
-          <p className={styles.stateTitle}>Не удалось загрузить заказы</p>
+          <p className={styles.stateTitle}>Не удалось загрузить заявки</p>
           <p className={styles.stateDescription}>{errorMessage}</p>
           {onRetry ? (
             <Button onClick={onRetry} size="sm" variant="secondary">
@@ -65,7 +66,7 @@ const ProfileOrdersPageSection = ({
       ) : section.items.length > 0 ? (
         <div className={styles.grid}>
           {section.items.map((item) => (
-            <article className={styles.card} key={item.id}>
+            <NavLink className={styles.card} key={item.id} to={`/profile/requests/${item.id}`}>
               <div className={styles.cardHeader}>
                 <div className={clsx(styles.thumb, styles[`thumb--${item.accent}`])}>
                   <Icon name="wrench" />
@@ -106,7 +107,7 @@ const ProfileOrdersPageSection = ({
                   </span>
                 </div>
               </div>
-            </article>
+            </NavLink>
           ))}
         </div>
       ) : (
@@ -114,7 +115,7 @@ const ProfileOrdersPageSection = ({
           compact
           description="После первой записи в сервис здесь появится история ваших обращений."
           icon="orders"
-          title="Заказов пока нет"
+          title="Заявок пока нет"
         />
       )}
     </article>

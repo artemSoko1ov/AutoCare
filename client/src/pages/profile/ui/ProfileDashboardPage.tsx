@@ -38,7 +38,7 @@ const ProfileDashboardPage = () => {
       <div className={styles.dashboard}>
         <div className={styles.primaryColumn}>
           <ProfileOrders
-            errorMessage={ordersQuery.isError ? "Не удалось загрузить список заказов." : null}
+            errorMessage={ordersQuery.isError ? "Не удалось загрузить список заявок." : null}
             isLoading={ordersQuery.isPending}
             onRetry={handleOrdersRetry}
             section={ordersSection}

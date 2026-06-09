@@ -11,7 +11,7 @@ const ProfileOrdersPage = () => {
 
   return (
     <ProfileOrdersPageSection
-      errorMessage={ordersQuery.isError ? "Не удалось загрузить список ваших заказов." : null}
+      errorMessage={ordersQuery.isError ? "Не удалось загрузить список ваших заявок." : null}
       isLoading={ordersQuery.isPending}
       onRetry={handleRetry}
       section={section}

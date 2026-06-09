@@ -36,12 +36,12 @@ const ProfileOrders = ({
 
       {isLoading ? (
         <div className={styles.state}>
-          <p className={styles.stateTitle}>Загружаем заказы</p>
+          <p className={styles.stateTitle}>Загружаем заявки</p>
           <p className={styles.stateDescription}>Подтягиваем ваши последние обращения в сервис.</p>
         </div>
       ) : errorMessage ? (
         <div className={styles.state}>
-          <p className={styles.stateTitle}>Не удалось загрузить заказы</p>
+          <p className={styles.stateTitle}>Не удалось загрузить заявки</p>
           <p className={styles.stateDescription}>{errorMessage}</p>
           {onRetry ? (
             <Button className={styles.stateAction} onClick={onRetry} size="sm" variant="secondary">
@@ -52,7 +52,7 @@ const ProfileOrders = ({
       ) : section.items.length > 0 ? (
         <div className={styles.list}>
           {section.items.map((item) => (
-            <button className={styles.item} key={item.id} type="button">
+            <NavLink className={styles.item} key={item.id} to={`/profile/requests/${item.id}`}>
               <div className={clsx(styles.thumb, styles[`thumb--${item.accent}`])}>
                 <Icon name={item.icon} />
               </div>
@@ -73,7 +73,7 @@ const ProfileOrders = ({
               <span className={styles.arrow}>
                 <Icon name="chevron-right" />
               </span>
-            </button>
+            </NavLink>
           ))}
         </div>
       ) : (
@@ -81,7 +81,7 @@ const ProfileOrders = ({
           compact
           description="После первой записи в сервис ваши обращения появятся в этом блоке."
           icon="orders"
-          title="Заказов пока нет"
+          title="Заявок пока нет"
         />
       )}
     </div>

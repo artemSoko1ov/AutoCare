@@ -2,6 +2,9 @@ import type { UpdateOrderBody, UpdateOrderResponse } from "@shared/contracts/ord
 import axiosInstance from "@/shared/api/axiosInstance";
 
 export const updateOrderApi = async (orderId: string, data: UpdateOrderBody) => {
-  const response = await axiosInstance.patch<UpdateOrderResponse>(`/admin/orders/${orderId}`, data);
+  const response = await axiosInstance.patch<UpdateOrderResponse>(
+    `/admin/requests/${orderId}`,
+    data,
+  );
   return response.data;
 };

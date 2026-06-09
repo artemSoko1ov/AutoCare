@@ -85,9 +85,9 @@ const getOrderPrice = (order: OrderDto) => {
 
 export const createProfileOrdersSection = (orders: OrderDto[]): ProfileOrdersSection => {
   return {
-    title: "Последние заказы",
+    title: "Последние заявки",
     actionLabel: "Смотреть все",
-    actionTo: "/profile/orders",
+    actionTo: "/profile/requests",
     items: orders.slice(0, 4).map((order, index) => ({
       id: order.id,
       title: order.service.title,
@@ -109,14 +109,14 @@ export const createProfileOrdersPageSection = (orders: OrderDto[]): ProfileOrder
   const completedOrdersCount = orders.filter((order) => order.status === "completed").length;
 
   return {
-    title: "Мои заказы",
+    title: "Мои заявки",
     description:
       "Здесь собраны все обращения в сервис: статус, автомобиль, стоимость и согласованное время визита.",
     stats: [
       {
         id: "orders-total",
         value: String(orders.length),
-        label: "Заказов всего",
+        label: "Заявок всего",
         description: "Все обращения, созданные из вашего профиля",
         icon: "orders",
         accent: "blue",
@@ -125,7 +125,7 @@ export const createProfileOrdersPageSection = (orders: OrderDto[]): ProfileOrder
         id: "orders-active",
         value: String(activeOrdersCount),
         label: "Активных сейчас",
-        description: "Новые, подтвержденные и заказы в работе",
+        description: "Новые, подтвержденные и заявки в работе",
         icon: "clock",
         accent: "amber",
       },

@@ -92,10 +92,23 @@
   gap: fluid(14, 12);
   min-height: fluid(262, 220);
   padding: fluid(20, 18);
+  color: inherit;
+  text-decoration: none;
   scroll-snap-align: start;
   scroll-snap-stop: always;
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-large);
+  transition:
+    translate var(--transition-duration-slow) var(--transition-easing),
+    box-shadow var(--transition-duration-slow) var(--transition-easing);
+
+  @include hover {
+    translate: 0 calc(var(--interaction-lift-y) * -1);
+  }
+
+  &:focus-visible {
+    @include interactive-ring;
+  }
 }
 
 .cardHeader {

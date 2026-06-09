@@ -2,7 +2,7 @@ import { type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { CarDto } from "@shared/contracts/cars";
 import type { CreateOrderBody, CreateOrderResponse } from "@shared/contracts/orders";
-import type { GetServiceResponse } from "@shared/contracts/services";
+import type { GetServicesResponse } from "@shared/contracts/services";
 import clsx from "clsx";
 import { formatOrderDateTime, formatOrderId, toIsoFromDateTimeLocal } from "@/entities/order";
 import { formatServicePrice } from "@/entities/service";
@@ -19,10 +19,12 @@ import styles from "./OrderCreateForm.module.scss";
 
 type OrderCreateFormProps = {
   cars: CarDto[];
-  service: GetServiceResponse;
+  services: GetServicesResponse;
+  initialServiceId?: string;
 };
 
 type OrderCreateFormState = {
+  serviceId: string;
   carId: string;
   scheduledFor: string;
   notes: string;
@@ -32,11 +34,14 @@ const mileageFormatter = new Intl.NumberFormat("ru-RU");
 const notesLimit = 1000;
 
 const getCarLabel = (car: CarDto) => `${car.brand} ${car.model} · ${car.licensePlate}`;
+const getServiceLabel = (service: GetServicesResponse[number]) =>
+  `${service.title} · ${service.category} · ${service.durationLabel}`;
 
-const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
+const OrderCreateForm = ({ cars, initialServiceId = "", services }: OrderCreateFormProps) => {
   const navigate = useNavigate();
   const createOrderMutation = useCreateOrderMutation();
   const [formState, setFormState] = useState<OrderCreateFormState>({
+    serviceId: initialServiceId,
     carId: cars[0]?.id ?? "",
     scheduledFor: "",
     notes: "",
@@ -49,11 +54,17 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
     label: getCarLabel(car),
     value: car.id,
   }));
+  const serviceOptions = services.map((service) => ({
+    label: getServiceLabel(service),
+    value: service.id,
+  }));
 
   const selectedCar = cars.find((car) => car.id === formState.carId) ?? null;
+  const selectedService = services.find((service) => service.id === formState.serviceId) ?? null;
 
   const resetForm = () => {
     setFormState({
+      serviceId: initialServiceId,
       carId: cars[0]?.id ?? "",
       scheduledFor: "",
       notes: "",
@@ -74,7 +85,7 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
     event.preventDefault();
 
     const payload: CreateOrderBody = {
-      serviceId: service.id,
+      serviceId: formState.serviceId,
       carId: formState.carId,
       notes: formState.notes.trim() ? formState.notes.trim() : null,
       scheduledFor: toIsoFromDateTimeLocal(formState.scheduledFor),
@@ -149,7 +160,7 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
           </Button>
           <Button
             onClick={() => {
-              navigate("/profile/orders");
+              navigate("/profile/requests");
             }}
             size="md"
           >
@@ -172,6 +183,32 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
         <div className={styles.formSection}>
           <div className={styles.sectionHeader}>
             <span className={styles.sectionNumber}>1.</span>
+            <div className={styles.sectionHeading}>
+              <h2 className={styles.sectionTitle}>Услуга</h2>
+              <p className={styles.sectionDescription}>Выберите нужную услугу из каталога</p>
+            </div>
+          </div>
+
+          <Select
+            error={fieldErrors.serviceId}
+            label="Выберите услугу"
+            leftIcon={<Icon name="wrench" />}
+            onChange={(event) => {
+              setFormState((currentState) => ({
+                ...currentState,
+                serviceId: event.target.value,
+              }));
+              clearFieldError("serviceId");
+            }}
+            options={serviceOptions}
+            placeholder="Услуга не выбрана"
+            value={formState.serviceId}
+          />
+        </div>
+
+        <div className={styles.formSection}>
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionNumber}>2.</span>
             <div className={styles.sectionHeading}>
               <h2 className={styles.sectionTitle}>Автомобиль</h2>
               <p className={styles.sectionDescription}>Выберите автомобиль из гаража</p>
@@ -201,7 +238,7 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
 
         <div className={styles.formSection}>
           <div className={styles.sectionHeader}>
-            <span className={styles.sectionNumber}>2.</span>
+            <span className={styles.sectionNumber}>3.</span>
             <div className={styles.sectionHeading}>
               <h2 className={styles.sectionTitle}>Комментарий</h2>
               <p className={styles.sectionDescription}>Комментарий к заявке</p>
@@ -246,7 +283,7 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
 
         <div className={styles.formSection}>
           <div className={styles.sectionHeader}>
-            <span className={styles.sectionNumber}>3.</span>
+            <span className={styles.sectionNumber}>4.</span>
             <div className={styles.sectionHeading}>
               <h2 className={styles.sectionTitle}>Удобное время</h2>
               <p className={styles.sectionDescription}>Выберите желаемую дату и время</p>
@@ -322,9 +359,18 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
             </span>
             <div className={styles.summaryBody}>
               <span className={styles.summaryLabel}>Услуга</span>
-              <strong className={styles.summaryName}>{service.title}</strong>
+              <strong className={styles.summaryName}>
+                {selectedService?.title ?? "Услуга не выбрана"}
+              </strong>
+              {selectedService ? (
+                <span className={styles.summaryMeta}>
+                  {selectedService.category} · {selectedService.durationLabel}
+                </span>
+              ) : null}
             </div>
-            <span className={styles.summaryAside}>{formatServicePrice(service.priceFrom)}</span>
+            <span className={styles.summaryAside}>
+              {selectedService ? formatServicePrice(selectedService.priceFrom) : "—"}
+            </span>
           </article>
 
           {selectedCar ? (
@@ -350,7 +396,9 @@ const OrderCreateForm = ({ cars, service }: OrderCreateFormProps) => {
             </span>
             <div className={styles.summaryBody}>
               <span className={styles.summaryLabel}>Ориентировочное время выполнения</span>
-              <strong className={styles.summaryName}>{service.durationLabel}</strong>
+              <strong className={styles.summaryName}>
+                {selectedService?.durationLabel ?? "Будет доступно после выбора услуги"}
+              </strong>
             </div>
           </article>
         </div>

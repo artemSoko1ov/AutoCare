@@ -164,7 +164,11 @@ const HomeServices = () => {
         <div className={styles.slider}>
           <div className={styles.track} ref={trackRef}>
             {services.map((service) => (
-              <article className={clsx("surface", styles.card)} key={service.id}>
+              <Link
+                className={clsx("surface", styles.card)}
+                key={service.id}
+                to={`/services/${service.id}`}
+              >
                 <div className={styles.cardHeader}>
                   <ServiceIcon className={styles.serviceIcon} src={service.iconPath} />
 
@@ -178,7 +182,7 @@ const HomeServices = () => {
                   <h3 className={styles.title}>{service.title}</h3>
                   <p className={styles.summary}>{service.summary}</p>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>

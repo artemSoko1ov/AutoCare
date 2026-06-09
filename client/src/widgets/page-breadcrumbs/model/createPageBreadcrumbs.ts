@@ -72,8 +72,17 @@ export const createPageBreadcrumbs = ({
     return [homeItem, { label: "Профиль", to: "/profile" }, { label: "Мои автомобили" }];
   }
 
-  if (normalizedPathname === "/profile/orders") {
-    return [homeItem, { label: "Профиль", to: "/profile" }, { label: "Мои заказы" }];
+  if (normalizedPathname === "/profile/requests") {
+    return [homeItem, { label: "Профиль", to: "/profile" }, { label: "Мои заявки" }];
+  }
+
+  if (matchPath("/profile/requests/:orderId", normalizedPathname)) {
+    return [
+      homeItem,
+      { label: "Профиль", to: "/profile" },
+      { label: "Мои заявки", to: "/profile/requests" },
+      { label: "Детали заявки" },
+    ];
   }
 
   if (normalizedPathname === "/profile") {
@@ -81,7 +90,7 @@ export const createPageBreadcrumbs = ({
   }
 
   if (normalizedPathname === "/requests/new") {
-    if (!serviceId) {
+    if (!serviceId || (!serviceTitle && !serviceCategory)) {
       return [homeItem, { label: "Новая заявка" }];
     }
 

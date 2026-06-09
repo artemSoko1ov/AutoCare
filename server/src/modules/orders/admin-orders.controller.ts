@@ -16,7 +16,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { OrdersService } from './orders.service';
 
-@Controller('admin/orders')
+@Controller('admin/requests')
 @UseGuards(JwtAuthGuard, AdminGuard)
 export class AdminOrdersController {
   constructor(private readonly ordersService: OrdersService) {}

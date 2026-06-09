@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import clsx from "clsx";
 import { useCarsQuery } from "@/entities/car";
-import { useServiceQuery } from "@/entities/service";
+import { useServicesQuery } from "@/entities/service";
 import { OrderCreateForm } from "@/features/order/create";
 import Button from "@/shared/ui/Button";
 import Empty from "@/shared/ui/Empty";
@@ -19,13 +19,14 @@ const RequestCreatePage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const serviceId = searchParams.get("serviceId") ?? undefined;
-  const serviceQuery = useServiceQuery(serviceId);
+  const servicesQuery = useServicesQuery();
   const carsQuery = useCarsQuery();
 
-  const service = serviceQuery.data;
+  const services = servicesQuery.data ?? [];
+  const selectedService = services.find((item) => item.id === serviceId) ?? null;
   const cars = carsQuery.data ?? [];
-  const isLoading = serviceQuery.isLoading || carsQuery.isLoading;
-  const isError = serviceQuery.isError || carsQuery.isError;
+  const isLoading = servicesQuery.isLoading || carsQuery.isLoading;
+  const isError = servicesQuery.isError || carsQuery.isError;
 
   const renderStateSection = (content: ReactNode) => (
     <Section
@@ -40,30 +41,6 @@ const RequestCreatePage = () => {
       {content}
     </Section>
   );
-
-  if (!serviceId) {
-    return renderStateSection(
-      <article className={clsx("surface", "surface--glass", styles.stateCard)}>
-        <Empty
-          action={
-            <div className={styles.stateActions}>
-              <Button
-                onClick={() => {
-                  navigate("/services");
-                }}
-                size="sm"
-              >
-                Выбрать услугу
-              </Button>
-            </div>
-          }
-          description="Перейдите в каталог, откройте нужную услугу и начните оформление оттуда."
-          icon="wrench"
-          title="Услуга не выбрана"
-        />
-      </article>,
-    );
-  }
 
   if (isLoading) {
     return renderStateSection(
@@ -93,7 +70,7 @@ const RequestCreatePage = () => {
         </div>
 
         <p className={styles.stateDescription}>
-          Мы не смогли загрузить услугу или список автомобилей. Повторите запрос, и форма снова
+          Мы не смогли загрузить список услуг или автомобилей. Повторите запрос, и форма снова
           подтянет актуальные данные.
         </p>
 
@@ -101,7 +78,7 @@ const RequestCreatePage = () => {
           <Button
             leftIcon={<Icon name="orders" />}
             onClick={() => {
-              void Promise.all([serviceQuery.refetch(), carsQuery.refetch()]);
+              void Promise.all([servicesQuery.refetch(), carsQuery.refetch()]);
             }}
             size="sm"
             variant="secondary"
@@ -122,7 +99,7 @@ const RequestCreatePage = () => {
     );
   }
 
-  if (!service) {
+  if (services.length === 0) {
     return renderStateSection(
       <article className={clsx("surface", "surface--glass", styles.stateCard)}>
         <Empty
@@ -138,9 +115,9 @@ const RequestCreatePage = () => {
               </Button>
             </div>
           }
-          description="Похоже, услуга больше недоступна или ссылка устарела. Выберите актуальную позицию из каталога."
+          description="Сейчас в каталоге нет доступных услуг для оформления. Как только они появятся, форму можно будет заполнить отсюда."
           icon="wrench"
-          title="Услуга не найдена"
+          title="Нет доступных услуг"
         />
       </article>,
     );
@@ -189,7 +166,12 @@ const RequestCreatePage = () => {
       titleAs="h1"
       titleSize="h1"
     >
-      <OrderCreateForm cars={cars} service={service} />
+      <OrderCreateForm
+        cars={cars}
+        initialServiceId={selectedService?.id ?? ""}
+        key={selectedService?.id ?? "no-service"}
+        services={services}
+      />
     </Section>
   );
 };

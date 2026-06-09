@@ -74,10 +74,19 @@
   gap: fluid(16, 12);
   align-items: center;
   padding-block: fluid(16, 14);
+  color: inherit;
   text-align: left;
+  text-decoration: none;
+  transition:
+    transform var(--transition-base),
+    opacity var(--transition-base);
 
   &:not(:first-child) {
     border-top: var(--border-soft);
+  }
+
+  &:hover {
+    transform: translateX(2px);
   }
 
   @include mobile {

@@ -27,7 +27,11 @@ const ServicesCatalog = ({ services }: ServicesCatalogProps) => {
     <div className={styles.section}>
       <div className={styles.grid}>
         {services.map((service) => (
-          <article className={clsx("surface", "surface--glass", styles.card)} key={service.id}>
+          <Link
+            className={clsx("surface", "surface--glass", styles.card)}
+            key={service.id}
+            to={`/services/${service.id}`}
+          >
             <div className={styles.cardHeader}>
               <ServiceIcon className={styles.serviceIcon} src={service.iconPath} />
 
@@ -51,15 +55,15 @@ const ServicesCatalog = ({ services }: ServicesCatalogProps) => {
               </div>
 
               <div className={styles.actions}>
-                <Link className={styles.detailsLink} to={`/services/${service.id}`}>
+                <span className={styles.detailsLink}>
                   Подробнее
                   <span className={styles.detailsLinkIcon}>
                     <Icon name="chevron-right" />
                   </span>
-                </Link>
+                </span>
               </div>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </div>

@@ -92,7 +92,7 @@ export const adminStats: AdminStat[] = [
   },
   {
     id: "orders-active",
-    title: "Активных заказов",
+    title: "Активных заявок",
     value: "9",
     hint: "Сейчас в работе",
     icon: "briefcase",

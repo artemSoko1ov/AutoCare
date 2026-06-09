@@ -16,7 +16,7 @@ const ProfilePage = () => {
           <PageBreadcrumbs />
           <h1 className={styles.pageTitle}>{profileData.pageTitle}</h1>
           <p className={styles.pageDescription}>
-            Управляйте профилем, автомобилями, заказами и избранными услугами в одном месте.
+            Управляйте профилем, автомобилями, заявками и избранными услугами в одном месте.
           </p>
         </div>
 

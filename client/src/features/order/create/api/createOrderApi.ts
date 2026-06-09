@@ -2,6 +2,6 @@ import type { CreateOrderBody, CreateOrderResponse } from "@shared/contracts/ord
 import axiosInstance from "@/shared/api/axiosInstance";
 
 export const createOrderApi = async (data: CreateOrderBody) => {
-  const response = await axiosInstance.post<CreateOrderResponse>("/orders", data);
+  const response = await axiosInstance.post<CreateOrderResponse>("/requests", data);
   return response.data;
 };

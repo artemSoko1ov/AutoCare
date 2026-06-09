@@ -10,6 +10,7 @@ import LoginPage from "@/pages/login/ui/LoginPage";
 import NotFoundPage from "@/pages/not-found/ui/NotFoundPage";
 import ProfileCarsPage from "@/pages/profile/ui/ProfileCarsPage";
 import ProfileDashboardPage from "@/pages/profile/ui/ProfileDashboardPage";
+import ProfileOrderDetailsPage from "@/pages/profile/ui/ProfileOrderDetailsPage";
 import ProfileOrdersPage from "@/pages/profile/ui/ProfileOrdersPage";
 import ProfilePage from "@/pages/profile/ui/ProfilePage";
 import RequestCreatePage from "@/pages/request-create/ui/RequestCreatePage";
@@ -51,7 +52,8 @@ const AppRouter = () => {
             <Route element={<ProfilePage />} path="profile">
               <Route element={<ProfileDashboardPage />} index />
               <Route element={<ProfileCarsPage />} path="cars" />
-              <Route element={<ProfileOrdersPage />} path="orders" />
+              <Route element={<ProfileOrdersPage />} path="requests" />
+              <Route element={<ProfileOrderDetailsPage />} path="requests/:orderId" />
             </Route>
           </Route>
           <Route element={<NotFoundPage />} path="*" />
