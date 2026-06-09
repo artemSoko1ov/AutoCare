@@ -39,6 +39,7 @@ model User {
 
   cars  Car[]
   orders Order[]
+  reviews Review[]
   Token Token?
 }
 
@@ -102,6 +103,7 @@ model Service {
   updatedAt     DateTime      @updatedAt
 
   orders Order[]
+  reviews Review[]
 
   @@index([status])
   @@index([category])
@@ -130,8 +132,27 @@ model Order {
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   service     Service?    @relation(fields: [serviceId], references: [id], onDelete: SetNull)
   carSnapshot CarSnapshot @relation(fields: [carSnapshotId], references: [id])
+  review      Review?
 
   @@index([userId, createdAt])
   @@index([status, createdAt])
   @@index([serviceId])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  serviceId String
+  orderId   String   @unique
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([serviceId, createdAt])
 }

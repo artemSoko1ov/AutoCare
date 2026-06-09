@@ -25,6 +25,11 @@
       "types": "./dist/contracts/orders/index.d.ts",
       "require": "./dist/contracts/orders/index.js",
       "default": "./dist/contracts/orders/index.js"
+    },
+    "./reviews": {
+      "types": "./dist/contracts/reviews/index.d.ts",
+      "require": "./dist/contracts/reviews/index.js",
+      "default": "./dist/contracts/reviews/index.js"
     }
   },
   "scripts": {
