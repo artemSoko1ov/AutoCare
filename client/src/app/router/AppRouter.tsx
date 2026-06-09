@@ -13,6 +13,7 @@ import ProfileDashboardPage from "@/pages/profile/ui/ProfileDashboardPage";
 import ProfileOrderDetailsPage from "@/pages/profile/ui/ProfileOrderDetailsPage";
 import ProfileOrdersPage from "@/pages/profile/ui/ProfileOrdersPage";
 import ProfilePage from "@/pages/profile/ui/ProfilePage";
+import ProfileReviewsPage from "@/pages/profile/ui/ProfileReviewsPage";
 import RequestCreatePage from "@/pages/request-create/ui/RequestCreatePage";
 import ServiceDetailsPage from "@/pages/service-details/ui/ServiceDetailsPage";
 import ServicesPage from "@/pages/services/ui/ServicesPage";
@@ -54,6 +55,7 @@ const AppRouter = () => {
               <Route element={<ProfileCarsPage />} path="cars" />
               <Route element={<ProfileOrdersPage />} path="requests" />
               <Route element={<ProfileOrderDetailsPage />} path="requests/:orderId" />
+              <Route element={<ProfileReviewsPage />} path="reviews" />
             </Route>
           </Route>
           <Route element={<NotFoundPage />} path="*" />

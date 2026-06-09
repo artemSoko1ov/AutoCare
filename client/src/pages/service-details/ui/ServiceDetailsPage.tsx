@@ -2,13 +2,14 @@ import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import clsx from "clsx";
 import { useAppSelector } from "@app/providers/store/hooks";
+import { createServiceReviewItems, useServiceReviewsQuery } from "@/entities/review";
 import { formatServicePrice, ServiceIcon, useServiceQuery } from "@/entities/service";
 import Button from "@/shared/ui/Button";
 import Empty from "@/shared/ui/Empty";
 import Icon from "@/shared/ui/Icon";
 import Section from "@/shared/ui/Section";
 import PageBreadcrumbs from "@/widgets/page-breadcrumbs";
-import ServiceReviews, { type ServiceReviewItem } from "@/widgets/service-reviews";
+import ServiceReviews from "@/widgets/service-reviews";
 import styles from "./ServiceDetailsPage.module.scss";
 
 const fallbackIncludedItems = [
@@ -23,38 +24,12 @@ const fallbackWorkflowSteps = [
   "В конце даем понятный итог и рекомендации по дальнейшим действиям.",
 ];
 
-const createMockReviews = (serviceTitle: string): ServiceReviewItem[] => [
-  {
-    id: "review-1",
-    author: "Алексей Смирнов",
-    car: "Toyota Camry, 2019",
-    date: "15 мая 2026",
-    rating: 5,
-    text: `Обращался на услугу "${serviceTitle}". Все объяснили спокойно и по делу, после визита стало понятно, что делать с автомобилем дальше.`,
-  },
-  {
-    id: "review-2",
-    author: "Марина Волкова",
-    car: "Kia Rio, 2021",
-    date: "4 мая 2026",
-    rating: 5,
-    text: "Понравился подход: без навязывания, с конкретикой по стоимости и срокам. Отчет и рекомендации были понятными даже без технической подготовки.",
-  },
-  {
-    id: "review-3",
-    author: "Илья Козлов",
-    car: "Skoda Octavia, 2018",
-    date: "27 апреля 2026",
-    rating: 4,
-    text: "Хороший сервис и внятная коммуникация. Особенно удобно, что сразу подсказали приоритетные моменты и не перегружали лишними деталями.",
-  },
-];
-
 const ServiceDetailsPage = () => {
   const navigate = useNavigate();
   const { serviceId } = useParams<{ serviceId: string }>();
   const { isAuth } = useAppSelector((state) => state.session);
   const { data: service, isError, isLoading, refetch } = useServiceQuery(serviceId);
+  const reviewsQuery = useServiceReviewsQuery(serviceId);
 
   const includedItems = useMemo(() => {
     if (!service || service.includedItems.length === 0) {
@@ -72,9 +47,7 @@ const ServiceDetailsPage = () => {
     return service.workflowSteps;
   }, [service]);
 
-  const reviews = useMemo(() => {
-    return createMockReviews(service?.title ?? "этой услуге");
-  }, [service?.title]);
+  const reviews = createServiceReviewItems(reviewsQuery.data ?? []);
 
   const handleBookClick = () => {
     if (!service) {
@@ -279,12 +252,56 @@ const ServiceDetailsPage = () => {
           <div>
             <h2 className={styles.reviewsTitle}>Отзывы по услуге</h2>
             <p className={styles.reviewsDescription}>
-              Пока это моковые отзывы, но секция уже готова под подключение реальных данных.
+              Реальные отзывы по завершенным заявкам помогают понять опыт клиентов до записи в
+              сервис.
             </p>
           </div>
         </div>
 
-        <ServiceReviews items={reviews} />
+        {reviewsQuery.isPending ? (
+          <article className={clsx("surface", "surface--glass", styles.stateCard)}>
+            <div className={styles.stateHeader}>
+              <span className={styles.stateIcon}>
+                <Icon name="star" />
+              </span>
+              <h2 className={styles.stateTitle}>Загружаем отзывы</h2>
+            </div>
+            <p className={styles.stateDescription}>
+              Подтягиваем последние оценки и комментарии клиентов по этой услуге.
+            </p>
+          </article>
+        ) : reviewsQuery.isError ? (
+          <article className={clsx("surface", "surface--glass", styles.stateCard)}>
+            <Empty
+              action={
+                <Button
+                  onClick={() => {
+                    void reviewsQuery.refetch();
+                  }}
+                  size="sm"
+                  variant="secondary"
+                >
+                  Повторить загрузку
+                </Button>
+              }
+              compact
+              description="Не удалось получить отзывы по услуге. Попробуйте обновить секцию еще раз."
+              icon="support"
+              title="Отзывы временно недоступны"
+            />
+          </article>
+        ) : reviews.length > 0 ? (
+          <ServiceReviews items={reviews} />
+        ) : (
+          <article className={clsx("surface", "surface--glass", styles.stateCard)}>
+            <Empty
+              compact
+              description="По этой услуге пока нет опубликованных отзывов. После завершенных заявок они появятся здесь."
+              icon="star"
+              title="Отзывов пока нет"
+            />
+          </article>
+        )}
       </div>
     </Section>
   );

@@ -31,6 +31,27 @@
   color: var(--color-primary);
 }
 
+.state {
+  display: grid;
+  gap: 10px;
+}
+
+.stateTitle {
+  font-size: fluid(17, 15);
+  font-weight: var(--font-weight-heading);
+  color: var(--color-text-heading);
+}
+
+.stateDescription {
+  font-size: fluid(14, 13);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.stateAction {
+  justify-self: start;
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -42,9 +63,21 @@
   gap: fluid(16, 12);
   align-items: start;
   padding-block: fluid(16, 14);
+  color: inherit;
 
   &:not(:first-child) {
     border-top: var(--border-soft);
+  }
+
+  &--interactive {
+    transition:
+      opacity var(--transition-duration) var(--transition-easing),
+      transform var(--transition-duration) var(--transition-easing);
+
+    @include hover {
+      opacity: 0.96;
+      transform: translateY(-1px);
+    }
   }
 }
 

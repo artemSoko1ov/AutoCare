@@ -48,7 +48,9 @@
 .description,
 .sectionSubtitle,
 .infoLabel,
-.noteText {
+.noteText,
+.reviewDescription,
+.reviewDate {
   font-size: fluid(15, 13);
   line-height: 1.6;
   color: var(--color-text-secondary);
@@ -85,7 +87,8 @@
 
 .stat,
 .section,
-.noteSection {
+.noteSection,
+.reviewSection {
   padding: fluid(20, 16);
   background: linear-gradient(
     180deg,
@@ -140,6 +143,12 @@
   align-items: center;
 }
 
+.reviewHeader,
+.reviewActions,
+.reviewMeta {
+  display: flex;
+}
+
 .sectionIcon {
   @include flex-center;
   @include square(3rem);
@@ -183,6 +192,83 @@
 
 .noteText {
   margin: 0;
+}
+
+.reviewDescription,
+.reviewText {
+  margin: 0;
+}
+
+.reviewSection {
+  display: grid;
+  gap: 14px;
+}
+
+.reviewHeader {
+  gap: 16px;
+  align-items: start;
+  justify-content: space-between;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.reviewActions {
+  gap: 12px;
+  align-items: center;
+}
+
+.reviewNotice {
+  padding: 12px 14px;
+  font-size: fluid(14, 13);
+  line-height: 1.5;
+  border-radius: var(--radius-lg);
+
+  &--success {
+    color: var(--color-success);
+    background-color: rgb(var(--color-success-rgb) / 10%);
+  }
+
+  &--info {
+    color: var(--color-primary);
+    background-color: rgb(var(--color-primary-rgb) / 10%);
+  }
+
+  &--error {
+    color: var(--color-danger);
+    background-color: rgb(var(--color-danger-rgb) / 10%);
+  }
+}
+
+.reviewCard {
+  display: grid;
+  gap: 12px;
+  padding: fluid(18, 14);
+  background-color: rgb(255 255 255 / 76%);
+  border: var(--border-soft);
+  border-radius: var(--radius-xl);
+}
+
+.reviewMeta {
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reviewRating {
+  font-size: fluid(18, 16);
+  font-weight: var(--font-weight-heading);
+  color: var(--color-text-heading);
+}
+
+.reviewText {
+  margin: 0;
+  font-size: fluid(15, 14);
+  line-height: 1.7;
+  color: var(--color-text-primary);
 }
 
 .actions {

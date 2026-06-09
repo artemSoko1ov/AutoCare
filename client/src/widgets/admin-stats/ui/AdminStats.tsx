@@ -13,7 +13,7 @@ const AdminStats = ({ items }: AdminStatsProps) => {
       <div className={styles.header}>
         <h2 className={styles.title}>Дашборд</h2>
         <p className={styles.description}>
-          Простая сводка по основным метрикам. Пока только моковые данные без лишней логики.
+          Краткая сводка по заявкам, отзывам и услугам на основе актуальных данных системы.
         </p>
       </div>
 

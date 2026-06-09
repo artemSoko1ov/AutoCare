@@ -216,9 +216,7 @@ export const createProfileDashboardData = (user: UserDto | null): ProfileDashboa
       { id: "profile", label: "Профиль", icon: "user", to: "/profile" },
       { id: "cars", label: "Мои автомобили", icon: "car", to: "/profile/cars" },
       { id: "orders", label: "Мои заявки", icon: "orders", to: "/profile/requests" },
-      { id: "favorites", label: "Избранные услуги", icon: "heart" },
-      { id: "reviews", label: "Отзывы", icon: "star" },
-      { id: "notifications", label: "Уведомления", icon: "bell" },
+      { id: "reviews", label: "Отзывы", icon: "star", to: "/profile/reviews" },
       { id: "settings", label: "Настройки", icon: "settings" },
     ],
     stats: [

@@ -2,8 +2,8 @@ import { useAppSelector } from "@app/providers/store/hooks";
 import { createProfileGarageSection, useCarsQuery } from "@/entities/car";
 import { createProfileOrdersSection, useOrdersQuery } from "@/entities/order";
 import { createProfileDashboardData, createProfileOverviewStats } from "@/entities/profile/model";
+import { createProfileReviewsSection, useMyReviewsQuery } from "@/entities/review";
 import { CarFormModal, useGarageManager } from "@/features/car/manage";
-import ProfileFavorites from "@/widgets/profile-favorites";
 import ProfileGarage from "@/widgets/profile-garage";
 import ProfileOrders from "@/widgets/profile-orders";
 import ProfileOverview from "@/widgets/profile-overview";
@@ -15,11 +15,14 @@ const ProfileDashboardPage = () => {
   const profileData = createProfileDashboardData(currentUser);
   const carsQuery = useCarsQuery();
   const ordersQuery = useOrdersQuery();
+  const reviewsQuery = useMyReviewsQuery();
   const overviewStats = createProfileOverviewStats({
     orders: ordersQuery.data ?? [],
+    reviewsCount: reviewsQuery.data?.length ?? 0,
   });
   const garageSection = createProfileGarageSection(carsQuery.data ?? []);
   const ordersSection = createProfileOrdersSection(ordersQuery.data ?? []);
+  const reviewsSection = createProfileReviewsSection(reviewsQuery.data ?? []);
   const garageManager = useGarageManager(carsQuery.data ?? []);
 
   const handleRetry = () => {
@@ -28,6 +31,10 @@ const ProfileDashboardPage = () => {
 
   const handleOrdersRetry = () => {
     void ordersQuery.refetch();
+  };
+
+  const handleReviewsRetry = () => {
+    void reviewsQuery.refetch();
   };
 
   return (
@@ -57,11 +64,15 @@ const ProfileDashboardPage = () => {
             onRetry={handleRetry}
             section={garageSection}
           />
-          <ProfileFavorites section={profileData.favoritesSection} />
         </div>
       </div>
 
-      <ProfileReviews section={profileData.reviewsSection} />
+      <ProfileReviews
+        errorMessage={reviewsQuery.isError ? "Не удалось загрузить список ваших отзывов." : null}
+        isLoading={reviewsQuery.isPending}
+        onRetry={handleReviewsRetry}
+        section={reviewsSection}
+      />
 
       {garageManager.isFormModalOpen ? (
         <CarFormModal

@@ -76,6 +76,10 @@ export const createPageBreadcrumbs = ({
     return [homeItem, { label: "Профиль", to: "/profile" }, { label: "Мои заявки" }];
   }
 
+  if (normalizedPathname === "/profile/reviews") {
+    return [homeItem, { label: "Профиль", to: "/profile" }, { label: "Мои отзывы" }];
+  }
+
   if (matchPath("/profile/requests/:orderId", normalizedPathname)) {
     return [
       homeItem,

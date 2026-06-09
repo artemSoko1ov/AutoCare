@@ -10,13 +10,16 @@ import styles from "./Header.module.scss";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuth } = useAppSelector((state) => state.session);
+  const currentUser = useAppSelector((state) => state.user.currentUser);
   const mobileMenuId = useId();
+  const isAdmin = currentUser?.role === "ADMIN";
 
   const visibleLinks = headerLinks.filter(
     (link) =>
       link.visibility === "always" ||
       (link.visibility === "auth" && isAuth) ||
-      (link.visibility === "guest" && !isAuth),
+      (link.visibility === "guest" && !isAuth) ||
+      (link.visibility === "admin" && isAdmin),
   );
   const navigationLinks = visibleLinks.filter((link) => link.visibility !== "guest");
   const guestLinks = visibleLinks.filter((link) => link.visibility === "guest");

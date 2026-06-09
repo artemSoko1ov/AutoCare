@@ -1,18 +1,10 @@
 import clsx from "clsx";
+import type { ServiceReviewCardItem } from "@/entities/review";
 import Icon from "@/shared/ui/Icon";
 import styles from "./ServiceReviews.module.scss";
 
-export type ServiceReviewItem = {
-  id: string;
-  author: string;
-  car: string;
-  date: string;
-  rating: number;
-  text: string;
-};
-
 type ServiceReviewsProps = {
-  items: ServiceReviewItem[];
+  items: ServiceReviewCardItem[];
 };
 
 const ServiceReviews = ({ items }: ServiceReviewsProps) => {
