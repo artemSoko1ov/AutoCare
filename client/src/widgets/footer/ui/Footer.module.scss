@@ -1,0 +1,225 @@
+.footer {
+  padding-block: fluid(56, 36) fluid(32, 24);
+}
+
+.shell {
+  position: relative;
+  padding: fluid(32, 20);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+
+  @include tablet {
+    border-radius: var(--radius-xl);
+  }
+
+  @include mobile-m {
+    padding-inline: fluid(16, 14);
+    border-radius: var(--radius-lg);
+  }
+}
+
+.main {
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+  gap: fluid(48, 24);
+  align-items: start;
+
+  @include tablet {
+    grid-template-columns: 1fr;
+    gap: fluid(28, 20);
+  }
+}
+
+.brand {
+  min-width: 0;
+
+  &Link {
+    display: inline-flex;
+    width: fluid(196, 128);
+  }
+
+  &Image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @include mobile {
+    &Link {
+      width: fluid(160, 120);
+    }
+  }
+
+  @include mobile-m {
+    &Link {
+      width: fluid(148, 142);
+    }
+  }
+}
+
+.sections {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: fluid(40, 24);
+  min-width: 0;
+
+  @include tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: fluid(18, 16);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: fluid(28, 20);
+  }
+}
+
+.section {
+  --flow-gap: #{fluid(18, 14)};
+
+  min-width: 0;
+
+  &Title {
+    font-size: fluid(13, 12);
+    font-weight: var(--font-weight-heading);
+    line-height: 1;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &Links {
+    --flow-gap: #{fluid(12, 10)};
+
+    min-width: 0;
+  }
+
+  @include tablet {
+    padding: fluid(18, 16);
+    background-color: rgb(255 255 255 / 54%);
+    border: var(--border-soft);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+
+    &:last-child {
+      grid-column: 1 / -1;
+    }
+
+    &Title {
+      color: var(--color-text-heading);
+    }
+  }
+
+  @include mobile {
+    &:last-child {
+      grid-column: auto;
+    }
+  }
+}
+
+.contacts {
+  --flow-gap: #{fluid(28, 20)};
+
+  min-width: 0;
+}
+
+.contact {
+  &Group {
+    --flow-gap: #{fluid(16, 12)};
+
+    min-width: 0;
+
+    & + & {
+      padding-top: fluid(18, 14);
+      border-top: var(--border-soft);
+    }
+  }
+
+  &Link,
+  &Text {
+    margin: 0;
+    font-size: fluid(15, 14);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.45;
+    color: var(--color-text-heading);
+    text-wrap: pretty;
+  }
+
+  &Link {
+    width: fit-content;
+
+    @include hover {
+      color: var(--color-primary);
+    }
+  }
+}
+
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  font-size: fluid(15, 14);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.45;
+  color: var(--color-text-heading);
+  text-wrap: pretty;
+
+  &::after {
+    position: absolute;
+    right: 0;
+    bottom: -2px;
+    left: 0;
+    height: 2px;
+    content: "";
+    background: currentcolor;
+    border-radius: var(--border-radius-pill);
+    scale: 0 1;
+    transition: scale var(--transition-duration) var(--transition-easing);
+  }
+
+  @include hover {
+    color: var(--color-primary);
+
+    &::after {
+      scale: 1 1;
+    }
+  }
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: fluid(18, 12);
+  align-items: center;
+  justify-content: space-between;
+  padding-top: fluid(20, 16);
+  margin-top: fluid(28, 20);
+  border-top: var(--border-soft);
+
+  &Copyright,
+  &Offer {
+    margin: 0;
+    font-size: fluid(14, 13);
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  &Offer {
+    text-align: right;
+  }
+
+  @include tablet {
+    align-items: flex-start;
+  }
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+
+    &Offer {
+      text-align: left;
+    }
+  }
+}

@@ -1,0 +1,105 @@
+.filters {
+  display: grid;
+  gap: fluid(18, 14);
+  padding: fluid(24, 18);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.headerBody {
+  display: grid;
+  gap: 6px;
+}
+
+.title {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  color: var(--color-text-heading);
+}
+
+.description {
+  max-width: 42rem;
+  font-size: fluid(14, 13);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.results {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.65rem 0.9rem;
+  font-size: fluid(12, 11);
+  font-weight: var(--font-weight-heading);
+  line-height: 1;
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 9%);
+  border-radius: var(--border-radius-pill);
+}
+
+.searchRow {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+
+  @include tablet {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.resetButton {
+  flex-shrink: 0;
+}
+
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.categoryButton {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 2.75rem;
+  padding: 0.75rem 1rem;
+  font: inherit;
+  font-size: fluid(14, 13);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  color: var(--color-text-secondary);
+  background-color: rgb(255 255 255 / 68%);
+  border: var(--border-soft);
+  border-radius: var(--border-radius-pill);
+  transition:
+    color var(--transition-duration-base) ease,
+    background-color var(--transition-duration-base) ease,
+    border-color var(--transition-duration-base) ease,
+    transform var(--transition-duration-base) ease;
+
+  @include hover {
+    color: var(--color-text-heading);
+    border-color: rgb(var(--color-primary-rgb) / 22%);
+    transform: translateY(-1px);
+  }
+
+  &--active {
+    color: var(--color-primary);
+    background: linear-gradient(
+      180deg,
+      rgb(var(--color-primary-rgb) / 14%),
+      rgb(255 255 255 / 92%)
+    );
+    border-color: rgb(var(--color-primary-rgb) / 24%);
+  }
+}

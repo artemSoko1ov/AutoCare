@@ -1,0 +1,122 @@
+.page {
+  min-width: 0;
+}
+
+.content {
+  --flow-gap: #{fluid(24, 18)};
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: fluid(20, 16);
+
+  @include laptop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include tablet {
+    grid-template-columns: 1fr;
+  }
+}
+
+.skeletonCard {
+  display: grid;
+  gap: fluid(16, 14);
+  min-height: fluid(260, 220);
+  padding: fluid(24, 20);
+  pointer-events: none;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+}
+
+.skeletonIcon,
+.skeletonLine {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--color-primary-rgb) / 8%) 0%,
+    rgb(var(--color-primary-rgb) / 16%) 50%,
+    rgb(var(--color-primary-rgb) / 8%) 100%
+  );
+  background-size: 200% 100%;
+  animation: services-shimmer 1.6s linear infinite;
+}
+
+.skeletonIcon {
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 1.2rem;
+}
+
+.skeletonLine {
+  height: 0.95rem;
+  border-radius: 999px;
+
+  &--title {
+    width: 78%;
+    height: 1.2rem;
+  }
+
+  &--wide {
+    width: 100%;
+  }
+
+  &--medium {
+    width: 86%;
+  }
+}
+
+.stateCard {
+  display: grid;
+  gap: fluid(14, 12);
+  padding: fluid(24, 18);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+}
+
+.stateHeader {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.stateIcon {
+  @include flex-center;
+  @include square(3rem);
+
+  flex-shrink: 0;
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 10%);
+  border-radius: 50%;
+}
+
+.stateTitle {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  color: var(--color-text-heading);
+}
+
+.stateDescription {
+  max-width: 42rem;
+  font-size: fluid(15, 14);
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+.stateActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+@keyframes services-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}

@@ -1,0 +1,165 @@
+.section {
+  display: grid;
+  gap: fluid(28, 20);
+}
+
+.emptyWrap {
+  padding: fluid(24, 18);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: fluid(20, 16);
+
+  @include laptop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include tablet {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: grid;
+  gap: fluid(18, 14);
+  min-height: 100%;
+  padding: fluid(24, 20);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+  transition:
+    translate var(--transition-duration-slow) var(--transition-easing),
+    box-shadow var(--transition-duration-slow) var(--transition-easing),
+    border-color var(--transition-duration) var(--transition-easing);
+
+  @include hover {
+    translate: 0 calc(var(--interaction-lift-y) * -1);
+
+    .detailsLink {
+      color: var(--color-primary-hover);
+      transform: translateX(2px);
+    }
+  }
+
+  &:focus-visible {
+    @include interactive-ring;
+  }
+}
+
+.cardHeader {
+  display: grid;
+  gap: 14px;
+}
+
+.serviceIcon {
+  @include square(4.25rem);
+
+  border-radius: 1.4rem;
+  box-shadow: 0 18px 38px rgb(var(--color-primary-rgb) / 12%);
+}
+
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.category,
+.duration {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.55rem 0.85rem;
+  font-size: fluid(12, 11);
+  font-weight: var(--font-weight-heading);
+  line-height: 1;
+  border-radius: 999px;
+}
+
+.category {
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 10%);
+}
+
+.duration {
+  color: var(--color-text-secondary);
+  background-color: rgb(15 23 42 / 6%);
+}
+
+.cardBody {
+  display: grid;
+  gap: 10px;
+}
+
+.title {
+  font-size: fluid(24, 20);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.15;
+  color: var(--color-text-heading);
+}
+
+.summary {
+  font-size: fluid(15, 14);
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+.cardFooter {
+  display: grid;
+  gap: 14px;
+  padding-top: fluid(16, 14);
+  margin-top: auto;
+  border-top: var(--border-soft);
+}
+
+.priceGroup {
+  display: grid;
+  gap: 4px;
+}
+
+.priceCaption {
+  font-size: fluid(12, 11);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.4;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.priceValue {
+  font-size: fluid(24, 20);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.1;
+  color: var(--color-text-heading);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.detailsLink {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: fluid(14, 13);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.4;
+  color: var(--color-primary);
+  transition:
+    color var(--transition-duration-base) ease,
+    transform var(--transition-duration-base) ease;
+}
+
+.detailsLinkIcon {
+  @include flex-center;
+
+  width: 1rem;
+  height: 1rem;
+}

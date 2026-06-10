@@ -1,0 +1,366 @@
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '@prisma/prisma.service';
+import * as bcrypt from 'bcryptjs';
+import type {
+  LoginBody,
+  RegisterBody,
+  TokensDto,
+  UserDto,
+} from '@shared/contracts/auth';
+import { toUserDto, userDtoSelect } from '../../common/mappers/user-dto.mapper';
+import type { AuthTokenPayload } from '../../common/types/auth-token-payload';
+import { TokensService } from '../tokens/tokens.service';
+
+const DEFAULT_ADMIN_EMAIL = 'admin@admin.admin';
+const DEFAULT_ADMIN_PASSWORD = 'admin.admin';
+const DEFAULT_ADMIN_USERNAME = 'Administrator';
+const isProduction = () => process.env.NODE_ENV === 'production';
+
+const authSessionUserSelect = {
+  ...userDtoSelect,
+  sessionVersion: true,
+} satisfies Prisma.UserSelect;
+
+const authUserSelect = {
+  ...authSessionUserSelect,
+  password: true,
+} satisfies Prisma.UserSelect;
+
+type AuthSessionUser = Prisma.UserGetPayload<{
+  select: typeof authSessionUserSelect;
+}>;
+
+type AuthUser = Prisma.UserGetPayload<{
+  select: typeof authUserSelect;
+}>;
+
+@Injectable()
+export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly tokenService: TokensService,
+  ) {}
+
+  private normalizeEnvValue(value: string): string {
+    const trimmedValue = value.trim().replace(/;+$/, '').trim();
+
+    if (
+      (trimmedValue.startsWith("'") && trimmedValue.endsWith("'")) ||
+      (trimmedValue.startsWith('"') && trimmedValue.endsWith('"'))
+    ) {
+      return trimmedValue.slice(1, -1).trim();
+    }
+
+    return trimmedValue;
+  }
+
+  private getOptionalEnvValue(
+    value: string | undefined,
+    fallbackValue: string,
+  ) {
+    if (typeof value !== 'string' || value.trim().length === 0) {
+      return fallbackValue;
+    }
+
+    const normalizedValue = this.normalizeEnvValue(value);
+    return normalizedValue.length > 0 ? normalizedValue : fallbackValue;
+  }
+
+  private getAdminCredentials(): {
+    email: string;
+    password: string;
+    username: string;
+  } | null {
+    const hasConfiguredEmail =
+      typeof process.env.ADMIN_EMAIL === 'string' &&
+      process.env.ADMIN_EMAIL.trim().length > 0;
+    const hasConfiguredPassword =
+      typeof process.env.ADMIN_PASSWORD === 'string' &&
+      process.env.ADMIN_PASSWORD.trim().length > 0;
+
+    if (isProduction() && (!hasConfiguredEmail || !hasConfiguredPassword)) {
+      this.logger.warn(
+        'Admin auto-login is disabled because ADMIN_EMAIL or ADMIN_PASSWORD is not configured in production.',
+      );
+      return null;
+    }
+
+    const email = this.getOptionalEnvValue(
+      process.env.ADMIN_EMAIL,
+      DEFAULT_ADMIN_EMAIL,
+    ).toLowerCase();
+
+    const password = this.getOptionalEnvValue(
+      process.env.ADMIN_PASSWORD,
+      DEFAULT_ADMIN_PASSWORD,
+    );
+
+    const username = this.getOptionalEnvValue(
+      process.env.ADMIN_USERNAME,
+      DEFAULT_ADMIN_USERNAME,
+    );
+
+    return {
+      email,
+      password,
+      username,
+    };
+  }
+
+  private toTokenPayload(user: AuthSessionUser): AuthTokenPayload {
+    return {
+      ...toUserDto(user),
+      sessionVersion: user.sessionVersion,
+    };
+  }
+
+  private extractBearerToken(authHeader?: string): string | null {
+    if (!authHeader?.startsWith('Bearer ')) {
+      return null;
+    }
+
+    const accessToken = authHeader.slice('Bearer '.length).trim();
+    return accessToken || null;
+  }
+
+  private isReservedAdminEmail(email: string): boolean {
+    const adminCredentials = this.getAdminCredentials();
+    return adminCredentials
+      ? email.trim().toLowerCase() === adminCredentials.email
+      : false;
+  }
+
+  private isAdminCredentials(email: string, password: string): boolean {
+    const adminCredentials = this.getAdminCredentials();
+
+    if (!adminCredentials) {
+      return false;
+    }
+
+    return (
+      email.trim().toLowerCase() === adminCredentials.email &&
+      password === adminCredentials.password
+    );
+  }
+
+  private async ensureAdminUser(): Promise<AuthUser> {
+    const adminCredentials = this.getAdminCredentials();
+
+    if (!adminCredentials) {
+      throw new UnauthorizedException('Admin credentials are not configured');
+    }
+
+    const existingAdmin = await this.prisma.user.findUnique({
+      where: { email: adminCredentials.email },
+      select: authUserSelect,
+    });
+
+    if (!existingAdmin) {
+      const passwordHash = await bcrypt.hash(adminCredentials.password, 10);
+
+      return this.prisma.user.create({
+        data: {
+          email: adminCredentials.email,
+          username: adminCredentials.username,
+          password: passwordHash,
+          phone: null,
+          avatarUrl: null,
+          role: 'ADMIN',
+        },
+        select: authUserSelect,
+      });
+    }
+
+    const hasExpectedPassword = await bcrypt.compare(
+      adminCredentials.password,
+      existingAdmin.password,
+    );
+
+    if (existingAdmin.role === 'ADMIN' && hasExpectedPassword) {
+      return existingAdmin;
+    }
+
+    const passwordHash = await bcrypt.hash(adminCredentials.password, 10);
+
+    return this.prisma.user.update({
+      where: { id: existingAdmin.id },
+      data: {
+        email: adminCredentials.email,
+        username: adminCredentials.username,
+        password: passwordHash,
+        role: 'ADMIN',
+      },
+      select: authUserSelect,
+    });
+  }
+
+  private resolveUserIdFromTokens(
+    refreshToken?: string,
+    authHeader?: string,
+  ): string | null {
+    const accessToken = this.extractBearerToken(authHeader);
+    if (accessToken) {
+      const accessPayload = this.tokenService.validateAccessToken(accessToken);
+      if (accessPayload) {
+        return accessPayload.id;
+      }
+    }
+
+    if (!refreshToken) {
+      return null;
+    }
+
+    const refreshPayload = this.tokenService.validateRefreshToken(refreshToken);
+    return refreshPayload?.id ?? null;
+  }
+
+  async register({
+    email,
+    username,
+    phone,
+    password,
+  }: RegisterBody): Promise<TokensDto & UserDto> {
+    if (this.isReservedAdminEmail(email)) {
+      throw new ConflictException(
+        'Этот email зарезервирован для администратора',
+      );
+    }
+
+    const candidate = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (candidate) {
+      throw new ConflictException(
+        `Пользователь с почтой ${email} уже существует`,
+      );
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+    const user = await this.prisma.user.create({
+      data: {
+        email,
+        username,
+        password: hashPassword,
+        phone,
+        avatarUrl: null,
+      },
+      select: authSessionUserSelect,
+    });
+
+    const userDto = toUserDto(user);
+    const tokens = this.tokenService.generateTokens(this.toTokenPayload(user));
+    await this.tokenService.saveToken(user.id, tokens.refreshToken);
+
+    return {
+      ...tokens,
+      ...userDto,
+    };
+  }
+
+  async login({ email, password }: LoginBody): Promise<TokensDto & UserDto> {
+    if (this.isAdminCredentials(email, password)) {
+      const adminUser = await this.ensureAdminUser();
+      const userDto = toUserDto(adminUser);
+      const tokens = this.tokenService.generateTokens(
+        this.toTokenPayload(adminUser),
+      );
+      await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+      return {
+        ...tokens,
+        ...userDto,
+      };
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: authUserSelect,
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Неверный email или пароль');
+    }
+
+    const isPassEquals = await bcrypt.compare(password, user.password);
+    if (!isPassEquals) {
+      throw new UnauthorizedException('Неверный email или пароль');
+    }
+
+    const userDto = toUserDto(user);
+    const tokens = this.tokenService.generateTokens(this.toTokenPayload(user));
+    await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+    return {
+      ...tokens,
+      ...userDto,
+    };
+  }
+
+  async logout(refreshToken?: string, authHeader?: string) {
+    const userId = this.resolveUserIdFromTokens(refreshToken, authHeader);
+
+    if (!userId) {
+      if (refreshToken) {
+        await this.tokenService.removeToken(refreshToken);
+      }
+      return;
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.user.updateMany({
+        where: { id: userId },
+        data: {
+          sessionVersion: {
+            increment: 1,
+          },
+        },
+      }),
+      this.prisma.token.deleteMany({
+        where: { userId },
+      }),
+    ]);
+  }
+
+  async refresh(refreshToken: string): Promise<TokensDto & UserDto> {
+    if (!refreshToken) {
+      throw new UnauthorizedException();
+    }
+
+    const userData = this.tokenService.validateRefreshToken(refreshToken);
+    const tokenFromDb = await this.tokenService.findToken(refreshToken);
+    if (!userData || !tokenFromDb) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userData.id },
+      select: authSessionUserSelect,
+    });
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    if (user.sessionVersion !== userData.sessionVersion) {
+      throw new UnauthorizedException();
+    }
+
+    const userDto = toUserDto(user);
+    const tokens = this.tokenService.generateTokens(this.toTokenPayload(user));
+    await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+    return {
+      ...tokens,
+      ...userDto,
+    };
+  }
+}

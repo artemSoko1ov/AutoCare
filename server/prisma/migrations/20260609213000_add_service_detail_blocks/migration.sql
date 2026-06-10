@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Service"
+ADD COLUMN "includedItems" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
+ADD COLUMN "workflowSteps" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];

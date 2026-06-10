@@ -1,0 +1,149 @@
+:root {
+  --color-white: #fff;
+  --color-black: #020617;
+
+  --color-primary: #1478fd;
+  --color-primary-hover: #2563eb;
+  --color-primary-pressed: #1d4ed8;
+  --color-primary-rgb: 59 130 246;
+  --color-primary-contrast: #fff;
+  --color-primary-soft: #dbeafe;
+  --color-primary-subtle: rgb(59 130 246 / 10%);
+  --color-primary-outline: rgb(59 130 246 / 24%);
+
+  --color-success: #12b76a;
+  --color-success-rgb: 18 183 106;
+  --color-success-bg: #ecfdf3;
+  --color-warning: #f79009;
+  --color-warning-rgb: 247 144 9;
+  --color-warning-bg: #fffaeb;
+  --color-danger: #f04438;
+  --color-danger-rgb: 240 68 56;
+  --color-danger-bg: #fef3f2;
+  --color-info: #1570ef;
+  --color-info-rgb: 21 112 239;
+  --color-info-bg: #eff8ff;
+
+  --color-text-primary: #0f172a;
+  --color-text-heading: #1e293b;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #64748b;
+  --color-text-placeholder: #94a3b8;
+  --color-text-inverse: #fff;
+
+  --color-bg-base: #fff;
+  --color-bg-page: #f8fbff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-muted: #eef4ff;
+  --color-bg-card: #f1f5f9;
+  --color-bg-elevated: #fcfdff;
+  --color-bg-accent: rgb(59 130 246 / 8%);
+  --color-bg-overlay: rgb(255 255 255 / 82%);
+
+  --gradient-page:
+    radial-gradient(circle at top right, rgb(59 130 246 / 14%), transparent 28%),
+    radial-gradient(circle at bottom right, rgb(59 130 246 / 10%), transparent 34%),
+    linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+  --gradient-hero:
+    radial-gradient(circle at 82% 42%, rgb(59 130 246 / 14%), transparent 26%),
+    radial-gradient(circle at 78% 82%, rgb(59 130 246 / 8%), transparent 24%);
+  --gradient-primary: linear-gradient(135deg, #4489ff 0%, #1478fd 100%);
+
+  --color-border: #e5e7eb;
+  --color-border-soft: rgb(148 163 184 / 18%);
+  --color-border-strong: #cbd5e1;
+  --shadow-medium: 0 8px 30px rgb(15 23 42 / 8%);
+  --shadow-soft: 0 6px 20px rgb(15 23 42 / 6%);
+  --shadow-large: 0 18px 48px rgb(15 23 42 / 12%);
+  --shadow-floating: 0 16px 36px rgb(59 130 246 / 14%);
+  --shadow-focus: 0 0 0 4px rgb(var(--color-primary-rgb) / 12%);
+
+  --border: 1px solid var(--color-border);
+  --border-soft: 1px solid var(--color-border-soft);
+  --border-strong: 1px solid var(--color-border-strong);
+  --border-radius-button: 12px;
+  --border-radius-card: 16px;
+  --border-radius-pill: 999px;
+  --radius-2xs: 8px;
+  --radius-xs: 10px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+
+  --font-family-base: "Montserrat", system-ui, sans-serif;
+  --font-weight-medium: 500;
+  --font-weight-heading: 600;
+  --font-weight-display: 700;
+
+  --font-size-display: #{fluid(88, 52)};
+  --font-size-h1: #{fluid(56, 44)};
+  --font-size-h2: #{fluid(40, 30)};
+  --font-size-h3: #{fluid(24, 21)};
+  --font-size-lead: #{fluid(20, 16)};
+  --font-size-body: #{fluid(16, 14)};
+  --font-size-small: 14px;
+  --font-size-caption: 12px;
+
+  --line-height-display: 0.94;
+  --line-height-body: 1.5;
+  --line-height-lead: 1.6;
+  --line-height-heading: 1.2;
+  --line-height-tight: 1.1;
+  --line-height-small: 1.25;
+
+  --container-width: #{fluid-to-laptop(1280, 1120)};
+  --container-width-wide: 1360px;
+  --container-width-narrow: 960px;
+  --container-padding-x: 15px;
+  --section-padding-y: #{fluid(96, 56)};
+  --header-height: 72px;
+  --header-offset-top: 20px;
+  --header-shell-padding-x: #{fluid(24, 16)};
+  --hero-min-height: #{fluid(720, 560)};
+  --hero-content-max-width: 620px;
+  --hero-media-max-width: 680px;
+
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 2.5rem;
+  --space-3xl: 3rem;
+  --space-4xl: 4rem;
+  --space-5xl: 5rem;
+
+  --control-height-xs: 2.25rem;
+  --control-height-sm: 2.75rem;
+  --control-height-md: 3rem;
+  --control-height-lg: 3.5rem;
+  --control-padding-x: 1rem;
+  --control-padding-x-lg: 1.5rem;
+  --icon-size-xs: 1rem;
+  --icon-size-sm: 1.125rem;
+  --icon-size-md: 1.5rem;
+  --icon-size-lg: 2rem;
+
+  --blur-sm: 10px;
+  --blur-md: 18px;
+  --blur-lg: 28px;
+
+  --transition-duration-fast: 0.15s;
+  --transition-duration: 0.2s;
+  --transition-duration-slow: 0.3s;
+  --transition-duration-slower: 0.4s;
+  --transition-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --interaction-lift-y: 2px;
+  --interaction-press-y: 1px;
+
+  --z-index-base: 0;
+  --z-index-sticky: 20;
+  --z-index-dropdown: 40;
+  --z-index-overlay: 60;
+  --z-index-modal: 80;
+  --z-index-toast: 100;
+}

@@ -1,0 +1,153 @@
+.section {
+  padding-block: 0;
+}
+
+.inner {
+  --flow-gap: #{fluid(32, 20)};
+
+  min-width: 0;
+}
+
+.section--plain {
+  background: none;
+}
+
+.section--card {
+  @include surface(
+    var(--color-bg-elevated),
+    var(--border-soft),
+    var(--radius-xl),
+    var(--shadow-medium)
+  );
+}
+
+.section--glass {
+  @include surface(
+    var(--color-bg-overlay),
+    var(--border-soft),
+    var(--radius-xl),
+    var(--shadow-large)
+  );
+
+  backdrop-filter: blur(var(--blur-md));
+}
+
+.section--md {
+  padding: fluid(28, 20);
+}
+
+.section--lg {
+  padding: fluid(40, 24);
+}
+
+.section--plain.section--md,
+.section--plain.section--lg {
+  padding-inline: var(--container-padding-x);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: fluid(24, 16);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.headerMain {
+  --flow-gap: #{fluid(14, 10)};
+
+  flex: 1 1 20px;
+  min-width: 0;
+}
+
+.eyebrow {
+  font-size: fluid(13, 12);
+  font-weight: var(--font-weight-heading);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--color-primary-outline);
+}
+
+.title {
+  max-width: 22ch;
+  margin: 0;
+  color: var(--color-text-heading);
+}
+
+.title--h1 {
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-tight);
+}
+
+.title--h2 {
+  font-size: var(--font-size-h2);
+  line-height: var(--line-height-heading);
+}
+
+.title--h3 {
+  font-size: var(--font-size-h3);
+  line-height: var(--line-height-heading);
+}
+
+.description {
+  max-width: 62ch;
+  margin: 0;
+  font-size: var(--font-size-lead);
+  line-height: var(--line-height-lead);
+  text-wrap: pretty;
+}
+
+.actions {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+}
+
+.body {
+  --flow-gap: #{fluid(24, 16)};
+
+  min-width: 0;
+}
+
+.footer {
+  justify-content: space-between;
+  min-width: 0;
+  padding-top: fluid(24, 18);
+  border-top: var(--border-soft);
+}
+
+.section--plain .footer {
+  padding-top: fluid(18, 14);
+}
+
+.section--center {
+  align-items: center;
+  text-align: center;
+}
+
+.section--center .header {
+  justify-content: center;
+}
+
+.section--center .headerMain {
+  flex-basis: 100%;
+  align-items: center;
+}
+
+.section--center .actions,
+.section--center .footer {
+  justify-content: center;
+}
+
+@include tablet {
+  .header {
+    flex-direction: column;
+  }
+
+  .actions {
+    justify-content: flex-start;
+  }
+
+  .section--center .actions {
+    justify-content: center;
+  }
+}

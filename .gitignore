@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+**/node_modules/
+.pnpm-store/
+
+# Environment
+.env
+.env.*
+*.local
+!.env.example
+!**/.env.example
+
+# IDE and editor files
+.idea/
+**/.idea/
+.vscode/
+**/.vscode/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Build output
+dist/
+**/dist/
+dist-ssr/
+build/
+coverage/
+.nyc_output/
+.vite/
+**/.vite/
+.cache/
+**/.cache/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+
+# Temp files
+.temp/
+.tmp/
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Diagnostic reports
+report.*.*.*.*.json
+
+# Local tool state
+.codex/
+.agents/

@@ -1,0 +1,52 @@
+.page {
+  min-width: 0;
+}
+
+.content {
+  --flow-gap: #{fluid(24, 18)};
+}
+
+.stateCard {
+  display: grid;
+  gap: fluid(22, 16);
+  align-items: start;
+  padding: fluid(28, 20);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+}
+
+.stateHeader {
+  display: flex;
+  gap: 14px;
+  align-items: start;
+}
+
+.stateIcon {
+  @include flex-center;
+  @include square(3rem);
+
+  flex-shrink: 0;
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 10%);
+  border-radius: 50%;
+}
+
+.stateTitle {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  color: var(--color-text-heading);
+}
+
+.stateDescription {
+  font-size: fluid(15, 14);
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+.stateActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}

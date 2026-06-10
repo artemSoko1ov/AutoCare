@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ServiceStatus {
+  active
+  draft
+  hidden
+}
+
+enum OrderStatus {
+  new
+  confirmed
+  in_progress
+  completed
+  cancelled
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  username       String
+  phone          String?
+  avatarUrl      String?
+  password       String
+  role           UserRole @default(USER)
+  sessionVersion Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  cars  Car[]
+  orders Order[]
+  reviews Review[]
+  Token Token?
+}
+
+model Token {
+  id           Int    @id @default(autoincrement())
+  userId       String @unique
+  refreshToken String @unique
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Car {
+  id           String   @id @default(uuid())
+  userId       String
+  brand        String
+  model        String
+  year         Int
+  licensePlate String   @unique
+  vin          String?  @unique
+  mileage      Int      @default(0)
+  photoUrl     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  snapshots CarSnapshot[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CarSnapshot {
+  id          String   @id @default(uuid())
+  sourceCarId String?
+  brand       String
+  model       String
+  year        Int
+  mileage     Int
+  plateNumber String
+  photoUrl    String?
+  createdAt   DateTime @default(now())
+
+  order Order?
+  sourceCar Car? @relation(fields: [sourceCarId], references: [id], onDelete: SetNull)
+
+  @@index([sourceCarId])
+}
+
+model Service {
+  id            String        @id @default(uuid())
+  slug          String        @unique
+  title         String
+  category      String
+  summary       String
+  iconPath      String
+  includedItems String[]      @default([])
+  workflowSteps String[]      @default([])
+  priceFrom     Int
+  durationLabel String
+  status        ServiceStatus @default(draft)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  orders Order[]
+  reviews Review[]
+
+  @@index([status])
+  @@index([category])
+}
+
+model Order {
+  id                   String      @id @default(uuid())
+  userId               String
+  serviceId            String?
+  carSnapshotId        String      @unique
+  customerName         String
+  customerEmail        String
+  customerPhone        String?
+  serviceTitle         String
+  serviceCategory      String
+  serviceIconPath      String
+  servicePriceFrom     Int
+  serviceDurationLabel String
+  status               OrderStatus @default(new)
+  notes                String?
+  scheduledFor         DateTime?
+  quotedPrice          Int?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service     Service?    @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  carSnapshot CarSnapshot @relation(fields: [carSnapshotId], references: [id])
+  review      Review?
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@index([serviceId])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  serviceId String
+  orderId   String   @unique
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([serviceId, createdAt])
+}

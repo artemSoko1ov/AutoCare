@@ -1,0 +1,23 @@
+.page {
+  min-width: 0;
+  max-width: none !important;
+}
+
+.content {
+  --flow-gap: #{fluid(24, 18)};
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+  gap: fluid(24, 18);
+  align-items: start;
+
+  @include laptop {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main {
+  min-width: 0;
+}

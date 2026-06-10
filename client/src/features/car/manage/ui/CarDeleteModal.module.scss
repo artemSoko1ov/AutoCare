@@ -1,0 +1,38 @@
+.body {
+  display: grid;
+  gap: 14px;
+}
+
+.text {
+  font-size: fluid(15, 14);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.carName {
+  font-weight: var(--font-weight-heading);
+  color: var(--color-text-heading);
+}
+
+.error {
+  padding: fluid(14, 12) fluid(16, 14);
+  font-size: fluid(14, 13);
+  line-height: 1.5;
+  color: var(--color-danger);
+  background-color: var(--color-danger-bg);
+  border: 1px solid rgb(var(--color-danger-rgb) / 18%);
+  border-radius: var(--radius-md);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+
+  @include mobile {
+    > button {
+      width: 100%;
+    }
+  }
+}

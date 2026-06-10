@@ -1,0 +1,39 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '@prisma/prisma.service';
+import type { UpdateProfileBody, UserDto } from '@shared/contracts/auth';
+import { toUserDto, userDtoSelect } from '../../common/mappers/user-dto.mapper';
+
+@Injectable()
+export class ProfileService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async getProfile(userId: string): Promise<UserDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: userDtoSelect,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return toUserDto(user);
+  }
+
+  async updateProfile(
+    userId: string,
+    data: UpdateProfileBody,
+  ): Promise<UserDto> {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        username: data.username,
+        phone: data.phone,
+        avatarUrl: data.avatarUrl,
+      },
+      select: userDtoSelect,
+    });
+
+    return toUserDto(user);
+  }
+}

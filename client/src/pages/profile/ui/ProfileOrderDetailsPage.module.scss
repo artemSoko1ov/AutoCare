@@ -1,0 +1,277 @@
+.card {
+  display: grid;
+  gap: fluid(24, 18);
+  padding: fluid(30, 20);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-large);
+
+  @include mobile {
+    padding: fluid(24, 18);
+    border-radius: var(--radius-xl);
+  }
+}
+
+.header,
+.heading,
+.grid,
+.section,
+.infoList,
+.stats {
+  display: grid;
+}
+
+.header,
+.heading {
+  gap: 12px;
+}
+
+.headingTop,
+.sectionHeader,
+.actions {
+  display: flex;
+}
+
+.headingTop {
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-display);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-heading);
+}
+
+.description,
+.sectionSubtitle,
+.infoLabel,
+.noteText,
+.reviewDescription,
+.reviewDate {
+  font-size: fluid(15, 13);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding-inline: 12px;
+  font-size: fluid(13, 12);
+  font-weight: var(--font-weight-heading);
+  border-radius: var(--border-radius-pill);
+
+  &--success {
+    color: var(--color-success);
+    background-color: rgb(var(--color-success-rgb) / 12%);
+  }
+
+  &--warning {
+    color: var(--color-warning);
+    background-color: rgb(var(--color-warning-rgb) / 12%);
+  }
+}
+
+.stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: fluid(16, 12);
+
+  @include tablet {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat,
+.section,
+.noteSection,
+.reviewSection {
+  padding: fluid(20, 16);
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 84%) 0%,
+    rgb(var(--color-primary-rgb) / 3%) 100%
+  );
+  border: var(--border-soft);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+}
+
+.stat {
+  display: grid;
+  gap: 8px;
+}
+
+.statLabel {
+  font-size: fluid(12, 11);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.statValue,
+.sectionTitle,
+.infoValue {
+  color: var(--color-text-heading);
+}
+
+.statValue {
+  font-size: fluid(20, 16);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.35;
+}
+
+.grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: fluid(18, 14);
+
+  @include tablet {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section {
+  gap: 18px;
+}
+
+.sectionHeader {
+  gap: 14px;
+  align-items: center;
+}
+
+.reviewHeader,
+.reviewActions,
+.reviewMeta {
+  display: flex;
+}
+
+.sectionIcon {
+  @include flex-center;
+  @include square(3rem);
+
+  flex-shrink: 0;
+  color: var(--color-primary);
+  background-color: rgb(var(--color-primary-rgb) / 10%);
+  border-radius: 50%;
+}
+
+.sectionTitle {
+  font-size: fluid(20, 17);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.3;
+}
+
+.infoList {
+  gap: 12px;
+}
+
+.infoItem {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 12px;
+
+  &:not(:last-child) {
+    border-bottom: var(--border-soft);
+  }
+}
+
+.infoValue {
+  font-size: fluid(16, 14);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.45;
+}
+
+.noteSection {
+  display: grid;
+  gap: 12px;
+}
+
+.noteText {
+  margin: 0;
+}
+
+.reviewDescription,
+.reviewText {
+  margin: 0;
+}
+
+.reviewSection {
+  display: grid;
+  gap: 14px;
+}
+
+.reviewHeader {
+  gap: 16px;
+  align-items: start;
+  justify-content: space-between;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.reviewActions {
+  gap: 12px;
+  align-items: center;
+}
+
+.reviewNotice {
+  padding: 12px 14px;
+  font-size: fluid(14, 13);
+  line-height: 1.5;
+  border-radius: var(--radius-lg);
+
+  &--success {
+    color: var(--color-success);
+    background-color: rgb(var(--color-success-rgb) / 10%);
+  }
+
+  &--info {
+    color: var(--color-primary);
+    background-color: rgb(var(--color-primary-rgb) / 10%);
+  }
+
+  &--error {
+    color: var(--color-danger);
+    background-color: rgb(var(--color-danger-rgb) / 10%);
+  }
+}
+
+.reviewCard {
+  display: grid;
+  gap: 12px;
+  padding: fluid(18, 14);
+  background-color: rgb(255 255 255 / 76%);
+  border: var(--border-soft);
+  border-radius: var(--radius-xl);
+}
+
+.reviewMeta {
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reviewRating {
+  font-size: fluid(18, 16);
+  font-weight: var(--font-weight-heading);
+  color: var(--color-text-heading);
+}
+
+.reviewText {
+  margin: 0;
+  font-size: fluid(15, 14);
+  line-height: 1.7;
+  color: var(--color-text-primary);
+}
+
+.actions {
+  flex-wrap: wrap;
+  gap: 12px;
+}
