@@ -78,11 +78,11 @@
   --font-weight-display: 700;
 
   --font-size-display: #{fluid(88, 52)};
-  --font-size-h1: #{fluid(56, 48)};
+  --font-size-h1: #{fluid(56, 44)};
   --font-size-h2: #{fluid(40, 30)};
   --font-size-h3: #{fluid(24, 21)};
   --font-size-lead: #{fluid(20, 16)};
-  --font-size-body: 16px;
+  --font-size-body: #{fluid(16, 14)};
   --font-size-small: 14px;
   --font-size-caption: 12px;
 

@@ -6,7 +6,7 @@ import Icon from "@/shared/ui/Icon";
 import styles from "./HomeHero.module.scss";
 
 const HomeHero = () => {
-  const { description, eyebrow, features, primaryAction, secondaryAction, title } = homeHeroContent;
+  const { description, eyebrow, features, primaryAction, title } = homeHeroContent;
 
   return (
     <section className={clsx("page-shell", "page-shell--accent", styles.hero)}>
@@ -43,16 +43,6 @@ const HomeHero = () => {
                 <span className={styles.actionIcon}>
                   <Icon name="chevron-right" />
                 </span>
-              </NavLink>
-
-              <NavLink
-                className={clsx(styles.action, styles["action--secondary"])}
-                to={secondaryAction.to}
-              >
-                <span className={styles.actionIcon}>
-                  <Icon name={secondaryAction.icon} />
-                </span>
-                <span>{secondaryAction.label}</span>
               </NavLink>
             </div>
 

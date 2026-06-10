@@ -3,6 +3,7 @@ import { useIsFetching, useIsMutating } from "@tanstack/react-query";
 import clsx from "clsx";
 import { useLocation } from "react-router-dom";
 import { useAppSelector } from "@app/providers/store/hooks";
+import { useSuspenseTopLoader } from "../model/suspenseLoader";
 import styles from "./TopLoader.module.scss";
 
 const START_PROGRESS = 0.12;
@@ -16,6 +17,7 @@ const TopLoader = () => {
   const fetchingCount = useIsFetching();
   const mutatingCount = useIsMutating();
   const sessionStatus = useAppSelector((state) => state.session.status);
+  const suspenseLoading = useSuspenseTopLoader();
 
   const [progress, setProgress] = useState(0);
   const [routePulseActive, setRoutePulseActive] = useState(false);
@@ -91,7 +93,11 @@ const TopLoader = () => {
   }, []);
 
   const isBusy =
-    routePulseActive || fetchingCount > 0 || mutatingCount > 0 || sessionStatus === "loading";
+    routePulseActive ||
+    suspenseLoading ||
+    fetchingCount > 0 ||
+    mutatingCount > 0 ||
+    sessionStatus === "loading";
   const isVisible = isBusy || progress > 0;
 
   useEffect(() => {

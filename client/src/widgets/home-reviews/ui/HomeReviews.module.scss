@@ -96,7 +96,6 @@
   scroll-snap-align: start;
   scroll-snap-stop: always;
   border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-large);
   transition:
     translate var(--transition-duration-slow) var(--transition-easing),
     box-shadow var(--transition-duration-slow) var(--transition-easing);

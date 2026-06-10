@@ -1,9 +1,10 @@
-import { Suspense, lazy, type ReactNode } from "react";
+import { Suspense, lazy, useEffect, type ReactNode } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AdminPage from "@/pages/admin/ui/AdminPage";
 import ProfilePage from "@/pages/profile/ui/ProfilePage";
 import MainLayout from "@/widgets/layout/ui/MainLayout";
 import TopLoader from "@/widgets/top-loader";
+import { beginSuspenseTopLoader } from "@/widgets/top-loader/model/suspenseLoader";
 import AdminRoute from "./AdminRoute";
 import GuestOnlyRoute from "./GuestOnlyRoute";
 import ProtectedRoute from "./ProtectedRoute";
@@ -27,18 +28,15 @@ const SitemapPage = lazy(() => import("@/pages/sitemap/ui/SitemapPage"));
 const ServicesPage = lazy(() => import("@/pages/services/ui/ServicesPage"));
 const SignUpPage = lazy(() => import("@/pages/sign-up/ui/SignUpPage"));
 
-const RouteFallback = () => (
-  <div
-    aria-busy="true"
-    className="container"
-    style={{
-      minHeight: "40vh",
-      paddingBlock: "4rem",
-    }}
-  >
-    Загружаем страницу...
-  </div>
-);
+const RouteFallback = () => {
+  useEffect(() => {
+    const endLoading = beginSuspenseTopLoader();
+
+    return endLoading;
+  }, []);
+
+  return null;
+};
 
 const withRouteFallback = (page: ReactNode) => (
   <Suspense fallback={<RouteFallback />}>{page}</Suspense>
