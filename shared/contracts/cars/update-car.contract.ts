@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import {
+  isImageValueWithinSizeLimit,
+  isSupportedImageValue,
+} from '../common/image-value.contract';
 import { carDtoSchema } from './car.contract';
 import { isCarBrand, isCarModelForBrand } from './car-catalog';
 
@@ -28,19 +32,6 @@ const normalizeOptionalPhoto = (value: unknown) => {
 
   const normalizedValue = value.trim();
   return normalizedValue === '' ? null : normalizedValue;
-};
-
-const isSupportedImageValue = (value: string) => {
-  if (value.startsWith('data:image/')) {
-    return true;
-  }
-
-  try {
-    const parsedUrl = new URL(value);
-    return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
-  } catch {
-    return false;
-  }
 };
 
 export const UpdateCarBodySchema = z
@@ -90,7 +81,14 @@ export const UpdateCarBodySchema = z
       normalizeOptionalPhoto,
       z
         .string()
-        .refine(isSupportedImageValue, 'Укажите корректное изображение автомобиля')
+        .refine(
+          isSupportedImageValue,
+          'Укажите корректное изображение автомобиля',
+        )
+        .refine(
+          isImageValueWithinSizeLimit,
+          'Размер фото должен быть не больше 5 МБ',
+        )
         .nullable()
         .optional(),
     ),

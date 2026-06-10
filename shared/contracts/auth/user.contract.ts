@@ -1,23 +1,18 @@
 import { z } from 'zod';
+import {
+  isImageValueWithinSizeLimit,
+  isSupportedImageValue,
+} from '../common/image-value.contract';
 
 export const userRoleSchema = z.enum(['USER', 'ADMIN']);
-
-const isSupportedImageValue = (value: string) => {
-  if (value.startsWith('data:image/')) {
-    return true;
-  }
-
-  try {
-    const parsedUrl = new URL(value);
-    return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
-  } catch {
-    return false;
-  }
-};
 
 export const nullableImageValueSchema = z
   .string()
   .refine(isSupportedImageValue, 'Некорректная ссылка на изображение')
+  .refine(
+    isImageValueWithinSizeLimit,
+    'Размер изображения не должен превышать 5 МБ',
+  )
   .nullable();
 
 export const userDtoSchema = z.object({

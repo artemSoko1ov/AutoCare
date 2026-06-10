@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "@/shared/ui/Button";
+import { LEGAL_DOCS } from "@/shared/config/legalDocs";
 import Form from "@/shared/ui/Form";
 import Icon from "@/shared/ui/Icon";
 import Input from "@/shared/ui/Input";
@@ -196,8 +197,18 @@ const RegisterForm = () => {
             type="checkbox"
           />
           <span className={styles.checkboxText}>
-            Я согласен на обработку персональных данных и с{" "}
-            <a href="#">Пользовательским соглашением</a>
+            Я подтверждаю{" "}
+            <a href={LEGAL_DOCS.consent.href} rel="noreferrer" target="_blank">
+              согласие на обработку персональных данных
+            </a>
+            , ознакомлен с{" "}
+            <a href={LEGAL_DOCS.privacyPolicy.href} rel="noreferrer" target="_blank">
+              политикой конфиденциальности
+            </a>{" "}
+            и{" "}
+            <a href={LEGAL_DOCS.personalDataPolicy.href} rel="noreferrer" target="_blank">
+              политикой обработки персональных данных
+            </a>
           </span>
         </label>
 

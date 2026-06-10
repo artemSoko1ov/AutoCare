@@ -1,15 +1,18 @@
 import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
 import { ServicesCatalogFilters, useServiceCatalogFilters } from "@/features/service/catalog";
 import { useServicesQuery } from "@/entities/service";
 import Button from "@/shared/ui/Button";
 import Empty from "@/shared/ui/Empty";
 import Icon from "@/shared/ui/Icon";
 import Section from "@/shared/ui/Section";
+import BookingCta from "@/widgets/booking-cta/ui/BookingCta";
 import PageBreadcrumbs from "@/widgets/page-breadcrumbs";
 import ServicesCatalog from "@/widgets/services-catalog";
 import styles from "./ServicesPage.module.scss";
 
 const ServicesPage = () => {
+  const navigate = useNavigate();
   const { data = [], isError, isLoading, refetch } = useServicesQuery();
   const {
     activeCategory,
@@ -125,6 +128,23 @@ const ServicesPage = () => {
       ) : null}
 
       {!isLoading && !isError && data.length === 0 ? <ServicesCatalog services={data} /> : null}
+
+      <BookingCta
+        action={
+          <Button
+            leftIcon={<Icon name="wrench" />}
+            onClick={() => {
+              void navigate("/requests/new");
+            }}
+            size="lg"
+          >
+            Оставить заявку
+          </Button>
+        }
+        description="Если не хотите разбираться в каталоге самостоятельно, мы подскажем подходящую услугу, сориентируем по срокам и подготовим обращение под ваш автомобиль."
+        icon={<Icon name="car" />}
+        title="Не уверены, какая услуга нужна именно вам?"
+      />
     </Section>
   );
 };

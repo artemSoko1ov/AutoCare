@@ -91,7 +91,7 @@
   gap: fluid(4, 2);
   max-width: 11ch;
   margin: 0;
-  font-size: fluid(76, 48);
+  font-size: fluid(76, 40);
   font-weight: var(--font-weight-display);
   line-height: 0.94;
   color: var(--color-text-heading);
@@ -110,7 +110,7 @@
 
 .description {
   max-width: 34rem;
-  font-size: fluid(20, 16);
+  font-size: fluid(20, 14);
   line-height: var(--line-height-lead);
   color: var(--color-text-secondary);
 

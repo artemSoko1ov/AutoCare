@@ -1,10 +1,12 @@
 import 'dotenv/config';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 
 const DEV_CORS_ORIGIN_PATTERN = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i;
+const REQUEST_BODY_LIMIT = '8mb';
 const bootstrapLogger = new Logger('Bootstrap');
 
 type CorsCallback = (error: Error | null, allow?: boolean) => void;
@@ -45,7 +47,13 @@ function createCorsOptions() {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // Images are sent as data URLs inside JSON, so the payload is larger than the original file.
+  app.useBodyParser('json', { limit: REQUEST_BODY_LIMIT });
+  app.useBodyParser('urlencoded', {
+    extended: true,
+    limit: REQUEST_BODY_LIMIT,
+  });
   app.setGlobalPrefix('api');
   app.enableCors(createCorsOptions());
   app.use(cookieParser());

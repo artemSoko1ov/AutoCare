@@ -1,6 +1,8 @@
 import clsx from "clsx";
+import Button from "@/shared/ui/Button";
 import Section from "@/shared/ui/Section";
 import Icon, { type IconName } from "@/shared/ui/Icon";
+import BookingCta from "@/widgets/booking-cta/ui/BookingCta";
 import PageBreadcrumbs from "@/widgets/page-breadcrumbs";
 import styles from "./ContactsPage.module.scss";
 
@@ -163,6 +165,23 @@ const ContactsPage = () => {
           );
         })}
       </div>
+
+      <BookingCta
+        action={
+          <Button
+            leftIcon={<Icon name="phone" />}
+            onClick={() => {
+              window.location.href = "tel:+78000000000";
+            }}
+            size="lg"
+          >
+            Позвонить сейчас
+          </Button>
+        }
+        description="Свяжемся без долгих ожиданий, уточним задачу, подскажем по ближайшему времени и поможем выбрать удобный формат обращения."
+        icon={<Icon name="support" />}
+        title="Нужно быстро обсудить диагностику или запись в сервис?"
+      />
     </Section>
   );
 };

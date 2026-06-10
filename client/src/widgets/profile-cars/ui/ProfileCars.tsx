@@ -88,7 +88,15 @@ const ProfileCars = ({
                   className={clsx(styles.thumb, styles[`thumb--${item.accent}`], {
                     [styles["thumb--image"]]: Boolean(item.photoUrl),
                   })}
-                  style={item.photoUrl ? { backgroundImage: `url(${item.photoUrl})` } : undefined}
+                  style={
+                    item.photoUrl
+                      ? {
+                          backgroundImage: `url(${item.photoUrl})`,
+                          backgroundPosition: "center",
+                          backgroundSize: "cover",
+                        }
+                      : undefined
+                  }
                 >
                   {!item.photoUrl ? <Icon name="car" /> : null}
                 </div>

@@ -1,3 +1,5 @@
+import { LEGAL_DOCS } from "@/shared/config/legalDocs";
+
 export type FooterContactItem = {
   label: string;
   href?: string;
@@ -7,6 +9,7 @@ export type FooterInfoLink = {
   label: string;
   href?: string;
   to?: string;
+  external?: boolean;
 };
 
 export type FooterPageLink = {
@@ -24,11 +27,18 @@ export const footerContactGroups: FooterContactItem[][] = [
 ];
 
 export const footerInfoLinks: FooterInfoLink[] = [
-  { label: "Согласие на обработку персональных данных", href: "#" },
-  { label: "Политика конфиденциальности", href: "#" },
-  { label: "Пользовательское соглашение", href: "#" },
+  { label: LEGAL_DOCS.consent.label, href: LEGAL_DOCS.consent.href, external: true },
+  {
+    label: LEGAL_DOCS.privacyPolicy.label,
+    href: LEGAL_DOCS.privacyPolicy.href,
+    external: true,
+  },
+  {
+    label: LEGAL_DOCS.personalDataPolicy.label,
+    href: LEGAL_DOCS.personalDataPolicy.href,
+    external: true,
+  },
   { label: "Карта сайта", to: "/sitemap" },
-  { label: "Реквизиты компании", href: "#" },
 ];
 
 export const footerPageLinks: FooterPageLink[] = [

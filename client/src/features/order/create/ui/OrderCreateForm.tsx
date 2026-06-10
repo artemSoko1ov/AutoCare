@@ -6,6 +6,7 @@ import type { GetServicesResponse } from "@shared/contracts/services";
 import clsx from "clsx";
 import { formatOrderDateTime, formatOrderId, toIsoFromDateTimeLocal } from "@/entities/order";
 import { formatServicePrice } from "@/entities/service";
+import { LEGAL_DOCS } from "@/shared/config/legalDocs";
 import Button from "@/shared/ui/Button";
 import Icon from "@/shared/ui/Icon";
 import Select from "@/shared/ui/Select";
@@ -344,7 +345,17 @@ const OrderCreateForm = ({ cars, initialServiceId = "", services }: OrderCreateF
 
           <p className={styles.privacyText}>
             <Icon name="shield" />
-            <span>Ваши данные защищены и не передаются третьим лицам</span>
+            <span>
+              Отправляя заявку, вы подтверждаете{" "}
+              <a href={LEGAL_DOCS.consent.href} rel="noreferrer" target="_blank">
+                согласие на обработку персональных данных
+              </a>{" "}
+              и ознакомление с{" "}
+              <a href={LEGAL_DOCS.privacyPolicy.href} rel="noreferrer" target="_blank">
+                политикой конфиденциальности
+              </a>
+              .
+            </span>
           </p>
         </div>
       </form>

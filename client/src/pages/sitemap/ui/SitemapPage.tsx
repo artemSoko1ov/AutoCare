@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { Link } from "react-router-dom";
+import { LEGAL_DOCS } from "@/shared/config/legalDocs";
 import type { IconName } from "@/shared/ui/Icon";
 import Icon from "@/shared/ui/Icon";
 import Section from "@/shared/ui/Section";
@@ -20,6 +21,7 @@ type SitemapLinkItem = {
   to?: string;
   href?: string;
   badge?: string;
+  external?: boolean;
   disabled?: boolean;
 };
 
@@ -152,35 +154,31 @@ const sitemapSections: SitemapSection[] = [
     id: "docs",
     icon: "mail",
     title: "Информация и документы",
-    description: "Информационные страницы и юридические материалы, которые можно развивать дальше.",
+    description:
+      "Юридические материалы AutoCare, доступные для быстрого просмотра и скачивания в PDF.",
     links: [
       {
         id: "personal-data",
-        title: "Согласие на обработку персональных данных",
-        description: "Раздел можно вынести в отдельную страницу с полным текстом согласия.",
-        href: "#",
-        disabled: true,
+        title: LEGAL_DOCS.consent.label,
+        description: "PDF-документ с полным текстом согласия на обработку персональных данных.",
+        href: LEGAL_DOCS.consent.href,
+        external: true,
       },
       {
         id: "privacy-policy",
-        title: "Политика конфиденциальности",
-        description: "Подробные правила хранения и обработки персональных данных клиентов.",
-        href: "#",
-        disabled: true,
+        title: LEGAL_DOCS.privacyPolicy.label,
+        description:
+          "PDF-версия политики конфиденциальности с правилами хранения и использования данных.",
+        href: LEGAL_DOCS.privacyPolicy.href,
+        external: true,
       },
       {
-        id: "user-agreement",
-        title: "Пользовательское соглашение",
-        description: "Условия использования сайта и личного кабинета сервиса AutoCare.",
-        href: "#",
-        disabled: true,
-      },
-      {
-        id: "company-details",
-        title: "Реквизиты компании",
-        description: "Блок с юридической информацией и реквизитами можно подключить отдельно.",
-        href: "#",
-        disabled: true,
+        id: "personal-data-policy",
+        title: LEGAL_DOCS.personalDataPolicy.label,
+        description:
+          "PDF-документ с порядком обработки персональных данных и правами пользователя.",
+        href: LEGAL_DOCS.personalDataPolicy.href,
+        external: true,
       },
     ],
   },
@@ -208,8 +206,7 @@ const SitemapPage = () => {
 
           <p className={styles.introText}>
             Карта сайта помогает быстро перейти в нужный раздел, проверить, какие страницы уже
-            доступны пользователю, и увидеть, какие информационные документы пока остаются
-            заглушками.
+            доступны пользователю, и сразу открыть PDF-документы с юридической информацией.
           </p>
 
           <ul className={styles.introList}>
@@ -283,6 +280,8 @@ const SitemapPage = () => {
                           className={styles.linkTitle}
                           href={link.href}
                           onClick={link.disabled ? (event) => event.preventDefault() : undefined}
+                          rel={link.external ? "noreferrer" : undefined}
+                          target={link.external ? "_blank" : undefined}
                         >
                           {link.title}
                         </a>

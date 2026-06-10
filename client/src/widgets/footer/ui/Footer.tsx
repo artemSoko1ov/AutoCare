@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import type { MouseEventHandler } from "react";
 import { Link } from "react-router-dom";
 import logoImage from "@/shared/assets/images/logo.png";
 import { footerContactGroups, footerInfoLinks, footerPageLinks } from "../model/footerLinks";
@@ -7,10 +6,6 @@ import styles from "./Footer.module.scss";
 
 const Footer = () => {
   const year = new Date().getFullYear();
-
-  const handlePlaceholderLinkClick: MouseEventHandler<HTMLAnchorElement> = (event) => {
-    event.preventDefault();
-  };
 
   return (
     <footer className={styles.footer}>
@@ -60,7 +55,8 @@ const Footer = () => {
                         className={styles.link}
                         href={link.href}
                         key={link.label}
-                        onClick={handlePlaceholderLinkClick}
+                        rel={link.external ? "noreferrer" : undefined}
+                        target={link.external ? "_blank" : undefined}
                       >
                         {link.label}
                       </a>
