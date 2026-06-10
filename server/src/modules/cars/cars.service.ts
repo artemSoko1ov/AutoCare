@@ -113,9 +113,14 @@ export class CarsService {
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === 'P2002'
     ) {
-      const target = Array.isArray(error.meta?.target)
-        ? error.meta.target.join(', ')
-        : String(error.meta?.target ?? '');
+      const rawTarget = error.meta?.target;
+      const target = Array.isArray(rawTarget)
+        ? rawTarget
+            .filter((field): field is string => typeof field === 'string')
+            .join(', ')
+        : typeof rawTarget === 'string'
+          ? rawTarget
+          : '';
 
       if (target.includes('licensePlate')) {
         throw new ConflictException(

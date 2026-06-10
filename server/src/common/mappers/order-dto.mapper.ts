@@ -40,7 +40,9 @@ export type OrderDtoSource = Prisma.OrderGetPayload<{
 
 export const toOrderDto = (order: OrderDtoSource): OrderDto => {
   if (!isCarBrand(order.carSnapshot.brand)) {
-    throw new Error(`Unsupported car brand in order snapshot: ${order.carSnapshot.brand}`);
+    throw new Error(
+      `Unsupported car brand in order snapshot: ${order.carSnapshot.brand}`,
+    );
   }
 
   return {

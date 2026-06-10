@@ -22,7 +22,8 @@ export class ProfileController {
   @Patch()
   updateProfile(
     @CurrentUser() user: UserDto,
-    @Body(new ZodValidationPipe(UpdateProfileBodySchema)) data: UpdateProfileBody,
+    @Body(new ZodValidationPipe(UpdateProfileBodySchema))
+    data: UpdateProfileBody,
   ) {
     return this.profileService.updateProfile(user.id, data);
   }

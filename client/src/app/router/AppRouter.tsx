@@ -1,29 +1,48 @@
-import AdminPage from "@/pages/admin/ui/AdminPage";
-import AdminDashboardPage from "@/pages/admin/ui/AdminDashboardPage";
-import AdminRequestsPage from "@/pages/admin/ui/AdminRequestsPage";
-import AdminReviewsPage from "@/pages/admin/ui/AdminReviewsPage";
-import AdminServicesPage from "@/pages/admin/ui/AdminServicesPage";
+import { Suspense, lazy, type ReactNode } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import ContactsPage from "@/pages/contacts/ui/ContactsPage";
-import HomePage from "@/pages/home/ui/HomePage";
-import LoginPage from "@/pages/login/ui/LoginPage";
-import NotFoundPage from "@/pages/not-found/ui/NotFoundPage";
-import ProfileCarsPage from "@/pages/profile/ui/ProfileCarsPage";
-import ProfileDashboardPage from "@/pages/profile/ui/ProfileDashboardPage";
-import ProfileOrderDetailsPage from "@/pages/profile/ui/ProfileOrderDetailsPage";
-import ProfileOrdersPage from "@/pages/profile/ui/ProfileOrdersPage";
+import AdminPage from "@/pages/admin/ui/AdminPage";
 import ProfilePage from "@/pages/profile/ui/ProfilePage";
-import ProfileReviewsPage from "@/pages/profile/ui/ProfileReviewsPage";
-import RequestCreatePage from "@/pages/request-create/ui/RequestCreatePage";
-import ServiceDetailsPage from "@/pages/service-details/ui/ServiceDetailsPage";
-import SitemapPage from "@/pages/sitemap/ui/SitemapPage";
-import ServicesPage from "@/pages/services/ui/ServicesPage";
-import SignUpPage from "@/pages/sign-up/ui/SignUpPage";
 import MainLayout from "@/widgets/layout/ui/MainLayout";
 import TopLoader from "@/widgets/top-loader";
 import AdminRoute from "./AdminRoute";
 import GuestOnlyRoute from "./GuestOnlyRoute";
 import ProtectedRoute from "./ProtectedRoute";
+
+const AdminDashboardPage = lazy(() => import("@/pages/admin/ui/AdminDashboardPage"));
+const AdminRequestsPage = lazy(() => import("@/pages/admin/ui/AdminRequestsPage"));
+const AdminReviewsPage = lazy(() => import("@/pages/admin/ui/AdminReviewsPage"));
+const AdminServicesPage = lazy(() => import("@/pages/admin/ui/AdminServicesPage"));
+const ContactsPage = lazy(() => import("@/pages/contacts/ui/ContactsPage"));
+const HomePage = lazy(() => import("@/pages/home/ui/HomePage"));
+const LoginPage = lazy(() => import("@/pages/login/ui/LoginPage"));
+const NotFoundPage = lazy(() => import("@/pages/not-found/ui/NotFoundPage"));
+const ProfileCarsPage = lazy(() => import("@/pages/profile/ui/ProfileCarsPage"));
+const ProfileDashboardPage = lazy(() => import("@/pages/profile/ui/ProfileDashboardPage"));
+const ProfileOrderDetailsPage = lazy(() => import("@/pages/profile/ui/ProfileOrderDetailsPage"));
+const ProfileOrdersPage = lazy(() => import("@/pages/profile/ui/ProfileOrdersPage"));
+const ProfileReviewsPage = lazy(() => import("@/pages/profile/ui/ProfileReviewsPage"));
+const RequestCreatePage = lazy(() => import("@/pages/request-create/ui/RequestCreatePage"));
+const ServiceDetailsPage = lazy(() => import("@/pages/service-details/ui/ServiceDetailsPage"));
+const SitemapPage = lazy(() => import("@/pages/sitemap/ui/SitemapPage"));
+const ServicesPage = lazy(() => import("@/pages/services/ui/ServicesPage"));
+const SignUpPage = lazy(() => import("@/pages/sign-up/ui/SignUpPage"));
+
+const RouteFallback = () => (
+  <div
+    aria-busy="true"
+    className="container"
+    style={{
+      minHeight: "40vh",
+      paddingBlock: "4rem",
+    }}
+  >
+    Загружаем страницу...
+  </div>
+);
+
+const withRouteFallback = (page: ReactNode) => (
+  <Suspense fallback={<RouteFallback />}>{page}</Suspense>
+);
 
 const AppRouter = () => {
   return (
@@ -33,34 +52,37 @@ const AppRouter = () => {
         <Route element={<AdminRoute />} path="/admin">
           <Route element={<AdminPage />}>
             <Route element={<Navigate replace to="dashboard" />} index />
-            <Route element={<AdminDashboardPage />} path="dashboard" />
-            <Route element={<AdminRequestsPage />} path="requests" />
-            <Route element={<AdminReviewsPage />} path="reviews" />
-            <Route element={<AdminServicesPage />} path="services" />
+            <Route element={withRouteFallback(<AdminDashboardPage />)} path="dashboard" />
+            <Route element={withRouteFallback(<AdminRequestsPage />)} path="requests" />
+            <Route element={withRouteFallback(<AdminReviewsPage />)} path="reviews" />
+            <Route element={withRouteFallback(<AdminServicesPage />)} path="services" />
           </Route>
         </Route>
 
         <Route element={<MainLayout />} path="/">
-          <Route element={<HomePage />} index />
-          <Route element={<ServicesPage />} path="services" />
-          <Route element={<ServiceDetailsPage />} path="services/:serviceId" />
-          <Route element={<ContactsPage />} path="contacts" />
-          <Route element={<SitemapPage />} path="sitemap" />
+          <Route element={withRouteFallback(<HomePage />)} index />
+          <Route element={withRouteFallback(<ServicesPage />)} path="services" />
+          <Route element={withRouteFallback(<ServiceDetailsPage />)} path="services/:serviceId" />
+          <Route element={withRouteFallback(<ContactsPage />)} path="contacts" />
+          <Route element={withRouteFallback(<SitemapPage />)} path="sitemap" />
           <Route element={<GuestOnlyRoute />}>
-            <Route element={<LoginPage />} path="login" />
-            <Route element={<SignUpPage />} path="sign-up" />
+            <Route element={withRouteFallback(<LoginPage />)} path="login" />
+            <Route element={withRouteFallback(<SignUpPage />)} path="sign-up" />
           </Route>
           <Route element={<ProtectedRoute />}>
-            <Route element={<RequestCreatePage />} path="requests/new" />
+            <Route element={withRouteFallback(<RequestCreatePage />)} path="requests/new" />
             <Route element={<ProfilePage />} path="profile">
-              <Route element={<ProfileDashboardPage />} index />
-              <Route element={<ProfileCarsPage />} path="cars" />
-              <Route element={<ProfileOrdersPage />} path="requests" />
-              <Route element={<ProfileOrderDetailsPage />} path="requests/:orderId" />
-              <Route element={<ProfileReviewsPage />} path="reviews" />
+              <Route element={withRouteFallback(<ProfileDashboardPage />)} index />
+              <Route element={withRouteFallback(<ProfileCarsPage />)} path="cars" />
+              <Route element={withRouteFallback(<ProfileOrdersPage />)} path="requests" />
+              <Route
+                element={withRouteFallback(<ProfileOrderDetailsPage />)}
+                path="requests/:orderId"
+              />
+              <Route element={withRouteFallback(<ProfileReviewsPage />)} path="reviews" />
             </Route>
           </Route>
-          <Route element={<NotFoundPage />} path="*" />
+          <Route element={withRouteFallback(<NotFoundPage />)} path="*" />
         </Route>
       </Routes>
     </BrowserRouter>

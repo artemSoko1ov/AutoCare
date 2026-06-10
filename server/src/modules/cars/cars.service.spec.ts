@@ -1,7 +1,4 @@
-import {
-  ConflictException,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { PrismaService } from '@prisma/prisma.service';
 import { CarsService } from './cars.service';
@@ -85,9 +82,9 @@ describe('CarsService', () => {
 
     const service = new CarsService(prisma);
 
-    await expect(service.getCarById('user-1', 'missing')).rejects.toBeInstanceOf(
-      NotFoundException,
-    );
+    await expect(
+      service.getCarById('user-1', 'missing'),
+    ).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('creates a car and returns normalized dto', async () => {
@@ -195,17 +192,15 @@ describe('CarsService', () => {
   it('maps prisma unique errors to conflict exception', async () => {
     const prisma = {
       car: {
-        create: jest
-          .fn()
-          .mockRejectedValue(
-            new Prisma.PrismaClientKnownRequestError('Duplicate', {
-              clientVersion: '7.8.0',
-              code: 'P2002',
-              meta: {
-                target: ['licensePlate'],
-              },
-            }),
-          ),
+        create: jest.fn().mockRejectedValue(
+          new Prisma.PrismaClientKnownRequestError('Duplicate', {
+            clientVersion: '7.8.0',
+            code: 'P2002',
+            meta: {
+              target: ['licensePlate'],
+            },
+          }),
+        ),
       },
     } as unknown as PrismaService;
 

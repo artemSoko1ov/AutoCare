@@ -244,8 +244,8 @@ describe('ServicesService', () => {
   });
 
   it('recomputes slug when title or category changes during update', async () => {
-    const nextTitle = 'РќРѕРІР°СЏ РґРёР°РіРЅРѕСЃС‚РёРєР°';
-    const nextCategory = 'РџСЂРµРјРёСѓРј';
+    const nextTitle = 'Новая диагностика';
+    const nextCategory = 'Премиум';
     const updatedService = {
       ...baseService,
       title: nextTitle,
@@ -307,8 +307,8 @@ describe('ServicesService', () => {
   });
 
   it('throws when updated title and category conflict with another service', async () => {
-    const nextTitle = 'РќРѕРІР°СЏ РґРёР°РіРЅРѕСЃС‚РёРєР°';
-    const nextCategory = 'РџСЂРµРјРёСѓРј';
+    const nextTitle = 'Новая диагностика';
+    const nextCategory = 'Премиум';
     const findUnique = jest
       .fn()
       .mockResolvedValueOnce({
@@ -399,8 +399,8 @@ describe('ServicesService', () => {
 
     const service = new ServicesService(prisma);
 
-    await expect(service.getPublicServiceById('missing')).rejects.toBeInstanceOf(
-      NotFoundException,
-    );
+    await expect(
+      service.getPublicServiceById('missing'),
+    ).rejects.toBeInstanceOf(NotFoundException);
   });
 });

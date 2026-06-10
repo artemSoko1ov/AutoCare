@@ -23,7 +23,9 @@ describe('ReviewsController', () => {
   it('delegates public list request to service', async () => {
     service.getPublicReviews.mockResolvedValue([] as never);
 
-    await expect(controller.getReviews({ serviceId: 'service-1', limit: 5 })).resolves.toEqual([]);
+    await expect(
+      controller.getReviews({ serviceId: 'service-1', limit: 5 }),
+    ).resolves.toEqual([]);
     expect(service.getPublicReviews).toHaveBeenCalledWith({
       serviceId: 'service-1',
       limit: 5,
@@ -33,7 +35,9 @@ describe('ReviewsController', () => {
   it('delegates current user reviews request to service', async () => {
     service.getUserReviews.mockResolvedValue([] as never);
 
-    await expect(controller.getMyReviews({ id: 'user-1' } as never)).resolves.toEqual([]);
+    await expect(
+      controller.getMyReviews({ id: 'user-1' } as never),
+    ).resolves.toEqual([]);
     expect(service.getUserReviews).toHaveBeenCalledWith('user-1');
   });
 
@@ -41,14 +45,11 @@ describe('ReviewsController', () => {
     service.createReview.mockResolvedValue({ id: 'review-1' } as never);
 
     await expect(
-      controller.createReview(
-        { id: 'user-1' } as never,
-        {
-          orderId: 'order-1',
-          rating: 5,
-          comment: 'Подробный и полезный отзыв о работе сервиса.',
-        },
-      ),
+      controller.createReview({ id: 'user-1' } as never, {
+        orderId: 'order-1',
+        rating: 5,
+        comment: 'Подробный и полезный отзыв о работе сервиса.',
+      }),
     ).resolves.toEqual({
       id: 'review-1',
     });
@@ -63,27 +64,29 @@ describe('ReviewsController', () => {
     service.updateUserReview.mockResolvedValue({ id: 'review-1' } as never);
 
     await expect(
-      controller.updateReview(
-        { id: 'user-1' } as never,
-        'review-1',
-        {
-          rating: 4,
-          comment: 'Обновленный отзыв после повторного визита.',
-        },
-      ),
+      controller.updateReview({ id: 'user-1' } as never, 'review-1', {
+        rating: 4,
+        comment: 'Обновленный отзыв после повторного визита.',
+      }),
     ).resolves.toEqual({
       id: 'review-1',
     });
-    expect(service.updateUserReview).toHaveBeenCalledWith('user-1', 'review-1', {
-      rating: 4,
-      comment: 'Обновленный отзыв после повторного визита.',
-    });
+    expect(service.updateUserReview).toHaveBeenCalledWith(
+      'user-1',
+      'review-1',
+      {
+        rating: 4,
+        comment: 'Обновленный отзыв после повторного визита.',
+      },
+    );
   });
 
   it('delegates delete request to service', async () => {
     service.deleteUserReview.mockResolvedValue({ id: 'review-1' } as never);
 
-    await expect(controller.deleteReview({ id: 'user-1' } as never, 'review-1')).resolves.toEqual({
+    await expect(
+      controller.deleteReview({ id: 'user-1' } as never, 'review-1'),
+    ).resolves.toEqual({
       id: 'review-1',
     });
     expect(service.deleteUserReview).toHaveBeenCalledWith('user-1', 'review-1');

@@ -9,7 +9,8 @@ describe('ReviewsService', () => {
     serviceId: 'service-1',
     orderId: 'order-1',
     rating: 5,
-    comment: 'Подробно объяснили проблему и помогли принять решение по ремонту.',
+    comment:
+      'Подробно объяснили проблему и помогли принять решение по ремонту.',
     createdAt: new Date('2026-06-10T08:00:00.000Z'),
     updatedAt: new Date('2026-06-10T08:00:00.000Z'),
     user: {
@@ -111,7 +112,8 @@ describe('ReviewsService', () => {
       service.createReview('user-1', {
         orderId: 'order-1',
         rating: 5,
-        comment: '  Подробно объяснили проблему и помогли принять решение по ремонту.  ',
+        comment:
+          '  Подробно объяснили проблему и помогли принять решение по ремонту.  ',
       }),
     ).resolves.toMatchObject({
       id: 'review-1',
@@ -125,7 +127,8 @@ describe('ReviewsService', () => {
         serviceId: 'service-1',
         orderId: 'order-1',
         rating: 5,
-        comment: 'Подробно объяснили проблему и помогли принять решение по ремонту.',
+        comment:
+          'Подробно объяснили проблему и помогли принять решение по ремонту.',
       },
       select: expect.any(Object),
     });
@@ -221,7 +224,9 @@ describe('ReviewsService', () => {
 
     const service = new ReviewsService(prisma);
 
-    await expect(service.deleteUserReview('user-1', 'review-1')).resolves.toMatchObject({
+    await expect(
+      service.deleteUserReview('user-1', 'review-1'),
+    ).resolves.toMatchObject({
       id: 'review-1',
     });
 

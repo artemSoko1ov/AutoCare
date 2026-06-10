@@ -39,18 +39,15 @@ describe('CarsController', () => {
     service.createCar.mockResolvedValue({ id: 'car-1' } as never);
 
     await expect(
-      controller.createCar(
-        { id: 'user-1' } as never,
-        {
-          brand: 'Toyota',
-          model: 'Camry',
-          year: 2018,
-          licensePlate: 'A123BC77',
-          vin: null,
-          mileage: 65000,
-          photoUrl: null,
-        },
-      ),
+      controller.createCar({ id: 'user-1' } as never, {
+        brand: 'Toyota',
+        model: 'Camry',
+        year: 2018,
+        licensePlate: 'A123BC77',
+        vin: null,
+        mileage: 65000,
+        photoUrl: null,
+      }),
     ).resolves.toEqual({ id: 'car-1' });
     expect(service.createCar).toHaveBeenCalledWith('user-1', {
       brand: 'Toyota',

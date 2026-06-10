@@ -1,9 +1,11 @@
 import 'dotenv/config';
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 
 const DEV_CORS_ORIGIN_PATTERN = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i;
+const bootstrapLogger = new Logger('Bootstrap');
 
 type CorsCallback = (error: Error | null, allow?: boolean) => void;
 
@@ -49,4 +51,20 @@ async function bootstrap() {
   app.use(cookieParser());
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+void bootstrap().catch((error: unknown) => {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    error.code === 'EADDRINUSE'
+  ) {
+    const port = process.env.PORT ?? 3000;
+    bootstrapLogger.error(
+      `Port ${port} is already in use. Stop the existing process or change PORT before starting the server.`,
+    );
+    process.exitCode = 1;
+    return;
+  }
+
+  throw error;
+});

@@ -107,7 +107,9 @@ describe('OrdersService', () => {
 
     const service = new OrdersService(prisma);
 
-    await expect(service.getOrderById('user-1', 'order-1')).resolves.toMatchObject({
+    await expect(
+      service.getOrderById('user-1', 'order-1'),
+    ).resolves.toMatchObject({
       id: 'order-1',
       status: 'new',
     });

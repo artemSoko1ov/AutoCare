@@ -22,7 +22,9 @@ describe('ServicesController', () => {
   });
 
   it('delegates public item request to service', async () => {
-    service.getPublicServiceById.mockResolvedValue({ id: 'service-1' } as never);
+    service.getPublicServiceById.mockResolvedValue({
+      id: 'service-1',
+    } as never);
 
     await expect(controller.getService('service-1')).resolves.toEqual({
       id: 'service-1',

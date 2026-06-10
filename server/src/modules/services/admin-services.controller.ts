@@ -31,7 +31,8 @@ export class AdminServicesController {
 
   @Post()
   createService(
-    @Body(new ZodValidationPipe(CreateServiceBodySchema)) data: CreateServiceBody,
+    @Body(new ZodValidationPipe(CreateServiceBodySchema))
+    data: CreateServiceBody,
   ) {
     return this.servicesService.createService(data);
   }
@@ -39,7 +40,8 @@ export class AdminServicesController {
   @Patch(':id')
   updateService(
     @Param('id') id: string,
-    @Body(new ZodValidationPipe(UpdateServiceBodySchema)) data: UpdateServiceBody,
+    @Body(new ZodValidationPipe(UpdateServiceBodySchema))
+    data: UpdateServiceBody,
   ) {
     return this.servicesService.updateService(id, data);
   }

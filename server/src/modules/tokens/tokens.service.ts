@@ -55,10 +55,11 @@ export class TokensService {
     try {
       const payload = jwt.verify(token, secret);
 
-      if (typeof payload === 'string') {
+      if (typeof payload !== 'object' || payload === null) {
         return null;
       }
 
+      const normalizedPayload = payload as Record<string, unknown>;
       const {
         id,
         email,
@@ -69,7 +70,7 @@ export class TokensService {
         createdAt,
         updatedAt,
         sessionVersion,
-      } = payload;
+      } = normalizedPayload;
       if (
         typeof id !== 'string' ||
         typeof email !== 'string' ||

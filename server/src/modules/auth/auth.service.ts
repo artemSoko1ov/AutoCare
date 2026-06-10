@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -12,16 +13,14 @@ import type {
   TokensDto,
   UserDto,
 } from '@shared/contracts/auth';
-import {
-  toUserDto,
-  userDtoSelect,
-} from '../../common/mappers/user-dto.mapper';
+import { toUserDto, userDtoSelect } from '../../common/mappers/user-dto.mapper';
 import type { AuthTokenPayload } from '../../common/types/auth-token-payload';
 import { TokensService } from '../tokens/tokens.service';
 
 const DEFAULT_ADMIN_EMAIL = 'admin@admin.admin';
 const DEFAULT_ADMIN_PASSWORD = 'admin.admin';
 const DEFAULT_ADMIN_USERNAME = 'Administrator';
+const isProduction = () => process.env.NODE_ENV === 'production';
 
 const authSessionUserSelect = {
   ...userDtoSelect,
@@ -43,6 +42,8 @@ type AuthUser = Prisma.UserGetPayload<{
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly tokenService: TokensService,
@@ -73,7 +74,25 @@ export class AuthService {
     return normalizedValue.length > 0 ? normalizedValue : fallbackValue;
   }
 
-  private getAdminCredentials() {
+  private getAdminCredentials(): {
+    email: string;
+    password: string;
+    username: string;
+  } | null {
+    const hasConfiguredEmail =
+      typeof process.env.ADMIN_EMAIL === 'string' &&
+      process.env.ADMIN_EMAIL.trim().length > 0;
+    const hasConfiguredPassword =
+      typeof process.env.ADMIN_PASSWORD === 'string' &&
+      process.env.ADMIN_PASSWORD.trim().length > 0;
+
+    if (isProduction() && (!hasConfiguredEmail || !hasConfiguredPassword)) {
+      this.logger.warn(
+        'Admin auto-login is disabled because ADMIN_EMAIL or ADMIN_PASSWORD is not configured in production.',
+      );
+      return null;
+    }
+
     const email = this.getOptionalEnvValue(
       process.env.ADMIN_EMAIL,
       DEFAULT_ADMIN_EMAIL,
@@ -113,11 +132,18 @@ export class AuthService {
   }
 
   private isReservedAdminEmail(email: string): boolean {
-    return email.trim().toLowerCase() === this.getAdminCredentials().email;
+    const adminCredentials = this.getAdminCredentials();
+    return adminCredentials
+      ? email.trim().toLowerCase() === adminCredentials.email
+      : false;
   }
 
   private isAdminCredentials(email: string, password: string): boolean {
     const adminCredentials = this.getAdminCredentials();
+
+    if (!adminCredentials) {
+      return false;
+    }
 
     return (
       email.trim().toLowerCase() === adminCredentials.email &&
@@ -127,6 +153,10 @@ export class AuthService {
 
   private async ensureAdminUser(): Promise<AuthUser> {
     const adminCredentials = this.getAdminCredentials();
+
+    if (!adminCredentials) {
+      throw new UnauthorizedException('Admin credentials are not configured');
+    }
 
     const existingAdmin = await this.prisma.user.findUnique({
       where: { email: adminCredentials.email },

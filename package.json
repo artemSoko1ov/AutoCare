@@ -5,10 +5,13 @@
   "private": true,
   "main": "index.js",
   "scripts": {
+    "build": "pnpm --dir shared build && pnpm --dir client build && pnpm --dir server build",
     "dev": "pnpm --parallel --stream --filter ./server --filter ./client run dev",
     "dev:client": "pnpm --filter ./client run dev",
     "dev:server": "pnpm --filter ./server run dev",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "pnpm --dir client lint && pnpm --dir client lint:styles && pnpm --dir server lint",
+    "lint:fix": "pnpm --dir client lint:fix && pnpm --dir client lint:styles:fix && pnpm --dir server lint:fix",
+    "test": "pnpm --dir server test",
     "prepare": "husky",
     "lint-staged": "pnpm --dir client lint-staged"
   },

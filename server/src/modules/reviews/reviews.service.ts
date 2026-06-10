@@ -64,8 +64,14 @@ export class ReviewsService {
     return reviews.map(toReviewDto);
   }
 
-  async createReview(userId: string, data: CreateReviewBody): Promise<ReviewDto> {
-    const order = await this.findCompletedOwnedOrderOrThrow(userId, data.orderId);
+  async createReview(
+    userId: string,
+    data: CreateReviewBody,
+  ): Promise<ReviewDto> {
+    const order = await this.findCompletedOwnedOrderOrThrow(
+      userId,
+      data.orderId,
+    );
 
     if (!order.serviceId) {
       throw new ConflictException('Service is unavailable for review');
@@ -144,7 +150,10 @@ export class ReviewsService {
     return toReviewDto(review);
   }
 
-  private async findCompletedOwnedOrderOrThrow(userId: string, orderId: string) {
+  private async findCompletedOwnedOrderOrThrow(
+    userId: string,
+    orderId: string,
+  ) {
     const order = await this.prisma.order.findFirst({
       where: {
         id: orderId,

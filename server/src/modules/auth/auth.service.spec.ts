@@ -7,6 +7,7 @@ const snapshotAdminEnv = () => ({
   email: process.env.ADMIN_EMAIL,
   password: process.env.ADMIN_PASSWORD,
   username: process.env.ADMIN_USERNAME,
+  nodeEnv: process.env.NODE_ENV,
 });
 
 const clearAdminEnv = () => {
@@ -19,6 +20,7 @@ const restoreAdminEnv = (snapshot: {
   email?: string;
   password?: string;
   username?: string;
+  nodeEnv?: string;
 }) => {
   if (snapshot.email === undefined) {
     delete process.env.ADMIN_EMAIL;
@@ -36,6 +38,12 @@ const restoreAdminEnv = (snapshot: {
     delete process.env.ADMIN_USERNAME;
   } else {
     process.env.ADMIN_USERNAME = snapshot.username;
+  }
+
+  if (snapshot.nodeEnv === undefined) {
+    delete process.env.NODE_ENV;
+  } else {
+    process.env.NODE_ENV = snapshot.nodeEnv;
   }
 };
 
@@ -215,6 +223,95 @@ describe('AuthService', () => {
     }
   });
 
+  it('does not enable the default admin account in production without explicit credentials', async () => {
+    const adminEnvSnapshot = snapshotAdminEnv();
+    clearAdminEnv();
+    process.env.NODE_ENV = 'production';
+
+    try {
+      const prisma = {
+        user: {
+          findUnique: jest.fn().mockResolvedValue(null),
+        },
+      } as unknown as PrismaService;
+
+      const tokenService = {} as TokensService;
+
+      const service = new AuthService(prisma, tokenService);
+
+      await expect(
+        service.login({
+          email: 'admin@admin.admin',
+          password: 'admin.admin',
+        }),
+      ).rejects.toThrow('Неверный email или пароль');
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { email: 'admin@admin.admin' },
+        select: expect.objectContaining({
+          email: true,
+          role: true,
+          password: true,
+        }),
+      });
+    } finally {
+      restoreAdminEnv(adminEnvSnapshot);
+    }
+  });
+
+  it('does not reserve the default admin email in production when explicit credentials are missing', async () => {
+    const adminEnvSnapshot = snapshotAdminEnv();
+    clearAdminEnv();
+    process.env.NODE_ENV = 'production';
+
+    try {
+      const prisma = {
+        user: {
+          findUnique: jest.fn().mockResolvedValue(null),
+          create: jest.fn().mockResolvedValue({
+            id: 'user-1',
+            email: 'admin@admin.admin',
+            username: 'tester',
+            phone: null,
+            avatarUrl: null,
+            role: 'USER',
+            sessionVersion: 0,
+            createdAt: new Date('2026-06-08T10:00:00.000Z'),
+            updatedAt: new Date('2026-06-08T10:00:00.000Z'),
+          }),
+        },
+      } as unknown as PrismaService;
+
+      const tokenService = {
+        generateTokens: jest.fn().mockReturnValue({
+          accessToken: 'access-token',
+          refreshToken: 'refresh-token',
+        }),
+        saveToken: jest.fn().mockResolvedValue(undefined),
+      } as unknown as TokensService;
+
+      const service = new AuthService(prisma, tokenService);
+
+      await expect(
+        service.register({
+          email: 'admin@admin.admin',
+          username: 'tester',
+          phone: null,
+          password: 'secret123',
+        }),
+      ).resolves.toMatchObject({
+        email: 'admin@admin.admin',
+        username: 'tester',
+        role: 'USER',
+      });
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { email: 'admin@admin.admin' },
+      });
+      expect(prisma.user.create).toHaveBeenCalledTimes(1);
+    } finally {
+      restoreAdminEnv(adminEnvSnapshot);
+    }
+  });
+
   it('revokes the active session on logout when access token is still valid', async () => {
     const prisma = {
       $transaction: jest.fn().mockResolvedValue([]),
@@ -276,7 +373,9 @@ describe('AuthService', () => {
 
     const service = new AuthService(prisma, tokenService);
 
-    await expect(service.logout('stale-refresh-token')).resolves.toBeUndefined();
+    await expect(
+      service.logout('stale-refresh-token'),
+    ).resolves.toBeUndefined();
     expect(tokenService.removeToken).toHaveBeenCalledWith(
       'stale-refresh-token',
     );

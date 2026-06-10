@@ -1,10 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import type { UpdateProfileBody, UserDto } from '@shared/contracts/auth';
-import {
-  toUserDto,
-  userDtoSelect,
-} from '../../common/mappers/user-dto.mapper';
+import { toUserDto, userDtoSelect } from '../../common/mappers/user-dto.mapper';
 
 @Injectable()
 export class ProfileService {
