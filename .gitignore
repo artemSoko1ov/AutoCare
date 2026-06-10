@@ -7,6 +7,8 @@ node_modules/
 .env
 .env.*
 *.local
+!.env.example
+!**/.env.example
 
 # IDE and editor files
 .idea/
@@ -42,6 +44,13 @@ dist-ssr/
 build/
 coverage/
 .nyc_output/
+.vite/
+**/.vite/
+.cache/
+**/.cache/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
 
 # Temp files
 .temp/
@@ -53,6 +62,11 @@ pids/
 
 # OS files
 .DS_Store
+Thumbs.db
 
 # Diagnostic reports
 report.*.*.*.*.json
+
+# Local tool state
+.codex/
+.agents/
