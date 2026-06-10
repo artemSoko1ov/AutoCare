@@ -9,6 +9,8 @@
     "dev": "pnpm --parallel --stream --filter ./server --filter ./client run dev",
     "dev:client": "pnpm --filter ./client run dev",
     "dev:server": "pnpm --filter ./server run dev",
+    "preview": "pnpm build && pnpm run preview:start",
+    "preview:start": "pnpm --parallel --stream --filter ./server --filter ./client run preview",
     "deploy": "node scripts/deploy.mjs",
     "deploy:check": "node scripts/deploy.mjs --skip-install",
     "deploy:prod": "node scripts/deploy.mjs --migrate",

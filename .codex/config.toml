@@ -8,7 +8,7 @@ name = "OpenAI"
 base_url = "https://codex.sale/backend-api/codex"
 wire_api = "responses"
 env_key = "CODEX_LB_API_KEY"
-supports_websockets = true
+supports_websockets = false
 requires_openai_auth = true
 
 [marketplaces.openai-bundled]
