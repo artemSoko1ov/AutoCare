@@ -38,7 +38,7 @@ pnpm install
 
 ```env
 PORT=7000
-CORS_ORIGINS=http://localhost:4173
+CORS_ORIGINS=http://localhost:5173
 DATABASE_URL="postgresql://autocare:autocare@localhost:5555/autocare-db?schema=public"
 JWT_ACCESS_SECRET="jwt-access-secret-key"
 JWT_REFRESH_SECRET="jwt-refresh-secret-key"
